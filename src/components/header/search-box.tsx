@@ -31,9 +31,9 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
 
     // 分类配置
     const categoryConfig: Record<string, CategoryConfig> = {
-        article: { label: "文章", icon: FileText, color: "text-blue-600" },
-        essay: { label: "随笔", icon: BookOpen, color: "text-green-600" },
-        diary: { label: "日记", icon: Calendar, color: "text-purple-600" },
+        article: { label: "文章", icon: FileText, color: "text-blue-600 dark:text-blue-400" },
+        essay: { label: "随笔", icon: BookOpen, color: "text-green-600 dark:text-green-400" },
+        diary: { label: "日记", icon: Calendar, color: "text-purple-600 dark:text-purple-400" },
     }
 
     // 搜索数据（按分类组织）
@@ -69,7 +69,6 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
     // 处理失焦
     const handleBlur = () => {
         setIsFocused(false)
-        // 延迟收缩，给用户时间点击搜索建议
         setTimeout(() => {
             if (!isFocused) {
                 handleCollapse()
@@ -91,7 +90,6 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
         setSearchValue(value)
 
         if (value.trim()) {
-            // 按分类过滤搜索结果
             const results: Record<string, SearchItem[]> = {}
 
             Object.keys(categoryConfig).forEach((category) => {
@@ -102,7 +100,7 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
                             (item.title.toLowerCase().includes(value.toLowerCase()) ||
                                 item.excerpt?.toLowerCase().includes(value.toLowerCase())),
                     )
-                    .slice(0, 3) // 每个分类最多显示3个结果
+                    .slice(0, 3)
 
                 if (categoryResults.length > 0) {
                     results[category] = categoryResults
@@ -129,7 +127,6 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
     const handleSelectResult = (item: SearchItem) => {
         setSearchValue(item.title)
         setShowSuggestions(false)
-        // 这里可以添加跳转逻辑
         console.log("选择了:", item)
     }
 
@@ -172,8 +169,8 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
           relative flex items-center transition-all duration-300 ease-out
           ${
                     isExpanded
-                        ? "w-80 bg-white/90 backdrop-blur-md shadow-lg border border-gray-200/50"
-                        : "w-auto bg-gray-100/50 hover:bg-gray-100/80 border border-transparent hover:border-gray-200/50"
+                        ? "w-80 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md shadow-lg border border-gray-200/50 dark:border-gray-700/50"
+                        : "w-auto bg-gray-100/50 hover:bg-gray-100/80 dark:bg-gray-800/50 dark:hover:bg-gray-800/80 border border-transparent hover:border-gray-200/50 dark:hover:border-gray-700/50"
                 }
           rounded-full px-4 py-2 cursor-text
         `}
@@ -182,7 +179,7 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
                 {/* 搜索图标 */}
                 <Search
                     className={`
-            h-4 w-4 text-gray-500 transition-all duration-200
+            h-4 w-4 text-gray-500 dark:text-gray-400 transition-all duration-200
             ${isExpanded ? "mr-3" : "mr-2"}
           `}
                 />
@@ -197,10 +194,10 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
                         onFocus={handleFocus}
                         onBlur={handleBlur}
                         placeholder="搜索文章、随笔、日记..."
-                        className="flex-1 bg-transparent border-none outline-none text-sm text-gray-700 placeholder-gray-400"
+                        className="flex-1 bg-transparent border-none outline-none text-sm text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500"
                     />
                 ) : (
-                    <span className="text-sm text-gray-600 select-none">文章/随笔/日记</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400 select-none">文章/随笔/日记</span>
                 )}
 
                 {/* 右侧操作区 */}
@@ -210,14 +207,14 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
                             variant="ghost"
                             size="sm"
                             onClick={handleClear}
-                            className="h-6 w-6 p-0 hover:bg-gray-100 rounded-full"
+                            className="h-6 w-6 p-0 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full"
                         >
-                            <X className="h-3 w-3 text-gray-400" />
+                            <X className="h-3 w-3 text-gray-400 dark:text-gray-500" />
                         </Button>
                     )}
 
                     {!isExpanded && (
-                        <div className="flex items-center space-x-1 text-xs text-gray-400">
+                        <div className="flex items-center space-x-1 text-xs text-gray-400 dark:text-gray-500">
                             <Command className="h-3 w-3" />
                             <span>K</span>
                         </div>
@@ -227,7 +224,7 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
 
             {/* 分类搜索结果下拉框 */}
             {showSuggestions && Object.keys(filteredResults).length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md border border-gray-200/50 rounded-xl shadow-xl z-50 overflow-hidden max-h-96 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 rounded-xl shadow-xl z-50 overflow-hidden max-h-96 overflow-y-auto">
                     <div className="py-2">
                         {Object.entries(filteredResults).map(([category, items]) => {
                             const config = categoryConfig[category]
@@ -236,11 +233,11 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
                             return (
                                 <div key={category} className="mb-4 last:mb-0">
                                     {/* 分类标题 */}
-                                    <div className="px-4 py-2 border-b border-gray-100 bg-gray-50/50">
+                                    <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                                         <div className="flex items-center space-x-2">
                                             <IconComponent className={`h-4 w-4 ${config.color}`} />
-                                            <span className="text-sm font-medium text-gray-700">{config.label}</span>
-                                            <span className="text-xs text-gray-400">({items.length})</span>
+                                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{config.label}</span>
+                                            <span className="text-xs text-gray-400 dark:text-gray-500">({items.length})</span>
                                         </div>
                                     </div>
 
@@ -249,17 +246,19 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
                                         {items.map((item, index) => (
                                             <button
                                                 key={`${category}-${index}`}
-                                                className="w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors group"
+                                                className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
                                                 onClick={() => handleSelectResult(item)}
                                             >
                                                 <div className="flex items-start space-x-3">
-                                                    <Search className="h-3 w-3 text-gray-400 mt-1 group-hover:text-gray-600" />
+                                                    <Search className="h-3 w-3 text-gray-400 dark:text-gray-500 mt-1 group-hover:text-gray-600 dark:group-hover:text-gray-400" />
                                                     <div className="flex-1 min-w-0">
-                                                        <div className="text-sm font-medium text-gray-900 group-hover:text-gray-700">
+                                                        <div className="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-300">
                                                             {item.title}
                                                         </div>
                                                         {item.excerpt && (
-                                                            <div className="text-xs text-gray-500 mt-1 line-clamp-1">{item.excerpt}</div>
+                                                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">
+                                                                {item.excerpt}
+                                                            </div>
                                                         )}
                                                     </div>
                                                 </div>
@@ -272,8 +271,8 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
                     </div>
 
                     {/* 搜索提示 */}
-                    <div className="border-t border-gray-100 px-4 py-2 bg-gray-50/50">
-                        <div className="flex items-center justify-between text-xs text-gray-500">
+                    <div className="border-t border-gray-100 dark:border-gray-800 px-4 py-2 bg-gray-50/50 dark:bg-gray-800/50">
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                             <span>按 Enter 搜索全部结果</span>
                             <div className="flex items-center space-x-2">
                                 <span>ESC 关闭</span>
@@ -285,9 +284,9 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
 
             {/* 无结果提示 */}
             {showSuggestions && searchValue && Object.keys(filteredResults).length === 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md border border-gray-200/50 rounded-xl shadow-xl z-50 overflow-hidden">
-                    <div className="px-4 py-8 text-center text-sm text-gray-500">
-                        <Search className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 rounded-xl shadow-xl z-50 overflow-hidden">
+                    <div className="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
+                        <Search className="h-8 w-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
                         <p>未找到相关内容</p>
                         <p className="text-xs mt-1">尝试使用其他关键词</p>
                     </div>
