@@ -1,14 +1,16 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import StickyNote, { type StickyNoteData } from "@/components/wall/sticky-note"
 import AddMessageModal from "@/components/wall/add-message-modal"
 import MessageDetailModal from "@/components/wall/message-detail-modal"
+import InfiniteScrollLoader from "@/components/loading/infinite-scroll-loader"
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
 
 // 模拟数据
-const initialMessages: StickyNoteData[] = [
+const allMessages: StickyNoteData[] = [
     {
         id: "1",
         content:
@@ -111,87 +113,81 @@ const initialMessages: StickyNoteData[] = [
         likes: 3,
         comments: 1,
     },
-    {
-        id: "11",
-        content: "想去新疆西藏旅游，妹妹说没有钱的味",
-        author: "匿名",
-        date: "05/28 14:37",
-        category: "目标",
-        color: "purple",
-        likes: 0,
-        comments: 0,
-    },
-    {
-        id: "12",
-        content: "呢呢呢呢我是欣欣大人了",
-        author: "无题",
-        date: "05/28 14:19",
-        category: "无题",
-        color: "blue",
-        likes: 0,
-        comments: 0,
-    },
-    {
-        id: "13",
-        content: "我家门前有两棵树\n一棵是枣树",
-        author: "匿名",
-        date: "05/27 14:51",
-        category: "留言",
-        color: "pink",
-        likes: 0,
-        comments: 0,
-    },
-    {
-        id: "14",
-        content: "记录",
-        author: "匿名",
-        date: "05/25 17:59",
-        category: "留言",
-        color: "yellow",
-        likes: 0,
-        comments: 0,
-    },
-    {
-        id: "15",
-        content: "从昨晚过来的，学习用vue写留言。",
-        author: "匿名",
-        date: "05/24 12:20",
-        category: "留言",
-        color: "green",
-        likes: 0,
-        comments: 0,
-    },
+    // 添加更多模拟数据用于测试分页
+    ...Array.from({ length: 50 }, (_, i) => ({
+        id: `mock-${i + 11}`,
+        content: `这是第 ${i + 11} 条模拟留言内容，用于测试无限滚动加载功能。`,
+        author: `用户${i + 11}`,
+        date: `06/${String(Math.floor(Math.random() * 30) + 1).padStart(2, "0")} ${String(Math.floor(Math.random() * 24)).padStart(2, "0")}:${String(Math.floor(Math.random() * 60)).padStart(2, "0")}`,
+        category: ["留言", "目标", "理想", "过去", "将来"][Math.floor(Math.random() * 5)],
+        color: ["pink", "yellow", "blue", "green", "purple"][Math.floor(Math.random() * 5)] as
+            | "pink"
+            | "yellow"
+            | "blue"
+            | "green"
+            | "purple",
+        likes: Math.floor(Math.random() * 10),
+        comments: Math.floor(Math.random() * 5),
+    })),
 ]
 
 const categories = ["全部", "留言", "目标", "理想", "过去", "将来", "爱情", "亲情", "友情", "秘密", "信条", "无题"]
 
 export default function MessagesPage() {
-    const [messages, setMessages] = useState<StickyNoteData[]>(initialMessages)
     const [selectedCategory, setSelectedCategory] = useState("全部")
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
     const [selectedNote, setSelectedNote] = useState<StickyNoteData | null>(null)
     const [columns, setColumns] = useState<StickyNoteData[][]>([[], [], [], []])
 
-    // 筛选消息
-    const filteredMessages = useMemo(() => {
-        if (selectedCategory === "全部") {
-            return messages
-        }
-        return messages.filter((message) => message.category === selectedCategory)
-    }, [messages, selectedCategory])
+    // 模拟 API 调用
+    const loadMessages = useCallback(
+        async (page: number, pageSize: number): Promise<StickyNoteData[]> => {
+            // 模拟网络延迟
+            await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 1000))
+
+            // 根据分类筛选数据
+            const filteredData =
+                selectedCategory === "全部" ? allMessages : allMessages.filter((msg) => msg.category === selectedCategory)
+
+            const startIndex = (page - 1) * pageSize
+            const endIndex = startIndex + pageSize
+
+            return filteredData.slice(startIndex, endIndex)
+        },
+        [selectedCategory],
+    )
+
+    // 使用无限滚动 hook
+    const {
+        items: messages,
+        isLoading,
+        hasMore,
+        loadMore,
+        refresh,
+        addItem,
+        updateItem,
+    } = useInfiniteScroll({
+        pageSize: 8,
+        loadData: loadMessages,
+    })
+
+    // 当分类改变时刷新数据
+    useEffect(() => {
+        refresh()
+    }, [selectedCategory, refresh])
 
     // 瀑布流布局
     useEffect(() => {
         const newColumns: StickyNoteData[][] = [[], [], [], []]
 
-        filteredMessages.forEach((message, index) => {
+        messages.forEach((message, index) => {
             const columnIndex = index % 4
             newColumns[columnIndex].push(message)
         })
 
         setColumns(newColumns)
-    }, [filteredMessages])
+    }, [messages])
 
     const handleAddMessage = (newMessage: Omit<StickyNoteData, "id" | "date" | "likes" | "comments">) => {
         const message: StickyNoteData = {
@@ -210,12 +206,13 @@ export default function MessagesPage() {
             comments: 0,
         }
 
-        setMessages((prev) => [message, ...prev])
+        addItem(message)
     }
 
     const handleLike = (id: string) => {
-        setMessages((prev) =>
-            prev.map((message) => (message.id === id ? { ...message, likes: message.likes + 1 } : message)),
+        updateItem(
+            (message) => message.id === id,
+            (message) => ({ ...message, likes: message.likes + 1 }),
         )
     }
 
@@ -233,6 +230,17 @@ export default function MessagesPage() {
         setIsDetailModalOpen(true)
     }
 
+    // 渲染单个便签
+    const renderStickyNote = (message: StickyNoteData) => (
+        <StickyNote
+            key={message.id}
+            note={message}
+            onLike={handleLike}
+            onComment={handleComment}
+            onClick={handleNoteClick}
+        />
+    )
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10">
             <div className="pt-16">
@@ -249,18 +257,18 @@ export default function MessagesPage() {
                         <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl border border-white/20 dark:border-gray-700/20 shadow-sm p-4">
                             {/* 分类按钮 */}
                             <div className="flex flex-wrap justify-center gap-2">
-                                {categories.map((category, index) => (
+                                {categories.map((category) => (
                                     <button
                                         key={category}
                                         onClick={() => setSelectedCategory(category)}
                                         className={`
-            px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 transform
-            ${
+                      px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 transform
+                      ${
                                             selectedCategory === category
                                                 ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md scale-105"
                                                 : "bg-white/60 dark:bg-gray-800/60 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-700/80 hover:scale-105"
                                         }
-          `}
+                    `}
                                     >
                                         {category}
                                     </button>
@@ -269,27 +277,42 @@ export default function MessagesPage() {
 
                             {/* 简洁的统计信息 */}
                             <div className="text-center mt-3">
-                                <p className="text-xs text-gray-500 dark:text-gray-400">{filteredMessages.length} 条留言</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    {messages.length} 条留言 {hasMore && "· 滚动加载更多"}
+                                </p>
                             </div>
                         </div>
                     </div>
 
-                    {/* 瀑布流布局 */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
-                        {columns.map((column, columnIndex) => (
+                    {/* 无限滚动容器 */}
+                    <InfiniteScrollLoader
+                        items={columns}
+                        onLoadMore={loadMore}
+                        hasMore={hasMore}
+                        isLoading={isLoading}
+                        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12"
+                        renderItem={(column, columnIndex) => (
                             <div key={columnIndex} className="space-y-6">
-                                {column.map((message) => (
-                                    <StickyNote
-                                        key={message.id}
-                                        note={message}
-                                        onLike={handleLike}
-                                        onComment={handleComment}
-                                        onClick={handleNoteClick}
-                                    />
-                                ))}
+                                {column.map(renderStickyNote)}
                             </div>
-                        ))}
-                    </div>
+                        )}
+                        emptyComponent={
+                            <div className="text-center py-12">
+                                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                                    <div className="text-2xl">📝</div>
+                                </div>
+                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">还没有留言</h3>
+                                <p className="text-gray-500 dark:text-gray-400 mb-4">成为第一个留言的人吧！</p>
+                                <Button
+                                    onClick={() => setIsModalOpen(true)}
+                                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                                >
+                                    <Plus className="w-4 h-4 mr-2" />
+                                    写下第一条留言
+                                </Button>
+                            </div>
+                        }
+                    />
 
                     {/* 添加留言按钮 */}
                     <Button
