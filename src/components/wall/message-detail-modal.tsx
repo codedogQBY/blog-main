@@ -124,16 +124,6 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onAd
         setCommentAuthor("")
     }
 
-    const handleRemoveRequest = () => {
-        // 处理撕下便签请求
-        console.log("请求撕下便签:", note.id)
-    }
-
-    const handleReport = () => {
-        // 处理举报
-        console.log("举报便签:", note.id)
-    }
-
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             {/* 背景遮罩 */}
@@ -172,26 +162,6 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onAd
                 </div>
 
                 <div className="p-6 space-y-6 overflow-y-auto flex-1">
-                    {/* 操作按钮 */}
-                    <div className="flex space-x-3">
-                        <Button
-                            onClick={handleRemoveRequest}
-                            variant="outline"
-                            className="flex-1 h-12 text-blue-600 border-2 border-blue-200/50 hover:bg-blue-50 dark:text-blue-400 dark:border-blue-800/50 dark:hover:bg-blue-950/50 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 backdrop-blur-sm"
-                        >
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            要墙主撕下该便签
-                        </Button>
-                        <Button
-                            onClick={handleReport}
-                            variant="outline"
-                            className="h-12 px-6 text-orange-600 border-2 border-orange-200/50 hover:bg-orange-50 dark:text-orange-400 dark:border-orange-800/50 dark:hover:bg-orange-950/50 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 backdrop-blur-sm"
-                        >
-                            <Flag className="w-4 h-4 mr-2" />
-                            举报
-                        </Button>
-                    </div>
-
                     {/* 便签内容 */}
                     <article
                         className={`
