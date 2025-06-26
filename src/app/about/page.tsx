@@ -1,17 +1,290 @@
+"use client"
+import Image from "next/image"
+import { useState, useEffect } from "react"
+import { getAboutConfig } from "@/data/about"
+import type { AboutConfig } from "@/types/about"
+
 export default function AboutPage() {
-    return (
-        <div className="min-h-screen bg-white dark:bg-gray-900 transition-colors duration-300">
-            <div className="pt-16">
-                <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="text-center">
-                        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">文章页面</h1>
-                        <p className="text-lg text-gray-600 dark:text-gray-300">
-                            这是文章页面，注意看Header中"文章"导航项的选中状态
-                        </p>
-                    </div>
-                </main>
+    const [aboutData, setAboutData] = useState<AboutConfig | null>(null)
+    const [loading, setLoading] = useState(true)
+
+    // 加载关于页面配置
+    useEffect(() => {
+        const loadAboutData = async () => {
+            try {
+                const data = await getAboutConfig()
+                setAboutData(data)
+            } catch (error) {
+                console.error("Failed to load about data:", error)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        loadAboutData()
+    }, [])
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-gray-600 dark:text-gray-400">加载中...</p>
+                </div>
             </div>
+        )
+    }
+
+    if (!aboutData) {
+        return (
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-gray-600 dark:text-gray-400">加载失败，请刷新重试</p>
+                </div>
+            </div>
+        )
+    }
+
+    // 合并所有标签用于移动端显示
+    const allTags = [...aboutData.hero.leftTags, ...aboutData.hero.rightTags]
+
+    return (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            {/* 英雄区域 - 标签展示 */}
+            <section className="relative min-h-screen flex items-center justify-center pt-20 pb-10">
+                <div className="max-w-7xl mx-auto px-6 w-full">
+                    {/* 桌面端布局 */}
+                    <div className="hidden lg:grid lg:grid-cols-3 lg:gap-8 items-center">
+                        {/* 左侧标签 */}
+                        <div className="flex flex-col space-y-4 items-end">
+                            {aboutData.hero.leftTags.map((tag, index) => (
+                                <div
+                                    key={`left-${index}`}
+                                    className="inline-block px-6 py-3 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full text-gray-700 dark:text-gray-300 font-medium shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105"
+                                    style={{
+                                        animationDelay: `${index * 0.1}s`,
+                                        animation: "fadeInUp 0.6s ease-out forwards",
+                                    }}
+                                >
+                                    {tag}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* 中间头像 */}
+                        <div className="flex justify-center">
+                            <div className="relative">
+                                <div className="w-96 h-96 rounded-full overflow-hidden shadow-2xl">
+                                    <Image
+                                        src={aboutData.hero.avatar || "/placeholder.svg"}
+                                        alt="个人头像"
+                                        width={400}
+                                        height={400}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                {/* 签名 */}
+                                <div className="absolute bottom-4 right-4 text-white/80 font-handwriting text-lg">
+                                    {aboutData.hero.signature}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 右侧标签 */}
+                        <div className="flex flex-col space-y-4 items-start">
+                            {aboutData.hero.rightTags.map((tag, index) => (
+                                <div
+                                    key={`right-${index}`}
+                                    className="inline-block px-6 py-3 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full text-gray-700 dark:text-gray-300 font-medium shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105"
+                                    style={{
+                                        animationDelay: `${(index + aboutData.hero.leftTags.length) * 0.1}s`,
+                                        animation: "fadeInUp 0.6s ease-out forwards",
+                                    }}
+                                >
+                                    {tag}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* 移动端布局 */}
+                    <div className="lg:hidden flex flex-col items-center space-y-8">
+                        {/* 头像 */}
+                        <div className="relative">
+                            <div className="w-64 h-64 rounded-full overflow-hidden shadow-2xl">
+                                <Image
+                                    src={aboutData.hero.avatar || "/placeholder.svg"}
+                                    alt="个人头像"
+                                    width={300}
+                                    height={300}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            {/* 签名 */}
+                            <div className="absolute bottom-2 right-2 text-white/80 font-handwriting text-base">
+                                {aboutData.hero.signature}
+                            </div>
+                        </div>
+
+                        {/* 标签云 - 移动端优化布局 */}
+                        <div className="w-full max-w-md">
+                            <div className="flex flex-wrap justify-center gap-3">
+                                {allTags.map((tag, index) => (
+                                    <div
+                                        key={`mobile-${index}`}
+                                        className="inline-block px-4 py-2 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-full text-gray-700 dark:text-gray-300 font-medium shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 text-sm"
+                                        style={{
+                                            animationDelay: `${index * 0.05}s`,
+                                            animation: "fadeInUp 0.6s ease-out forwards",
+                                        }}
+                                    >
+                                        {tag}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 关于介绍 */}
+            <section className="py-20 bg-white dark:bg-gray-800">
+                <div className="max-w-6xl mx-auto px-6">
+                    {/* PC端：左文字右图片 */}
+                    <div className="hidden lg:grid lg:grid-cols-3 lg:gap-12 items-start">
+                        <div className="lg:col-span-2">
+                            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-8">{aboutData.intro.title}</h2>
+                            <div className="prose prose-lg text-gray-600 dark:text-gray-300 leading-relaxed space-y-6">
+                                {aboutData.intro.content.map((paragraph, index) => (
+                                    <p key={index}>{paragraph}</p>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <div className="w-64 h-64 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
+                                <div className="text-white text-6xl font-bold">XA</div>
+                            </div>
+                            <div className="text-center mt-4">
+                                <div className="text-lg font-medium text-gray-900 dark:text-white">YIKE</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 移动端：上文字下图片 */}
+                    <div className="lg:hidden">
+                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 text-center">
+                            {aboutData.intro.title}
+                        </h2>
+                        <div className="prose prose-base text-gray-600 dark:text-gray-300 leading-relaxed space-y-4 mb-8">
+                            {aboutData.intro.content.map((paragraph, index) => (
+                                <p key={index} className="text-sm">
+                                    {paragraph}
+                                </p>
+                            ))}
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <div className="w-48 h-48 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
+                                <div className="text-white text-4xl font-bold">XA</div>
+                            </div>
+                            <div className="text-center mt-4">
+                                <div className="text-base font-medium text-gray-900 dark:text-white">YIKE</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 动态渲染各个章节 */}
+            {aboutData.sections.map((section, sectionIndex) => (
+                <section
+                    key={section.id}
+                    className={`py-12 lg:py-20 ${sectionIndex % 2 === 0 ? "bg-gray-50 dark:bg-gray-900" : "bg-white dark:bg-gray-800"}`}
+                >
+                    <div className="max-w-6xl mx-auto px-6">
+                        <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white mb-8 lg:mb-12">
+                            {section.title}
+                        </h2>
+
+                        {/* PC端：左文字右图片 */}
+                        <div className="hidden lg:grid lg:grid-cols-3 lg:gap-12 items-start">
+                            {/* 左侧文字内容 */}
+                            <div className="lg:col-span-2">
+                                <div className="space-y-6">
+                                    {section.content.map((paragraph, index) => (
+                                        <p key={index} className="text-gray-600 dark:text-gray-300 leading-relaxed">
+                                            {paragraph}
+                                        </p>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* 右侧图片 */}
+                            <div className="space-y-6">
+                                {section.images?.map((image) => (
+                                    <div key={image.id} className="relative group">
+                                        <Image
+                                            src={image.src || "/placeholder.svg"}
+                                            alt={image.alt}
+                                            width={300}
+                                            height={200}
+                                            className="w-full rounded-lg shadow-lg group-hover:shadow-xl transition-shadow duration-300"
+                                        />
+                                        <div className="text-center mt-2 text-sm text-gray-600 dark:text-gray-400">{image.caption}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* 移动端：上文字下图片 */}
+                        <div className="lg:hidden">
+                            {/* 文字内容 */}
+                            <div className="space-y-4 mb-8">
+                                {section.content.map((paragraph, index) => (
+                                    <p key={index} className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm">
+                                        {paragraph}
+                                    </p>
+                                ))}
+                            </div>
+
+                            {/* 图片 */}
+                            {section.images && section.images.length > 0 && (
+                                <div className="grid grid-cols-1 gap-4">
+                                    {section.images.map((image) => (
+                                        <div key={image.id} className="relative max-w-sm mx-auto">
+                                            <Image
+                                                src={image.src || "/placeholder.svg"}
+                                                alt={image.alt}
+                                                width={300}
+                                                height={180}
+                                                className="w-full rounded-lg shadow-lg"
+                                            />
+                                            <div className="text-center mt-2 text-xs text-gray-600 dark:text-gray-400">{image.caption}</div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </section>
+            ))}
+
+            {/* 动画样式 */}
+            <style jsx>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .font-handwriting {
+          font-family: 'Brush Script MT', cursive;
+        }
+      `}</style>
         </div>
     )
 }
-

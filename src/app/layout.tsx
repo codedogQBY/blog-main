@@ -4,6 +4,7 @@ import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/header/theme-provider"
 import Header from "@/components/header";
+import ScrollToTop from "@/components/scroll-to-top"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -19,10 +20,11 @@ export default function RootLayout({
 }) {
     return (
         <html lang="zh-CN" suppressHydrationWarning>
-        <body className={inter.className} suppressHydrationWarning>
+        <body className={inter.className}>
         <ThemeProvider defaultTheme="system" storageKey="xa-theme">
-            <Header/>
+            <Header />
             {children}
+            <ScrollToTop />
         </ThemeProvider>
         </body>
         </html>

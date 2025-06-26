@@ -177,13 +177,37 @@ export default function MessagesPage() {
         refresh()
     }, [selectedCategory, refresh])
 
-    // 瀑布流布局
+    // 优化的瀑布流布局算法
     useEffect(() => {
-        const newColumns: StickyNoteData[][] = [[], [], [], []]
+        const getColumnCount = () => {
+            if (typeof window === "undefined") return 4
+            const width = window.innerWidth
+            if (width < 768) return 1 // mobile
+            if (width < 1024) return 2 // tablet
+            if (width < 1280) return 3 // desktop
+            return 4 // large desktop
+        }
 
-        messages.forEach((message, index) => {
-            const columnIndex = index % 4
-            newColumns[columnIndex].push(message)
+        const columnCount = getColumnCount()
+        const newColumns: StickyNoteData[][] = Array.from({ length: columnCount }, () => [])
+
+        // 估算每个卡片的高度（基于内容长度）
+        const estimateCardHeight = (message: StickyNoteData) => {
+            const baseHeight = 200 // 基础高度
+            const contentHeight = Math.ceil(message.content.length / 50) * 20 // 根据内容长度估算
+            const authorHeight = 40 // 作者信息高度
+            const paddingHeight = 60 // 内边距
+            return baseHeight + contentHeight + authorHeight + paddingHeight
+        }
+
+        // 跟踪每列的累计高度
+        const columnHeights = new Array(columnCount).fill(0)
+
+        // 将每个消息分配到高度最小的列
+        messages.forEach((message) => {
+            const shortestColumnIndex = columnHeights.indexOf(Math.min(...columnHeights))
+            newColumns[shortestColumnIndex].push(message)
+            columnHeights[shortestColumnIndex] += estimateCardHeight(message) + 24 // 24px gap
         })
 
         setColumns(newColumns)
@@ -317,9 +341,9 @@ export default function MessagesPage() {
                     {/* 添加留言按钮 */}
                     <Button
                         onClick={() => setIsModalOpen(true)}
-                        className="fixed bottom-8 right-8 h-14 w-14 rounded-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110"
+                        className="fixed bottom-8 right-8 h-12 w-12 rounded-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110"
                     >
-                        <Plus className="h-6 w-6" />
+                        <Plus className="h-5 w-5" />
                     </Button>
 
                     {/* 添加留言弹窗 */}
