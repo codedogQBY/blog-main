@@ -1,7 +1,6 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useCallback } from "react"
 import { Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -10,56 +9,82 @@ import ArticleCard from "@/components/blog/article-card"
 import InfiniteScrollLoader from "@/components/loading/infinite-scroll-loader"
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
 import type { Article, ArticleCategory } from "@/types/article"
-import { mockArticles } from "@/data/articles"
-
-const categories: ArticleCategory[] = ["全部", "旅行", "总结", "产品", "技术", "生活"]
+import { api } from "@/lib/api"
 
 export default function ArticlesPage() {
-    const [selectedCategory, setSelectedCategory] = useState<ArticleCategory>("全部")
+    const [selectedCategory, setSelectedCategory] = useState<string>("全部")
     const [searchQuery, setSearchQuery] = useState("")
-    const [isSearchVisible, setIsSearchVisible] = useState(false)
+    const [categoryStats, setCategoryStats] = useState<Record<string, number>>({})
+    const [realCategories, setRealCategories] = useState<any[]>([])
+    const [displayCategories, setDisplayCategories] = useState<string[]>(["全部"])
 
-    // 获取分类统计
-    const getCategoryStats = () => {
-        const stats: Record<string, number> = {}
-        mockArticles.forEach((article) => {
-            stats[article.category] = (stats[article.category] || 0) + 1
-        })
-        stats["全部"] = mockArticles.length
-        return stats
-    }
+    // 获取分类数据
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await api.getCategories({ limit: 100 })
+                setRealCategories(response.data)
+                
+                // 计算分类统计
+                const stats: Record<string, number> = { "全部": 0 }
+                const categoryNames = ["全部"]
+                
+                response.data.forEach((category) => {
+                    const articleCount = category._count?.articles || 0
+                    stats[category.name] = articleCount
+                    stats["全部"] += articleCount
+                    categoryNames.push(category.name)
+                })
+                
+                setCategoryStats(stats)
+                setDisplayCategories(categoryNames)
+            } catch (error) {
+                console.error('获取分类失败:', error)
+                // 使用默认统计和分类
+                setCategoryStats({ "全部": 0 })
+                setDisplayCategories(["全部"])
+            }
+        }
 
-    const categoryStats = getCategoryStats()
+        fetchCategories()
+    }, [])
 
-    // 模拟 API 调用
+    // 加载文章数据
     const loadArticles = useCallback(
         async (page: number, pageSize: number): Promise<Article[]> => {
-            // 模拟网络延迟
-            await new Promise((resolve) => setTimeout(resolve, 800 + Math.random() * 800))
+            try {
+                // 将中文分类名转换为对应的slug
+                let categorySlug: string | undefined
+                if (selectedCategory !== "全部") {
+                    const realCategory = realCategories.find(cat => cat.name === selectedCategory)
+                    categorySlug = realCategory?.slug
+                }
 
-            // 根据分类和搜索条件筛选数据
-            let filteredData = mockArticles
+                const response = await api.getArticles({
+                    page,
+                    limit: pageSize,
+                    search: searchQuery.trim() || undefined,
+                    category: categorySlug,
+                })
 
-            if (selectedCategory !== "全部") {
-                filteredData = filteredData.filter((article) => article.category === selectedCategory)
+                // 转换API数据格式以兼容现有组件
+                return response.data.map(article => ({
+                    ...article,
+                    publishDate: article.publishedAt || article.createdAt,
+                    category: typeof article.category === 'object' ? article.category.name : article.category,
+                    tags: Array.isArray(article.tags) 
+                        ? article.tags.map(t => typeof t === 'string' ? t : t.tag.name)
+                        : [],
+                    comments: article._count?.comments || 0,
+                    author: typeof article.author === 'object' ? article.author.name : article.author,
+                    coverImage: article.coverImage || "/placeholder.svg?height=128&width=128",
+                }))
+            } catch (error) {
+                console.error('加载文章失败:', error)
+                return []
             }
-
-            if (searchQuery.trim()) {
-                const query = searchQuery.toLowerCase()
-                filteredData = filteredData.filter(
-                    (article) =>
-                        article.title.toLowerCase().includes(query) ||
-                        article.excerpt.toLowerCase().includes(query) ||
-                        article.tags.some((tag) => tag.toLowerCase().includes(query)),
-                )
-            }
-
-            const startIndex = (page - 1) * pageSize
-            const endIndex = startIndex + pageSize
-
-            return filteredData.slice(startIndex, endIndex)
         },
-        [selectedCategory, searchQuery],
+        [selectedCategory, searchQuery, realCategories],
     )
 
     // 使用无限滚动 hook
@@ -76,12 +101,28 @@ export default function ArticlesPage() {
 
     // 当分类或搜索条件改变时刷新数据
     useEffect(() => {
-        refresh()
+        const refreshData = async () => {
+            await refresh()
+        }
+        refreshData()
     }, [selectedCategory, searchQuery, refresh])
 
-    const handleArticleClick = (article: Article) => {
+    const handleArticleClick = async (article: Article) => {
         console.log("点击文章:", article.title)
-        // 这里可以跳转到文章详情页
+        
+        // 增加浏览量
+        if (article.id) {
+            try {
+                await api.incrementArticleViews(article.id)
+            } catch (error) {
+                console.error('更新浏览量失败:', error)
+            }
+        }
+        
+        // 跳转到文章详情页
+        if (article.slug) {
+            window.location.href = `/blog/${article.slug}`
+        }
     }
 
     const handleSearch = (e: React.FormEvent) => {
@@ -89,7 +130,6 @@ export default function ArticlesPage() {
         // 搜索逻辑已经通过 useEffect 处理
     }
 
-    // @ts-ignore
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10">
             <div className="pt-16">
@@ -121,32 +161,32 @@ export default function ArticlesPage() {
                         {/* 分类筛选 */}
                         <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl border border-white/20 dark:border-gray-700/20 shadow-sm p-4">
                             <div className="flex flex-wrap justify-center gap-2">
-                                {categories.map((category) => (
+                                {displayCategories.map((category) => (
                                     <button
                                         key={category}
                                         onClick={() => setSelectedCategory(category)}
                                         className={`
-                      px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 transform flex items-center space-x-2
-                      ${
-                                            selectedCategory === category
-                                                ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md scale-105"
-                                                : "bg-white/60 dark:bg-gray-800/60 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-700/80 hover:scale-105"
-                                        }
-                    `}
+                                            px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 transform flex items-center space-x-2
+                                            ${
+                                                selectedCategory === category
+                                                    ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md scale-105"
+                                                    : "bg-white/60 dark:bg-gray-800/60 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-700/80 hover:scale-105"
+                                            }
+                                        `}
                                     >
                                         <span>{category}</span>
                                         <span
                                             className={`
-                        text-xs px-1.5 py-0.5 rounded-full
-                        ${
-                                                selectedCategory === category
-                                                    ? "bg-white/20 text-white"
-                                                    : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
-                                            }
-                      `}
+                                                text-xs px-1.5 py-0.5 rounded-full
+                                                ${
+                                                    selectedCategory === category
+                                                        ? "bg-white/20 text-white"
+                                                        : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
+                                                }
+                                            `}
                                         >
-                      {categoryStats[category] || 0}
-                    </span>
+                                            {categoryStats[category] || 0}
+                                        </span>
                                     </button>
                                 ))}
                             </div>
@@ -164,23 +204,32 @@ export default function ArticlesPage() {
                     <InfiniteScrollLoader
                         items={articles}
                         onLoadMore={loadMore}
-                        hasMore={hasMore}
-                        isLoading={isLoading}
+                        renderItem={(article, index) => (
+                            <ArticleCard
+                                key={article.id || index}
+                                article={article}
+                                onClick={() => handleArticleClick(article)}
+                            />
+                        )}
                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                        renderItem={(article) => <ArticleCard key={article.id} article={article} onClick={handleArticleClick} />}
-                        emptyComponent={
-                            <div className="text-center py-12">
-                                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <div className="text-2xl">📝</div>
-                                </div>
-                                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                    {searchQuery ? "未找到相关文章" : "还没有文章"}
-                                </h3>
-                                <p className="text-gray-500 dark:text-gray-400 mb-4">
-                                    {searchQuery ? "尝试使用其他关键词搜索" : "开始写作，分享你的想法吧！"}
+                        isLoading={isLoading}
+                        hasMore={hasMore}
+                        emptyMessage={
+                            <div className="col-span-full text-center py-12">
+                                <div className="text-gray-400 text-lg mb-2">🔍</div>
+                                <p className="text-gray-500 dark:text-gray-400">
+                                    {searchQuery
+                                        ? `没有找到包含 "${searchQuery}" 的文章`
+                                        : selectedCategory !== "全部"
+                                        ? `"${selectedCategory}" 分类下暂无文章`
+                                        : "暂无文章"}
                                 </p>
                                 {searchQuery && (
-                                    <Button onClick={() => setSearchQuery("")} variant="outline" className="rounded-xl">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() => setSearchQuery("")}
+                                        className="mt-4"
+                                    >
                                         清除搜索
                                     </Button>
                                 )}
