@@ -66,13 +66,15 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
           <span
               className={`
               px-3 py-1 rounded-full text-sm font-medium
-              ${categoryColors[article.category] || "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"}
+              ${categoryColors[typeof article.category === 'string' ? article.category : article.category?.name || ''] || "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"}
             `}
           >
-            {article.category}
+            {typeof article.category === 'string' ? article.category : article.category?.name || ''}
           </span>
-                    {article.tags.length > 0 && (
-                        <span className="text-sm text-gray-400 dark:text-gray-500">/ {article.tags[0]}</span>
+                    {article.tags && article.tags.length > 0 && (
+                        <span className="text-sm text-gray-400 dark:text-gray-500">
+                            / {typeof article.tags[0] === 'string' ? article.tags[0] : article.tags[0]?.tag?.name || ''}
+                        </span>
                     )}
                 </div>
 

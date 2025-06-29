@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useRef, useEffect } from "react"
+import React, { useState, useRef } from "react"
 import { Heart, MessageCircle, Calendar, Tag } from "lucide-react"
 
 export interface StickyNoteData {
@@ -81,28 +79,8 @@ const modernColorThemes = {
 export default function StickyNote({ note, onLike, onComment, onClick }: StickyNoteProps) {
     const [isHovered, setIsHovered] = useState(false)
     const [isPressed, setIsPressed] = useState(false)
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
     const cardRef = useRef<HTMLDivElement>(null)
     const theme = modernColorThemes[note.color]
-
-    useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            if (cardRef.current && isHovered) {
-                const rect = cardRef.current.getBoundingClientRect()
-                const x = ((e.clientX - rect.left) / rect.width) * 100
-                const y = ((e.clientY - rect.top) / rect.height) * 100
-                setMousePosition({ x, y })
-            }
-        }
-
-        if (isHovered) {
-            document.addEventListener("mousemove", handleMouseMove)
-        }
-
-        return () => {
-            document.removeEventListener("mousemove", handleMouseMove)
-        }
-    }, [isHovered])
 
     const handleLike = (e: React.MouseEvent) => {
         e.stopPropagation()
@@ -194,41 +172,20 @@ export default function StickyNote({ note, onLike, onComment, onClick }: StickyN
                   ${note.isLiked ? "fill-current animate-pulse" : "group-hover/like:fill-current"}
                 `}
                             />
-                            <span className="text-xs font-bold">{note.likes}</span>
+                            <span className="text-sm font-medium">{note.likes}</span>
                         </button>
-
                         <button
                             onClick={handleComment}
-                            className="group/comment flex items-center space-x-1.5 px-3 py-2 rounded-xl text-gray-500 dark:text-gray-400 hover:text-blue-500 hover:bg-white/30 dark:hover:bg-gray-700/30 transition-all duration-300 hover:scale-110 active:scale-95 transform-gpu"
+                            className="group/comment flex items-center space-x-1.5 px-3 py-2 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 transform-gpu hover:bg-white/30 dark:hover:bg-gray-700/30 text-gray-500 dark:text-gray-400 hover:text-blue-500"
                         >
-                            <MessageCircle className="w-4 h-4 transition-all duration-300 group-hover/comment:scale-125" />
-                            <span className="text-xs font-bold">{note.comments}</span>
+                            <MessageCircle
+                                className="w-4 h-4 transition-all duration-300 group-hover/comment:scale-125 group-hover/comment:fill-current"
+                            />
+                            <span className="text-sm font-medium">{note.comments}</span>
                         </button>
-                    </div>
-
-                    {/* Author */}
-                    <div className="flex items-center space-x-2 opacity-80 group-hover:opacity-100 transition-all duration-300">
-                        <div
-                            className={`
-                w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold
-                ${theme.accent} shadow-lg transform transition-all duration-300 group-hover:scale-110
-              `}
-                        >
-                            {note.author.charAt(0).toUpperCase()}
-                        </div>
-                        <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">{note.author}</span>
                     </div>
                 </footer>
             </div>
-
-            {/* Floating particles effect */}
-            {isHovered && (
-                <>
-                    <div className="absolute top-4 right-4 w-1 h-1 bg-white/40 rounded-full animate-ping" />
-                    <div className="absolute top-8 right-8 w-0.5 h-0.5 bg-white/30 rounded-full animate-pulse" />
-                    <div className="absolute bottom-8 left-6 w-0.5 h-0.5 bg-white/20 rounded-full animate-bounce" />
-                </>
-            )}
         </article>
     )
 }

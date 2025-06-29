@@ -43,6 +43,12 @@ export default function GalleryPage() {
         // 这里可以添加查看详情的逻辑
     }
 
+    // 创建适配器函数来匹配InfiniteScrollLoader的接口
+    const handleLoadMore = async (): Promise<GalleryItem[]> => {
+        await loadMore()
+        return [] // InfiniteScrollLoader不使用返回值，items通过hook状态管理
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10">
             <div className="pt-16">
@@ -64,7 +70,7 @@ export default function GalleryPage() {
                     {/* 无限滚动容器 */}
                     <InfiniteScrollLoader
                         items={items}
-                        onLoadMore={loadMore}
+                        onLoadMore={handleLoadMore}
                         hasMore={hasMore}
                         isLoading={isLoading}
                         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"

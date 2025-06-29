@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 import SearchBox from "./search-box"
@@ -128,13 +127,6 @@ export default function Header() {
                                         {isActive && (
                                             <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-blue-500 dark:bg-blue-400 rounded-full"></div>
                                         )}
-
-                                        {/* 通知徽章 */}
-                                        {item.hasNotification && (
-                                            <Badge className="absolute -top-1 -right-1 h-2 w-2 p-0 bg-red-500 border-0 animate-pulse">
-                                                <span className="sr-only">通知</span>
-                                            </Badge>
-                                        )}
                                     </Link>
                                 )
                             })}
@@ -215,7 +207,6 @@ export default function Header() {
                                 >
                                     <span className="font-medium">{item.name}</span>
                                     <div className="flex items-center space-x-2">
-                                        {item.hasNotification && <Badge className="h-2 w-2 p-0 bg-red-500 border-0" />}
                                         {isActive && <div className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full" />}
                                     </div>
                                 </Link>

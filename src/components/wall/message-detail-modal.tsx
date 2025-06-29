@@ -1,367 +1,108 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { X, Heart, MessageCircle, Flag, Trash2, Eye, Calendar, Tag } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
-import { Input } from "@/components/ui/input"
-import type { StickyNoteData } from "./sticky-note"
+import { useState } from 'react'
+import { X, Heart, MessageCircle, Share2, MapPin, Calendar } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 
-interface Comment {
-    id: string
-    author: string
-    content: string
-    date: string
-    avatar?: string
+interface StickyNote {
+  id: string
+  content: string
+  likes?: number
+  date: string
+  location?: string
+  author?: string
+  category?: string
+  color?: string
 }
 
 interface MessageDetailModalProps {
-    isOpen: boolean
-    onClose: () => void
-    note: StickyNoteData | null
-    onLike?: (id: string) => void
-    onAddComment?: (noteId: string, comment: Omit<Comment, "id" | "date">) => void
+  message: StickyNote
+  isOpen: boolean
+  onClose: () => void
 }
 
-const modernColorThemes = {
-    pink: {
-        gradient: "from-rose-400/20 via-pink-300/15 to-rose-500/20",
-        border: "border-rose-200/30",
-        accent: "bg-gradient-to-r from-rose-400 to-pink-500",
-        text: "text-rose-600",
-    },
-    yellow: {
-        gradient: "from-amber-400/20 via-yellow-300/15 to-orange-400/20",
-        border: "border-amber-200/30",
-        accent: "bg-gradient-to-r from-amber-400 to-orange-500",
-        text: "text-amber-600",
-    },
-    blue: {
-        gradient: "from-blue-400/20 via-cyan-300/15 to-blue-500/20",
-        border: "border-blue-200/30",
-        accent: "bg-gradient-to-r from-blue-400 to-cyan-500",
-        text: "text-blue-600",
-    },
-    green: {
-        gradient: "from-emerald-400/20 via-green-300/15 to-teal-400/20",
-        border: "border-emerald-200/30",
-        accent: "bg-gradient-to-r from-emerald-400 to-teal-500",
-        text: "text-emerald-600",
-    },
-    purple: {
-        gradient: "from-violet-400/20 via-purple-300/15 to-indigo-400/20",
-        border: "border-violet-200/30",
-        accent: "bg-gradient-to-r from-violet-400 to-indigo-500",
-        text: "text-violet-600",
-    },
-}
+export default function MessageDetailModal({ message, isOpen, onClose }: MessageDetailModalProps) {
+  const [isLiked, setIsLiked] = useState(false)
+  const [likes, setLikes] = useState(message.likes || 0)
 
-// 模拟评论数据
-const mockComments: Comment[] = [
-    {
-        id: "1",
-        author: "逸刻",
-        content: "欢迎参考借鉴",
-        date: "06/22 20:53",
-        avatar: "/placeholder.svg?height=32&width=32",
-    },
-]
+  if (!isOpen) return null
 
-export default function MessageDetailModal({ isOpen, onClose, note, onLike, onAddComment }: MessageDetailModalProps) {
-    const [commentText, setCommentText] = useState("")
-    const [commentAuthor, setCommentAuthor] = useState("")
-    const [comments, setComments] = useState<Comment[]>(mockComments)
-
-    // 锁定背景滚动
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = "hidden"
-        } else {
-            document.body.style.overflow = "unset"
-        }
-
-        return () => {
-            document.body.style.overflow = "unset"
-        }
-    }, [isOpen])
-
-    if (!isOpen || !note) return null
-
-    const theme = modernColorThemes[note.color]
-
-    const handleLike = () => {
-        onLike?.(note.id)
-    }
-
-    const handleAddComment = () => {
-        if (!commentText.trim()) return
-
-        const newComment: Comment = {
-            id: Date.now().toString(),
-            author: commentAuthor.trim() || "匿名",
-            content: commentText.trim(),
-            date: new Date()
-                .toLocaleDateString("zh-CN", {
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                })
-                .replace(/\//g, "/")
-                .replace(",", ""),
-            avatar: "/placeholder.svg?height=32&width=32",
-        }
-
-        setComments((prev) => [...prev, newComment])
-        onAddComment?.(note.id, {
-            author: newComment.author,
-            content: newComment.content,
-            avatar: newComment.avatar,
-        })
-
-        // 重置表单
-        setCommentText("")
-        setCommentAuthor("")
-    }
-
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* 背景遮罩 */}
-            <div
-                className="absolute inset-0 bg-black/60 backdrop-blur-xl"
-                onClick={onClose}
-                style={{
-                    background: "radial-gradient(circle at center, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 100%)",
-                }}
-            />
-
-            {/* 弹窗内容 */}
-            <div className="relative w-full max-w-lg bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden max-h-[90vh] flex flex-col">
-                {/* 头部 - 对齐创建留言样式 */}
-                <div className="relative overflow-hidden">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse" />
-                    <header className="relative flex items-center justify-between p-6">
-                        <div className="flex items-center space-x-3">
-                            <div className="p-2 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl shadow-lg flex items-center justify-center">
-                                <Eye className="w-5 h-5 text-white" />
-                            </div>
-                            <div className="flex flex-col justify-center">
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white leading-tight">详情</h2>
-                                <p className="text-xs text-gray-500 dark:text-gray-400 leading-tight">查看留言详情</p>
-                            </div>
-                        </div>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={onClose}
-                            className="w-10 h-10 p-0 rounded-full hover:bg-white/20 dark:hover:bg-gray-800/50 transition-all duration-300 hover:scale-110 flex items-center justify-center"
-                        >
-                            <X className="w-4 h-4" />
-                        </Button>
-                    </header>
-                </div>
-
-                <div className="p-6 space-y-6 overflow-y-auto flex-1">
-                    {/* 便签内容 */}
-                    <article
-                        className={`
-    relative overflow-hidden rounded-3xl border backdrop-blur-xl
-    bg-gradient-to-br ${theme.gradient} 
-    ${theme.border} 
-    shadow-lg
-  `}
-                    >
-                        {/* Top accent bar */}
-                        <div className={`h-6 w-full ${theme.accent} opacity-80`} />
-
-                        <div className="relative p-8 space-y-6">
-                            {/* Header */}
-                            <header className="flex items-start justify-between">
-                                <div className="flex items-center space-x-2 opacity-70">
-                                    <Calendar className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
-                                    <time className="text-xs font-medium text-gray-600 dark:text-gray-300">{note.date}</time>
-                                </div>
-                            </header>
-
-                            {/* Content */}
-                            <div className="space-y-3">
-                                <p className="text-gray-800 dark:text-gray-100 text-sm leading-relaxed font-medium whitespace-pre-wrap break-words">
-                                    {note.content}
-                                </p>
-                            </div>
-
-                            {/* Category tag */}
-                            <div className="flex justify-start">
-                <span
-                    className={`
-          inline-flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-semibold
-          bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-white/20 dark:border-gray-600/20
-          ${theme.text} dark:text-gray-300
-        `}
-                >
-                  <Tag className="w-3 h-3" />
-                  <span>{note.category}</span>
-                </span>
-                            </div>
-
-                            {/* Footer */}
-                            <footer className="flex items-center justify-between pt-2">
-                                {/* Interaction buttons - 无交互效果 */}
-                                <div className="flex items-center space-x-1">
-                                    <div
-                                        className={`
-            flex items-center space-x-1.5 px-3 py-2 rounded-xl
-            ${
-                                            note.isLiked
-                                                ? "bg-red-500/20 text-red-500 shadow-red-500/20 shadow-lg"
-                                                : "text-gray-500 dark:text-gray-400"
-                                        }
-          `}
-                                    >
-                                        <Heart
-                                            className={`
-              w-4 h-4
-              ${note.isLiked ? "fill-current" : ""}
-            `}
-                                        />
-                                        <span className="text-xs font-bold">{note.likes}</span>
-                                    </div>
-
-                                    <div className="flex items-center space-x-1.5 px-3 py-2 rounded-xl text-gray-500 dark:text-gray-400">
-                                        <MessageCircle className="w-4 h-4" />
-                                        <span className="text-xs font-bold">{note.comments}</span>
-                                    </div>
-                                </div>
-
-                                {/* Author */}
-                                <div className="flex items-center space-x-2 opacity-80">
-                                    <div
-                                        className={`
-            w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold
-            ${theme.accent} shadow-lg
-          `}
-                                    >
-                                        {note.author.charAt(0).toUpperCase()}
-                                    </div>
-                                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-200">{note.author}</span>
-                                </div>
-                            </footer>
-                        </div>
-                    </article>
-
-                    {/* 评论输入 */}
-                    <div className="space-y-4">
-                        {/* 大文本框 */}
-                        <div className="relative group">
-                            <Textarea
-                                value={commentText}
-                                onChange={(e) => setCommentText(e.target.value)}
-                                placeholder="请输入..."
-                                className="
-                  min-h-[120px] resize-none w-full p-4 text-sm rounded-2xl
-                  bg-gray-50/80 dark:bg-gray-800/80 backdrop-blur-sm
-                  border border-gray-200/50 dark:border-gray-600/50
-                  placeholder:text-gray-500 dark:placeholder:text-gray-400
-                  text-gray-900 dark:text-gray-100
-                  transition-all duration-300 ease-out
-                  focus:outline-none focus:ring-0 focus-visible:ring-0
-                  focus:border-blue-400 dark:focus:border-blue-500
-                  focus:bg-white dark:focus:bg-gray-700
-                  focus:shadow-xl focus:shadow-blue-500/25 dark:focus:shadow-blue-400/25
-                  focus:scale-[1.02] focus:-translate-y-1
-                  hover:border-gray-300/70 dark:hover:border-gray-500/70
-                "
-                                maxLength={500}
-                                style={{ boxShadow: "none" }}
-                            />
-                            {/* 字数统计 */}
-                            <div className="absolute bottom-3 right-3 text-xs text-gray-400 dark:text-gray-500 bg-white/80 dark:bg-gray-800/80 px-2 py-1 rounded-full backdrop-blur-sm">
-                                {commentText.length}/500
-                            </div>
-                            {/* 聚焦指示器 */}
-                            <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur-sm" />
-                        </div>
-
-                        {/* 底部操作区 */}
-                        <div className="flex space-x-3">
-                            <div className="relative flex-1 group">
-                                <Input
-                                    value={commentAuthor}
-                                    onChange={(e) => setCommentAuthor(e.target.value)}
-                                    placeholder="署名"
-                                    className="
-                    h-12 px-4 text-sm rounded-xl w-full
-                    bg-gray-50/80 dark:bg-gray-800/80 backdrop-blur-sm
-                    border border-gray-200/50 dark:border-gray-600/50
-                    placeholder:text-gray-500 dark:placeholder:text-gray-400
-                    text-gray-900 dark:text-gray-100
-                    transition-all duration-300 ease-out
-                    focus:outline-none focus:ring-0 focus-visible:ring-0
-                    focus:border-blue-400 dark:focus:border-blue-500
-                    focus:bg-white dark:focus:bg-gray-700
-                    focus:shadow-xl focus:shadow-blue-500/25 dark:focus:shadow-blue-400/25
-                    focus:scale-105 focus:-translate-y-0.5
-                    hover:border-gray-300/70 dark:hover:border-gray-500/70
-                  "
-                                    maxLength={10}
-                                    style={{ boxShadow: "none" }}
-                                />
-                                {/* 聚焦指示器 */}
-                                <div className="absolute -inset-1 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-xl opacity-0 group-focus-within:opacity-100 transition-opacity duration-300 -z-10 blur-sm" />
-                            </div>
-                            <Button
-                                onClick={handleAddComment}
-                                disabled={!commentText.trim()}
-                                className="
-                  h-12 px-8 rounded-xl border-0 shadow-lg font-semibold
-                  bg-gradient-to-r from-blue-500 to-purple-600
-                  hover:from-blue-600 hover:to-purple-700
-                  text-white transition-all duration-300 transform
-                  hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30
-                  active:scale-95
-                  disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
-                  disabled:hover:shadow-lg
-                "
-                            >
-                                评论
-                            </Button>
-                        </div>
-                    </div>
-
-                    {/* 评论列表 */}
-                    {comments.length > 0 && (
-                        <div className="space-y-4">
-                            <h3 className="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-                                <MessageCircle className="w-5 h-5 mr-2 text-blue-500" />
-                                评论 {comments.length}
-                            </h3>
-                            <div className="space-y-4">
-                                {comments.map((comment) => (
-                                    <div
-                                        key={comment.id}
-                                        className="bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm rounded-2xl p-4 border border-white/20 dark:border-gray-600/20"
-                                    >
-                                        <div className="flex space-x-3">
-                                            <div
-                                                className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 shadow-lg"
-                                            />
-                                            <div className="flex-1">
-                                                <div className="flex items-center space-x-2 mb-2">
-                                                    <span className="font-semibold text-gray-900 dark:text-white text-sm">{comment.author}</span>
-                                                    <time className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
-                                                        {comment.date}
-                                                    </time>
-                                                </div>
-                                                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{comment.content}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </div>
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+        {/* 头部 */}
+        <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">便签详情</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            <X className="w-5 h-5" />
+          </Button>
         </div>
-    )
+
+        {/* 内容 */}
+        <div className="p-6">
+          {/* 便签内容 */}
+          <div className="mb-6">
+            <p className="text-gray-800 dark:text-gray-200 leading-relaxed whitespace-pre-wrap">
+              {message.content}
+            </p>
+          </div>
+
+          {/* 元信息 */}
+          <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-6">
+            <div className="flex items-center gap-1">
+              <Calendar className="w-4 h-4" />
+              <span>{message.date}</span>
+            </div>
+            {message.location && (
+              <div className="flex items-center gap-1">
+                <MapPin className="w-4 h-4" />
+                <span>{message.location}</span>
+              </div>
+            )}
+          </div>
+
+          {/* 操作按钮 */}
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setIsLiked(!isLiked)
+                setLikes((prev: number) => isLiked ? prev - 1 : prev + 1)
+              }}
+              className={`flex items-center gap-2 ${
+                isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'
+              }`}
+            >
+              <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+              <span>{likes}</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2 text-gray-500 hover:text-blue-500"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>评论</span>
+            </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2 text-gray-500 hover:text-green-500"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>分享</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }

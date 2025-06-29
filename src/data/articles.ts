@@ -1,7 +1,4 @@
-import type { Article } from "@/types/article"
-
-// @ts-ignore
-export const mockArticles: Article[] = [
+export const mockArticles: unknown[] = [
     {
         id: "1",
         title: "我的UI组件库-Yike Design",
@@ -120,7 +117,7 @@ export const mockArticles: Article[] = [
         coverImage: "/placeholder.svg?height=128&width=128",
         publishDate: `2024-${String(Math.floor(Math.random() * 12) + 1).padStart(2, "0")}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, "0")}`,
         category: ["旅行", "总结", "产品", "技术", "生活"][Math.floor(Math.random() * 5)],
-        tags: ["标签1", "标签2", "标签3"][Math.floor(Math.random() * 3)],
+        tags: [["标签1", "标签2", "标签3"][Math.floor(Math.random() * 3)]],
         comments: Math.floor(Math.random() * 20),
         views: Math.floor(Math.random() * 1000) + 100,
         readTime: Math.floor(Math.random() * 10) + 3,

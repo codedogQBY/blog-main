@@ -1,21 +1,38 @@
 "use client"
 
-import type React from "react"
-import { useState, useEffect, useCallback } from "react"
-import { Search } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import ArticleCard from "@/components/blog/article-card"
-import InfiniteScrollLoader from "@/components/loading/infinite-scroll-loader"
-import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
-import type { Article, ArticleCategory } from "@/types/article"
+import { useEffect, useState, useCallback } from "react"
+import { Search } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { api } from "@/lib/api"
+import type { Article } from '@/lib/api'
+import ArticleCard from '@/components/blog/article-card'
+import InfiniteScrollLoader from '@/components/loading/infinite-scroll-loader'
+import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
+
+// 创建一个兼容的显示类型
+interface ArticleForDisplay extends Omit<Article, 'category' | 'tags' | 'author'> {
+    category?: string
+    tags?: string[]
+    author?: string
+    publishDate?: string
+    comments?: number
+}
+
+interface Category {
+    id: string;
+    name: string;
+    slug: string;
+    _count?: {
+        articles: number;
+    };
+}
 
 export default function ArticlesPage() {
     const [selectedCategory, setSelectedCategory] = useState<string>("全部")
     const [searchQuery, setSearchQuery] = useState("")
     const [categoryStats, setCategoryStats] = useState<Record<string, number>>({})
-    const [realCategories, setRealCategories] = useState<any[]>([])
+    const [realCategories, setRealCategories] = useState<Category[]>([])
     const [displayCategories, setDisplayCategories] = useState<string[]>(["全部"])
 
     // 获取分类数据
@@ -51,7 +68,7 @@ export default function ArticlesPage() {
 
     // 加载文章数据
     const loadArticles = useCallback(
-        async (page: number, pageSize: number): Promise<Article[]> => {
+        async (page: number, pageSize: number): Promise<ArticleForDisplay[]> => {
             try {
                 // 将中文分类名转换为对应的slug
                 let categorySlug: string | undefined
@@ -94,7 +111,7 @@ export default function ArticlesPage() {
         hasMore,
         loadMore,
         refresh,
-    } = useInfiniteScroll({
+    } = useInfiniteScroll<ArticleForDisplay>({
         pageSize: 9,
         loadData: loadArticles,
     })
@@ -107,7 +124,13 @@ export default function ArticlesPage() {
         refreshData()
     }, [selectedCategory, searchQuery, refresh])
 
-    const handleArticleClick = async (article: Article) => {
+    // 创建适配器函数来匹配InfiniteScrollLoader的接口
+    const handleLoadMore = async (): Promise<ArticleForDisplay[]> => {
+        await loadMore()
+        return [] // InfiniteScrollLoader不使用返回值，items通过hook状态管理
+    }
+
+    const handleArticleClick = async (article: ArticleForDisplay) => {
         console.log("点击文章:", article.title)
         
         // 增加浏览量
@@ -125,7 +148,7 @@ export default function ArticlesPage() {
         }
     }
 
-    const handleSearch = (e: React.FormEvent) => {
+    const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         // 搜索逻辑已经通过 useEffect 处理
     }
@@ -203,7 +226,7 @@ export default function ArticlesPage() {
                     {/* 文章列表 */}
                     <InfiniteScrollLoader
                         items={articles}
-                        onLoadMore={loadMore}
+                        onLoadMore={handleLoadMore}
                         renderItem={(article, index) => (
                             <ArticleCard
                                 key={article.id || index}
@@ -214,7 +237,7 @@ export default function ArticlesPage() {
                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
                         isLoading={isLoading}
                         hasMore={hasMore}
-                        emptyMessage={
+                        emptyComponent={
                             <div className="col-span-full text-center py-12">
                                 <div className="text-gray-400 text-lg mb-2">🔍</div>
                                 <p className="text-gray-500 dark:text-gray-400">

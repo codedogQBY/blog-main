@@ -265,6 +265,12 @@ export default function MessagesPage() {
         />
     )
 
+    // 创建适配器函数来匹配InfiniteScrollLoader的接口
+    const handleLoadMore = async (): Promise<StickyNoteData[][]> => {
+        await loadMore()
+        return [] // InfiniteScrollLoader不使用返回值，items通过hook状态管理
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10">
             <div className="pt-16">
@@ -311,7 +317,7 @@ export default function MessagesPage() {
                     {/* 无限滚动容器 */}
                     <InfiniteScrollLoader
                         items={columns}
-                        onLoadMore={loadMore}
+                        onLoadMore={handleLoadMore}
                         hasMore={hasMore}
                         isLoading={isLoading}
                         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12"
@@ -350,15 +356,16 @@ export default function MessagesPage() {
                     <AddMessageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSubmit={handleAddMessage} />
 
                     {/* 留言详情弹窗 */}
-                    <MessageDetailModal
-                        isOpen={isDetailModalOpen}
-                        onClose={() => {
-                            setIsDetailModalOpen(false)
-                            setSelectedNote(null)
-                        }}
-                        note={selectedNote}
-                        onLike={handleLike}
-                    />
+                    {selectedNote && (
+                        <MessageDetailModal
+                            isOpen={isDetailModalOpen}
+                            onClose={() => {
+                                setIsDetailModalOpen(false)
+                                setSelectedNote(null)
+                            }}
+                            message={selectedNote}
+                        />
+                    )}
                 </main>
             </div>
         </div>

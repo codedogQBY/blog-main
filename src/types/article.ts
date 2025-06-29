@@ -1,37 +1,39 @@
-export interface Article {
+export interface ArticleCategory {
     id: string
-    title: string
-    content?: string
-    excerpt: string
-    coverImage?: string
-    slug?: string
-    publishDate?: string // 兼容老版本
-    publishedAt?: string // 新版本
-    category: string | {
-        id: string
-        name: string
-        slug: string
-    }
-    tags: string[] | Array<{
-        tag: {
-            id: string
-            name: string
-            slug: string
-        }
-    }>
-    comments?: number
-    views: number
-    readTime?: number
-    author?: string | {
-        id: string
-        name: string
-    }
-    published?: boolean
-    createdAt?: string
-    updatedAt?: string
+    name: string
+    slug: string
+    description?: string
+    color?: string
     _count?: {
-        comments: number
+        articles: number
     }
 }
 
-export type ArticleCategory = "全部" | "旅行" | "总结" | "产品" | "技术" | "生活"
+export interface ArticleTag {
+    id: string
+    name: string
+    slug: string
+}
+
+export interface Article {
+    id: string
+    title: string
+    content: string
+    excerpt: string
+    slug: string
+    published: boolean
+    publishedAt?: string
+    createdAt: string
+    updatedAt: string
+    views: number
+    readTime?: number
+    coverImage?: string
+    author?: string | { id: string; name: string }
+    category?: string | ArticleCategory
+    tags?: string[] | { tag: ArticleTag }[]
+    _count?: {
+        comments: number
+    }
+    publishDate?: string
+    comments?: number
+}

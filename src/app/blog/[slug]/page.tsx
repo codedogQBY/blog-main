@@ -8,6 +8,8 @@ import { api } from "@/lib/api"
 import type { Article } from "@/lib/api"
 import Link from "next/link"
 import Image from "next/image"
+import FloatingActions from '@/components/blog/floating-actions'
+import CommentSection from '@/components/blog/comment-section'
 
 export default function ArticleDetailPage() {
     const params = useParams()
@@ -207,7 +209,48 @@ export default function ArticleDetailPage() {
                             </div>
                         </div>
                     </div>
+
+                    {/* 评论区域 */}
+                    <div id="comments" className="mt-12">
+                        <CommentSection
+                            targetType="article"
+                            targetId={article.id}
+                        />
+                    </div>
                 </article>
+
+                {/* 悬浮操作按钮 */}
+                <FloatingActions
+                    targetType="article"
+                    targetId={article.id}
+                    autoLoad={true}
+                    onComment={() => {
+                        const commentSection = document.getElementById('comments')
+                        commentSection?.scrollIntoView({ behavior: 'smooth' })
+                    }}
+                    onShare={() => {
+                        if (navigator.share) {
+                            navigator.share({
+                                title: article.title,
+                                text: article.excerpt || '',
+                                url: window.location.href,
+                            })
+                        } else {
+                            navigator.clipboard.writeText(window.location.href)
+                            // 可以添加一个提示消息
+                        }
+                    }}
+                    article={{
+                        id: article.id,
+                        title: article.title,
+                        excerpt: article.excerpt,
+                        author: article.author,
+                        publishDate: article.publishedAt || article.createdAt,
+                        category: article.category,
+                        coverImage: article.coverImage
+                    }}
+                    shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                />
             </div>
         </div>
     )
