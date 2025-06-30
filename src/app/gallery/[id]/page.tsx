@@ -18,7 +18,6 @@ export default function GalleryDetailPage() {
     const [galleryItem, setGalleryItem] = useState<GalleryItem | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const [imageLoaded, setImageLoaded] = useState(false)
 
     useEffect(() => {
         const fetchGalleryItem = async () => {
@@ -46,7 +45,6 @@ export default function GalleryDetailPage() {
     }
 
     const handleComment = () => {
-        // 滚动到评论区域
         const commentSection = document.querySelector('#comment-section')
         if (commentSection) {
             commentSection.scrollIntoView({ behavior: 'smooth' })
@@ -56,15 +54,15 @@ export default function GalleryDetailPage() {
     if (loading) {
         return (
             <div className="min-h-screen pt-20">
-                <div className="container mx-auto px-4 py-8">
-                    <div className="max-w-4xl mx-auto">
-                        {/* 加载状态 */}
-                        <div className="animate-pulse">
-                            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded mb-6 w-32"></div>
-                            <div className="bg-gray-200 dark:bg-gray-700 rounded-2xl aspect-[4/3] mb-6"></div>
-                            <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded mb-4 w-3/4"></div>
-                            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2 w-full"></div>
-                            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2 w-2/3"></div>
+                <div className="container mx-auto px-4 py-8 max-w-4xl">
+                    <div className="animate-pulse space-y-6">
+                        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+                        <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+                        <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+                        <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+                        <div className="space-y-4">
+                            <div className="h-96 bg-gray-200 dark:bg-gray-700 rounded"></div>
+                            <div className="h-80 bg-gray-200 dark:bg-gray-700 rounded"></div>
                         </div>
                     </div>
                 </div>
@@ -74,16 +72,18 @@ export default function GalleryDetailPage() {
 
     if (error || !galleryItem) {
         return (
-            <div className="min-h-screen pt-20">
-                <div className="container mx-auto px-4 py-8">
-                    <div className="max-w-4xl mx-auto text-center">
-                        <div className="p-8 backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-lg">
-                            <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                                {error || '图库项目不存在'}
-                            </h1>
-                            <Button onClick={handleBack}>返回图库</Button>
-                        </div>
-                    </div>
+            <div className="min-h-screen pt-20 flex items-center justify-center">
+                <div className="text-center p-8 bg-white dark:bg-gray-800 rounded-2xl shadow-lg max-w-md mx-4">
+                    <div className="text-4xl mb-4">😔</div>
+                    <h1 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+                        {error || '图库项目不存在'}
+                    </h1>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                        抱歉，我们找不到您要访问的图库内容
+                    </p>
+                    <Button onClick={handleBack}>
+                        返回图库
+                    </Button>
                 </div>
             </div>
         )
@@ -91,130 +91,109 @@ export default function GalleryDetailPage() {
 
     return (
         <div className="min-h-screen pt-20">
-            <div className="container mx-auto px-4 py-8">
-                <div className="max-w-4xl mx-auto">
-                    {/* 返回按钮 */}
-                    <Button
-                        variant="outline"
-                        onClick={handleBack}
-                        className="mb-6 backdrop-blur-sm bg-white/80 dark:bg-gray-800/80"
-                    >
-                        ← 返回图库
-                    </Button>
+            <div className="container mx-auto px-4 py-8 max-w-4xl">
+                {/* 返回按钮 */}
+                <Button
+                    variant="outline"
+                    onClick={handleBack}
+                    className="mb-8"
+                >
+                    ← 返回图库
+                </Button>
 
-                    <div className="overflow-hidden backdrop-blur-sm bg-white/80 dark:bg-gray-800/80 rounded-2xl shadow-lg">
-                        {/* 主图展示 */}
-                        <div className="relative aspect-[4/3] w-full overflow-hidden">
-                            <Image
-                                src={galleryItem.coverImage || galleryItem.images?.[0]?.imageUrl || "/placeholder.svg"}
-                                alt={galleryItem.title}
-                                fill
-                                className={`object-cover transition-opacity duration-500 ${
-                                    imageLoaded ? 'opacity-100' : 'opacity-0'
-                                }`}
-                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
-                                priority
-                                onLoad={() => setImageLoaded(true)}
-                            />
-
-                            {!imageLoaded && (
-                                <div className="absolute inset-0 bg-gray-200 dark:bg-gray-700 animate-pulse flex items-center justify-center">
-                                    <div className="text-gray-400">加载中...</div>
-                                </div>
-                            )}
-
-                            {/* 分类标签 */}
+                <article className="space-y-8">
+                    {/* 标题 */}
+                    <header>
+                        <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                            {galleryItem.title}
+                        </h1>
+                        
+                        {/* 分类和标签 */}
+                        <div className="flex flex-wrap items-center gap-2 text-gray-600 dark:text-gray-400 mb-4">
                             {galleryItem.category && (
-                                <div className="absolute top-4 left-4">
-                                    <Badge className="bg-blue-500/80 text-white backdrop-blur-sm">
-                                        {galleryItem.category}
-                                    </Badge>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* 内容区域 */}
-                        <div className="p-6">
-                            {/* 标题和统计 */}
-                            <div className="flex justify-between items-start mb-4">
-                                <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
-                                    {galleryItem.title}
-                                </h1>
-                                
-                                {galleryItem.stats && (
-                                    <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
-                                        <span className="flex items-center gap-1">
-                                            ❤️ {galleryItem.stats.likes}
-                                        </span>
-                                        <span className="flex items-center gap-1">
-                                            💬 {galleryItem.stats.comments}
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* 描述 */}
-                            {galleryItem.description && (
-                                <div className="mb-6">
-                                    <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
-                                        {galleryItem.description}
-                                    </p>
-                                </div>
-                            )}
-
-                            {/* 标签 */}
-                            {galleryItem.tags && galleryItem.tags.length > 0 && (
-                                <div className="mb-6">
-                                    <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
-                                        标签
-                                    </h3>
-                                    <div className="flex flex-wrap gap-2">
-                                        {galleryItem.tags.map((tag, index) => (
-                                            <Badge 
-                                                key={index}
-                                                variant="secondary"
-                                                className="text-xs"
-                                            >
-                                                {tag}
-                                            </Badge>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* 元信息 */}
-                            <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400 mb-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                                <span>
-                                    创建时间：{new Date(galleryItem.createdAt).toLocaleDateString('zh-CN', {
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric',
-                                        hour: '2-digit',
-                                        minute: '2-digit'
-                                    })}
+                                <span className="text-blue-600 dark:text-blue-400 font-medium">
+                                    {galleryItem.category}
                                 </span>
-                                {galleryItem.updatedAt && galleryItem.updatedAt !== galleryItem.createdAt && (
-                                    <span>
-                                        更新时间：{new Date(galleryItem.updatedAt).toLocaleDateString('zh-CN', {
-                                            year: 'numeric',
-                                            month: 'long',
-                                            day: 'numeric',
-                                            hour: '2-digit',
-                                            minute: '2-digit'
-                                        })}
-                                    </span>
-                                )}
-                            </div>
+                            )}
+                            {galleryItem.tags && galleryItem.tags.length > 0 && (
+                                <>
+                                    {galleryItem.category && <span>/</span>}
+                                    {galleryItem.tags.map((tag, index) => (
+                                        <span key={index} className="text-purple-600 dark:text-purple-400">
+                                            #{tag}
+                                        </span>
+                                    ))}
+                                </>
+                            )}
                         </div>
-                    </div>
 
-                    {/* 互动区域 */}
-                    <div id="comment-section" className="mt-8">
-                        <CommentSection
-                            targetType="gallery_image"
-                            targetId={galleryItem.id}
-                        />
-                    </div>
+                        {/* 创建时间 */}
+                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                            {new Date(galleryItem.createdAt).toLocaleDateString('zh-CN', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })}
+                        </div>
+                    </header>
+
+                    {/* 简介 */}
+                    {galleryItem.description && (
+                        <div className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+                            {galleryItem.description}
+                        </div>
+                    )}
+
+                    {/* 图片展示 */}
+                    {galleryItem.images && galleryItem.images.length > 0 && (
+                        <div className="space-y-8">
+                            {galleryItem.images.map((image, index) => (
+                                <div key={image.id} className="space-y-2">
+                                    <div className="relative bg-gray-100 dark:bg-gray-800 rounded-lg overflow-hidden">
+                                        <Image
+                                            src={image.imageUrl}
+                                            alt={image.title || `图片 ${index + 1}`}
+                                            width={1200}
+                                            height={800}
+                                            className="w-full h-auto object-contain"
+                                            sizes="(max-width: 1024px) 100vw, 1024px"
+                                        />
+                                    </div>
+                                    {/* 图片标题和描述 */}
+                                    {(image.title || image.description) && (
+                                        <div className="space-y-1">
+                                            {image.title && (
+                                                <h3 className="font-medium text-gray-900 dark:text-white">
+                                                    {image.title}
+                                                </h3>
+                                            )}
+                                            {image.description && (
+                                                <p className="text-sm text-gray-600 dark:text-gray-400">
+                                                    {image.description}
+                                                </p>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {/* 没有图片的情况 */}
+                    {(!galleryItem.images || galleryItem.images.length === 0) && (
+                        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                            <div className="text-4xl mb-4">📷</div>
+                            <p>暂无图片内容</p>
+                        </div>
+                    )}
+                </article>
+
+                {/* 评论区域 */}
+                <div id="comment-section" className="mt-16">
+                    <CommentSection
+                        targetType="gallery_image"
+                        targetId={galleryItem.id}
+                    />
                 </div>
             </div>
 
