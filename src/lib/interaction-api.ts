@@ -177,4 +177,12 @@ class InteractionAPI {
   }
 }
 
-export const interactionAPI = new InteractionAPI() 
+export const interactionAPI = new InteractionAPI()
+
+// 导出便捷方法
+export const toggleLike = (request: LikeRequest) => interactionAPI.toggleLike(request)
+export const addComment = (request: CommentRequest) => interactionAPI.addComment(request)
+export const getComments = (targetType: string, targetId: string, page?: number, limit?: number) => 
+  interactionAPI.getComments(targetType, targetId, page, limit)
+export const getInteractionStats = (targetType: string, targetId: string, fingerprint: string) =>
+  interactionAPI.getInteractionStats(targetType, targetId, fingerprint) 

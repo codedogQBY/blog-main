@@ -8,6 +8,8 @@ export interface StickyNoteData {
     content: string
     author: string
     date: string
+    createdAt: string
+    updatedAt: string
     category: string
     color: "pink" | "yellow" | "blue" | "green" | "purple"
     likes: number

@@ -3,135 +3,14 @@
 import { useState, useEffect, useCallback } from "react"
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import StickyNote, { type StickyNoteData } from "@/components/wall/sticky-note"
+import StickyNote from "@/components/wall/sticky-note"
 import AddMessageModal from "@/components/wall/add-message-modal"
 import MessageDetailModal from "@/components/wall/message-detail-modal"
 import InfiniteScrollLoader from "@/components/loading/infinite-scroll-loader"
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
-
-// 模拟数据
-const allMessages: StickyNoteData[] = [
-    {
-        id: "1",
-        content:
-            "您好！我是一名应届毕业生在6b站看到您的网站风格很棒。我会跟着您的视频制作网站，但是不会商业化。希望您考虑做一个网站并部署上线，作为自己的项目经验。希望您能同意。谢谢！",
-        author: "匿名",
-        date: "06/22 01:12",
-        category: "留言",
-        color: "pink",
-        likes: 0,
-        comments: 1,
-    },
-    {
-        id: "2",
-        content: "人生的意义是什么",
-        author: "darker",
-        date: "06/20 11:30",
-        category: "留言",
-        color: "purple",
-        likes: 1,
-        comments: 0,
-    },
-    {
-        id: "3",
-        content: "您好！我特别喜欢您网站的设计风格。想参考您做自己的网站，可以吗？我会自己调整细节的。谢谢啦！",
-        author: "dasher",
-        date: "06/19 10:27",
-        category: "理想",
-        color: "pink",
-        likes: 0,
-        comments: 1,
-    },
-    {
-        id: "4",
-        content: "2025年6月19日\n天气晴\n跟up跟到mock数据了，但是引入mock后页面白屏，还没找到原因。呜呜～",
-        author: "嘿嘿",
-        date: "06/19 09:47",
-        category: "留言",
-        color: "yellow",
-        likes: 2,
-        comments: 0,
-    },
-    {
-        id: "5",
-        content: "会留下记忆吗",
-        author: "嘿嘿",
-        date: "06/17 15:36",
-        category: "留言",
-        color: "blue",
-        likes: 1,
-        comments: 0,
-    },
-    {
-        id: "6",
-        content: "开始学习",
-        author: "null",
-        date: "06/14 08:32",
-        category: "留言",
-        color: "green",
-        likes: 1,
-        comments: 0,
-    },
-    {
-        id: "7",
-        content:
-            "这个留言这个界面的技术很好，我以为是真的。哈哈哈。然后上面朋友分享了。\n看完了，给了我很多感悟。谢谢日记介绍写得好。照片拍得太棒了",
-        author: "勿勿那年",
-        date: "06/10 16:07",
-        category: "留言",
-        color: "purple",
-        likes: 4,
-        comments: 1,
-    },
-    {
-        id: "8",
-        content: "晚拜大神，小白从0开始学",
-        author: "林树峰",
-        date: "06/06 20:09",
-        category: "留言",
-        color: "pink",
-        likes: 1,
-        comments: 0,
-    },
-    {
-        id: "9",
-        content: "我想做个游戏，关于亲情和爱情，用ocos。有没有大佬推荐学学，像素风昨晚",
-        author: "匿名",
-        date: "06/05 07:27",
-        category: "留言",
-        color: "blue",
-        likes: 2,
-        comments: 0,
-    },
-    {
-        id: "10",
-        content: "毕业季不说再见，现代码可以改变给我吗",
-        author: "匿名",
-        date: "06/29 14:56",
-        category: "留言",
-        color: "green",
-        likes: 3,
-        comments: 1,
-    },
-    // 添加更多模拟数据用于测试分页
-    ...Array.from({ length: 50 }, (_, i) => ({
-        id: `mock-${i + 11}`,
-        content: `这是第 ${i + 11} 条模拟留言内容，用于测试无限滚动加载功能。`,
-        author: `用户${i + 11}`,
-        date: `06/${String(Math.floor(Math.random() * 30) + 1).padStart(2, "0")} ${String(Math.floor(Math.random() * 24)).padStart(2, "0")}:${String(Math.floor(Math.random() * 60)).padStart(2, "0")}`,
-        category: ["留言", "目标", "理想", "过去", "将来"][Math.floor(Math.random() * 5)],
-        color: ["pink", "yellow", "blue", "green", "purple"][Math.floor(Math.random() * 5)] as
-            | "pink"
-            | "yellow"
-            | "blue"
-            | "green"
-            | "purple",
-        likes: Math.floor(Math.random() * 10),
-        comments: Math.floor(Math.random() * 5),
-    })),
-]
-
-const categories = ["全部", "留言", "目标", "理想", "过去", "将来", "爱情", "亲情", "友情", "秘密", "信条", "无题"]
+import { getStickyNotes, getStickyNoteCategories, type StickyNoteData, type CreateStickyNoteData, createStickyNote } from "@/lib/sticky-note-api"
+import { toggleLike, addComment, getInteractionStats } from "@/lib/interaction-api"
+import { getOrGenerateFingerprint, collectUserInfo } from "@/lib/fingerprint"
 
 export default function MessagesPage() {
     const [selectedCategory, setSelectedCategory] = useState("全部")
@@ -139,24 +18,76 @@ export default function MessagesPage() {
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
     const [selectedNote, setSelectedNote] = useState<StickyNoteData | null>(null)
     const [columns, setColumns] = useState<StickyNoteData[][]>([[], [], [], []])
+    const [categories, setCategories] = useState<string[]>(["全部", "留言", "目标", "理想", "过去", "将来"])
+    const [fingerprint, setFingerprint] = useState<string>("")
 
-    // 模拟 API 调用
+    // 获取用户指纹
+    useEffect(() => {
+        const initFingerprint = async () => {
+            try {
+                const fp = await getOrGenerateFingerprint()
+                setFingerprint(fp)
+            } catch (error) {
+                console.error('获取指纹失败:', error)
+            }
+        }
+        initFingerprint()
+    }, [])
+
+    // 加载留言数据
     const loadMessages = useCallback(
         async (page: number, pageSize: number): Promise<StickyNoteData[]> => {
-            // 模拟网络延迟
-            await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 1000))
-
-            // 根据分类筛选数据
-            const filteredData =
-                selectedCategory === "全部" ? allMessages : allMessages.filter((msg) => msg.category === selectedCategory)
-
-            const startIndex = (page - 1) * pageSize
-            const endIndex = startIndex + pageSize
-
-            return filteredData.slice(startIndex, endIndex)
+            try {
+                const response = await getStickyNotes({
+                    page,
+                    limit: pageSize,
+                    category: selectedCategory
+                })
+                
+                // 如果有用户指纹，获取每个留言的点赞状态
+                if (fingerprint) {
+                    const messagesWithLikeStatus = await Promise.all(
+                        response.data.map(async (note) => {
+                            try {
+                                const stats = await getInteractionStats('sticky_note', note.id, fingerprint)
+                                return {
+                                    ...note,
+                                    isLiked: stats.isLiked,
+                                    likes: stats.likes,
+                                    comments: stats.comments
+                                }
+                            } catch (error) {
+                                console.error(`获取留言${note.id}的统计信息失败:`, error)
+                                return note
+                            }
+                        })
+                    )
+                    return messagesWithLikeStatus
+                }
+                
+                return response.data
+            } catch (error) {
+                console.error('加载留言失败:', error)
+                return []
+            }
         },
-        [selectedCategory],
+        [selectedCategory, fingerprint],
     )
+
+    // 加载分类数据
+    const loadCategories = useCallback(async () => {
+        try {
+            const data = await getStickyNoteCategories()
+            const categoryNames = data.map(cat => cat.name)
+            setCategories(categoryNames)
+        } catch (error) {
+            console.error('加载分类失败:', error)
+        }
+    }, [])
+
+    useEffect(() => {
+        loadCategories()
+    }, [loadCategories])
 
     // 使用无限滚动 hook
     const {
@@ -213,30 +144,54 @@ export default function MessagesPage() {
         setColumns(newColumns)
     }, [messages])
 
-    const handleAddMessage = (newMessage: Omit<StickyNoteData, "id" | "date" | "likes" | "comments">) => {
-        const message: StickyNoteData = {
-            ...newMessage,
-            id: Date.now().toString(),
-            date: new Date()
-                .toLocaleDateString("zh-CN", {
-                    month: "2-digit",
-                    day: "2-digit",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                })
-                .replace(/\//g, "/")
-                .replace(",", ""),
-            likes: 0,
-            comments: 0,
+    const handleAddMessage = async (newMessage: Omit<StickyNoteData, "id" | "date" | "likes" | "comments" | "createdAt" | "updatedAt">) => {
+        try {
+            const createdNote = await createStickyNote(newMessage)
+            addItem(createdNote)
+            setIsModalOpen(false)
+            
+            // 刷新分类列表，特别是如果是新分类
+            if (newMessage.category && !categories.includes(newMessage.category)) {
+                loadCategories()
+            }
+        } catch (error) {
+            console.error('创建留言失败:', error)
+            alert('创建留言失败，请重试')
         }
-
-        addItem(message)
     }
 
-    const handleLike = (id: string) => {
+    const handleLike = async (id: string) => {
+        if (!fingerprint) return
+        
+        try {
+            const userInfo = await collectUserInfo()
+            const response = await toggleLike({
+                targetType: 'sticky_note',
+                targetId: id,
+                fingerprint,
+                userInfo
+            })
+            
+            updateItem(
+                (item) => item.id === id,
+                (item) => ({
+                    ...item,
+                    likes: response.totalLikes,
+                    isLiked: response.isLiked,
+                })
+            )
+        } catch (error) {
+            console.error('点赞失败:', error)
+        }
+    }
+
+    const handleCommentAdded = (noteId: string, newCommentCount: number) => {
         updateItem(
-            (message) => message.id === id,
-            (message) => ({ ...message, likes: message.likes + 1 }),
+            (item) => item.id === noteId,
+            (item) => ({
+                ...item,
+                comments: newCommentCount,
+            })
         )
     }
 
@@ -356,16 +311,16 @@ export default function MessagesPage() {
                     <AddMessageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSubmit={handleAddMessage} />
 
                     {/* 留言详情弹窗 */}
-                    {selectedNote && (
-                        <MessageDetailModal
-                            isOpen={isDetailModalOpen}
-                            onClose={() => {
-                                setIsDetailModalOpen(false)
-                                setSelectedNote(null)
-                            }}
-                            message={selectedNote}
-                        />
-                    )}
+                    <MessageDetailModal
+                        isOpen={isDetailModalOpen}
+                        onClose={() => {
+                            setIsDetailModalOpen(false)
+                            setSelectedNote(null)
+                        }}
+                        note={selectedNote}
+                        onLike={handleLike}
+                        onCommentAdded={handleCommentAdded}
+                    />
                 </main>
             </div>
         </div>

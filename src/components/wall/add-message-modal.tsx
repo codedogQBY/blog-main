@@ -10,7 +10,7 @@ import type { StickyNoteData } from "./sticky-note"
 interface AddMessageModalProps {
     isOpen: boolean
     onClose: () => void
-    onSubmit: (message: Omit<StickyNoteData, "id" | "date" | "likes" | "comments">) => void
+    onSubmit: (message: Omit<StickyNoteData, "id" | "date" | "likes" | "comments" | "createdAt" | "updatedAt">) => void
 }
 
 const modernColors = [
@@ -73,23 +73,24 @@ export default function AddMessageModal({ isOpen, onClose, onSubmit }: AddMessag
 
         setIsSubmitting(true)
 
-        // Simulate API call
-        await new Promise((resolve) => setTimeout(resolve, 800))
+        try {
+            await onSubmit({
+                content: content.trim(),
+                author: author.trim() || "匿名",
+                category: selectedCategory,
+                color: selectedColor,
+            })
 
-        onSubmit({
-            content: content.trim(),
-            author: author.trim() || "匿名",
-            category: selectedCategory,
-            color: selectedColor,
-        })
-
-        // Reset form
-        setContent("")
-        setAuthor("")
-        setSelectedColor("blue")
-        setSelectedCategory("留言")
-        setIsSubmitting(false)
-        onClose()
+            // Reset form
+            setContent("")
+            setAuthor("")
+            setSelectedColor("blue")
+            setSelectedCategory("留言")
+        } catch (error) {
+            console.error('提交留言失败:', error)
+        } finally {
+            setIsSubmitting(false)
+        }
     }
 
     const handleClose = () => {
