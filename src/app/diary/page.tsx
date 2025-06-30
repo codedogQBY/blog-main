@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft, List } from "lucide-react"
 import type { Note } from "@/types/note"
-import { notes } from "@/data/notes"
+import { diaryApi, type DiaryNote } from "@/lib/diary-api"
 import NoteListItem from "@/components/diary/note-list-item"
 import NotePaper from "@/components/diary/note-paper"
 
@@ -12,33 +12,77 @@ export default function NotesPage() {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null)
     const [displayedNotes, setDisplayedNotes] = useState<Note[]>([])
     const [isLoading, setIsLoading] = useState(false)
+    const [isInitialLoading, setIsInitialLoading] = useState(true)
     const [currentPage, setCurrentPage] = useState(1)
     const [showMobileList, setShowMobileList] = useState(true) // 移动端显示状态
+    const [hasMore, setHasMore] = useState(true)
     const pageSize = 8
+
+    // 将API响应转换为Note格式
+    const convertToNote = (diaryNote: DiaryNote): Note => ({
+        id: diaryNote.id,
+        title: diaryNote.title,
+        content: diaryNote.content,
+        excerpt: diaryNote.excerpt,
+        images: diaryNote.images,
+        weather: diaryNote.weather,
+        mood: diaryNote.mood,
+        status: diaryNote.status,
+        date: diaryNote.date,
+        time: diaryNote.time,
+        createdAt: diaryNote.createdAt,
+        updatedAt: diaryNote.updatedAt,
+    })
 
     // 初始化加载第一页数据
     useEffect(() => {
-        const initialNotes = notes.slice(0, pageSize)
-        setDisplayedNotes(initialNotes)
-        if (initialNotes.length > 0) {
-            setSelectedNote(initialNotes[0])
+        const loadInitialData = async () => {
+            try {
+                setIsInitialLoading(true)
+                const response = await diaryApi.getNotes({
+                    page: 1,
+                    limit: pageSize,
+                })
+                
+                const notes = response.data.map(convertToNote)
+                setDisplayedNotes(notes)
+                setHasMore(response.pagination.hasMore)
+                
+                if (notes.length > 0) {
+                    setSelectedNote(notes[0])
+                }
+            } catch (error) {
+                console.error('加载随记失败:', error)
+            } finally {
+                setIsInitialLoading(false)
+            }
         }
+
+        loadInitialData()
     }, [])
 
     // 手动加载更多
     const handleLoadMore = async () => {
+        if (isLoading || !hasMore) return
+
         setIsLoading(true)
 
-        // 模拟加载延迟
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        try {
+            const nextPage = currentPage + 1
+            const response = await diaryApi.getNotes({
+                page: nextPage,
+                limit: pageSize,
+            })
 
-        const startIndex = currentPage * pageSize
-        const endIndex = startIndex + pageSize
-        const newNotes = notes.slice(startIndex, endIndex)
-
-        setDisplayedNotes((prev) => [...prev, ...newNotes])
-        setCurrentPage((prev) => prev + 1)
-        setIsLoading(false)
+            const newNotes = response.data.map(convertToNote)
+            setDisplayedNotes(prev => [...prev, ...newNotes])
+            setCurrentPage(nextPage)
+            setHasMore(response.pagination.hasMore)
+        } catch (error) {
+            console.error('加载更多随记失败:', error)
+        } finally {
+            setIsLoading(false)
+        }
     }
 
     // 选择随记
@@ -48,8 +92,16 @@ export default function NotesPage() {
         setShowMobileList(false)
     }
 
-    // 检查是否还有更多数据
-    const hasMore = displayedNotes.length < notes.length
+    if (isInitialLoading) {
+        return (
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-gray-600 dark:text-gray-400">加载随记中...</p>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10">
@@ -93,7 +145,7 @@ export default function NotesPage() {
                             <div className="p-6 border-b border-gray-100/50 dark:border-gray-800/50 hidden lg:block">
                                 <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">随记</h2>
                                 <p className="text-sm text-gray-600 dark:text-gray-300">
-                                    {displayedNotes.length} 篇随记 {hasMore && `· 共 ${notes.length} 篇`}
+                                    {displayedNotes.length} 篇随记
                                 </p>
                             </div>
 
@@ -119,7 +171,7 @@ export default function NotesPage() {
                                 )}
                             </div>
 
-                            {/* 加载更多按钮 - 移动端和桌面端都显示 */}
+                            {/* 加载更多按钮 */}
                             <div className="p-4 border-t border-gray-100/50 dark:border-gray-800/50">
                                 <Button
                                     onClick={handleLoadMore}

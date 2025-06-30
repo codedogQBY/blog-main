@@ -1,14 +1,73 @@
 "use client"
 
+import { useState, useEffect } from "react"
+import Image from "next/image"
+import { diaryApi, type DiarySignature } from "@/lib/diary-api"
 import type { Note } from "@/types/note"
 import WeatherIcon from "./weather-icon"
-import Image from "next/image"
 
 interface NotePaperProps {
     note: Note | null
 }
 
 export default function NotePaper({ note }: NotePaperProps) {
+    const [signature, setSignature] = useState<DiarySignature | null>(null)
+
+    // 加载签名配置
+    useEffect(() => {
+        const loadSignature = async () => {
+            try {
+                const activeSignature = await diaryApi.getActiveSignature()
+                setSignature(activeSignature)
+            } catch (error) {
+                console.error('加载签名失败:', error)
+            }
+        }
+
+        loadSignature()
+    }, [])
+
+    // 获取字体大小的像素值
+    const getFontSizeValue = (size: string) => {
+        const sizeMap: Record<string, string> = {
+            'sm': '14px',
+            'base': '16px', 
+            'lg': '18px',
+            'xl': '20px',
+            '2xl': '24px',
+            '3xl': '30px'
+        }
+        return sizeMap[size] || '24px'
+    }
+
+    // 获取颜色值
+    const getColorValue = (color: string) => {
+        const colorMap: Record<string, string> = {
+            'gray-400': '#9ca3af',
+            'blue-400': '#60a5fa',
+            'green-400': '#4ade80',
+            'purple-400': '#a78bfa',
+            'red-400': '#f87171',
+            'yellow-400': '#facc15',
+            'pink-400': '#f472b6'
+        }
+        return colorMap[color] || '#9ca3af'
+    }
+
+    // 获取心情表情
+    const getMoodEmoji = (mood?: number) => {
+        if (mood === undefined || mood === null) return ''
+        const moodMap: Record<number, string> = {
+            0: '😞',
+            1: '😕', 
+            2: '😐',
+            3: '🙂',
+            4: '😊',
+            5: '😄'
+        }
+        return moodMap[mood] || ''
+    }
+
     if (!note) {
         return (
             <div className="h-full bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex items-center justify-center">
@@ -30,9 +89,16 @@ export default function NotePaper({ note }: NotePaperProps) {
                 <div className="flex items-center justify-between mb-2">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{note.title}</h1>
                     <div className="flex items-center space-x-3">
-            <span className="text-sm text-gray-500 dark:text-gray-400 font-mono">
-              {note.date.replace("2025-", "").replace("-", "-")} {note.time.slice(0, 5)}
-            </span>
+                        <span className="text-sm text-gray-500 dark:text-gray-400 font-mono">
+                            {note.date.replace("2025-", "").replace("-", "-")} {note.time.slice(0, 5)}
+                        </span>
+                        {/* 心情显示 */}
+                        {note.mood !== undefined && note.mood !== null && (
+                            <div className="flex items-center space-x-1">
+                                <span className="text-lg">{getMoodEmoji(note.mood)}</span>
+                                <span className="text-xs text-gray-400">心情 {note.mood}/5</span>
+                            </div>
+                        )}
                         <WeatherIcon weather={note.weather} />
                     </div>
                 </div>
@@ -75,13 +141,17 @@ export default function NotePaper({ note }: NotePaperProps) {
                         <div className="flex justify-end mt-8 pb-8">
                             <div className="text-right">
                                 <div
-                                    className="text-2xl font-bold text-gray-400 dark:text-gray-500 italic transform rotate-12"
+                                    className="font-bold italic"
                                     style={{
                                         lineHeight: "36px",
-                                        fontFamily: "'Kalam', 'Comic Sans MS', cursive",
+                                        fontFamily: signature?.fontFamily || "'Kalam', 'Comic Sans MS', cursive",
+                                        fontSize: getFontSizeValue(signature?.fontSize || '2xl'),
+                                        color: getColorValue(signature?.color || 'gray-400'),
+                                        transform: `rotate(${signature?.rotation || '12'}deg)`,
+                                        display: 'inline-block'
                                     }}
                                 >
-                                    Yike
+                                    {signature?.signatureName || 'Yike'}
                                 </div>
                             </div>
                         </div>

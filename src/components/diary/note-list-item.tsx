@@ -10,6 +10,20 @@ interface NoteListItemProps {
 }
 
 export default function NoteListItem({ note, isSelected, onClick }: NoteListItemProps) {
+    // 获取心情表情
+    const getMoodEmoji = (mood?: number) => {
+        if (mood === undefined || mood === null) return ''
+        const moodMap: Record<number, string> = {
+            0: '😞',
+            1: '😕', 
+            2: '😐',
+            3: '🙂',
+            4: '😊',
+            5: '😄'
+        }
+        return moodMap[mood] || ''
+    }
+
     return (
         <div
             className={`
@@ -26,7 +40,13 @@ export default function NoteListItem({ note, isSelected, onClick }: NoteListItem
                 <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">
                     {note.date} {note.time}
                 </div>
-                <WeatherIcon weather={note.weather} />
+                <div className="flex items-center space-x-2">
+                    {/* 心情显示 */}
+                    {note.mood !== undefined && note.mood !== null && (
+                        <span className="text-sm">{getMoodEmoji(note.mood)}</span>
+                    )}
+                    <WeatherIcon weather={note.weather} />
+                </div>
             </div>
 
             <h3
