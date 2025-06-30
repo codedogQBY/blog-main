@@ -83,7 +83,7 @@ class InteractionAPI {
   private baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
 
   async toggleLike(request: LikeRequest): Promise<LikeResponse> {
-    const response = await fetch(`${this.baseUrl}/api/interactions/like`, {
+    const response = await fetch(`${this.baseUrl}/interactions/like`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -109,7 +109,7 @@ class InteractionAPI {
       fingerprint,
     })
 
-    const response = await fetch(`${this.baseUrl}/api/interactions/like?${params}`)
+    const response = await fetch(`${this.baseUrl}/interactions/like?${params}`)
 
     if (!response.ok) {
       throw new Error(`获取点赞状态失败: ${response.statusText}`)
@@ -119,7 +119,7 @@ class InteractionAPI {
   }
 
   async addComment(request: CommentRequest): Promise<Comment> {
-    const response = await fetch(`${this.baseUrl}/api/interactions/comment`, {
+    const response = await fetch(`${this.baseUrl}/interactions/comment`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,7 +147,7 @@ class InteractionAPI {
       limit: limit.toString(),
     })
 
-    const response = await fetch(`${this.baseUrl}/api/interactions/comment?${params}`)
+    const response = await fetch(`${this.baseUrl}/interactions/comment?${params}`)
 
     if (!response.ok) {
       throw new Error(`获取评论失败: ${response.statusText}`)
@@ -167,7 +167,7 @@ class InteractionAPI {
       fingerprint,
     })
 
-    const response = await fetch(`${this.baseUrl}/api/interactions/stats?${params}`)
+    const response = await fetch(`${this.baseUrl}/interactions/stats?${params}`)
 
     if (!response.ok) {
       throw new Error(`获取统计数据失败: ${response.statusText}`)

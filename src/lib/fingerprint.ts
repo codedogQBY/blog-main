@@ -54,7 +54,7 @@ export async function getUserLocation(): Promise<{
 }> {
   try {
     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
-    const response = await fetch(`${baseUrl}/api/interactions/location`);
+    const response = await fetch(`${baseUrl}/interactions/location`);
     const result = await response.json();
     
     if (result.success) {

@@ -1,12 +1,9 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/header/theme-provider"
 import Header from "@/components/header";
 import ScrollToTop from "@/components/scroll-to-top"
-
-const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
     title: "XA - 现代化网站",
@@ -20,7 +17,7 @@ export default function RootLayout({
 }) {
     return (
         <html lang="zh-CN" suppressHydrationWarning>
-        <body className={inter.className}>
+        <body className="font-sans">
         <ThemeProvider defaultTheme="system" storageKey="xa-theme">
             <Header />
             {children}

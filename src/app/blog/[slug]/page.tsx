@@ -43,6 +43,23 @@ export default function ArticleDetailPage() {
         fetchArticle()
     }, [slug])
 
+    // 代码高亮效果
+    useEffect(() => {
+        if (article?.content) {
+            // 简单的代码高亮处理
+            const highlightCode = () => {
+                const codeBlocks = document.querySelectorAll('pre code')
+                codeBlocks.forEach((block) => {
+                    // 为代码块添加基本的样式类
+                    block.classList.add('language-generic')
+                })
+            }
+            
+            // 延迟执行，确保DOM已更新
+            setTimeout(highlightCode, 100)
+        }
+    }, [article?.content])
+
     if (loading) {
         return (
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -167,10 +184,9 @@ export default function ArticleDetailPage() {
                     </header>
 
                     {/* 文章内容 */}
-                    <div className="prose prose-lg dark:prose-invert max-w-none">
+                    <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-strong:text-gray-900 dark:prose-strong:text-white prose-code:text-blue-600 dark:prose-code:text-blue-400 prose-pre:bg-gray-900 dark:prose-pre:bg-gray-800 prose-pre:text-gray-100 dark:prose-pre:text-gray-200">
                         <div
                             dangerouslySetInnerHTML={{ __html: article.content }}
-                            className="prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-300 prose-strong:text-gray-900 dark:prose-strong:text-white prose-code:text-blue-600 dark:prose-code:text-blue-400 prose-pre:bg-gray-100 dark:prose-pre:bg-gray-800"
                         />
                     </div>
 
@@ -204,53 +220,49 @@ export default function ArticleDetailPage() {
                                 </Button>
                             </Link>
                             
-                            <div className="text-sm text-gray-500 dark:text-gray-400">
-                                最后更新: {new Date(article.updatedAt).toLocaleDateString('zh-CN')}
+                            <div className="flex items-center space-x-4">
+                                <FloatingActions 
+                                    targetType="article"
+                                    targetId={article.id}
+                                    autoLoad={true}
+                                    onComment={() => {
+                                        const commentSection = document.getElementById('comments')
+                                        commentSection?.scrollIntoView({ behavior: 'smooth' })
+                                    }}
+                                    onShare={() => {
+                                        if (navigator.share) {
+                                            navigator.share({
+                                                title: article.title,
+                                                text: article.excerpt || '',
+                                                url: window.location.href,
+                                            })
+                                        } else {
+                                            navigator.clipboard.writeText(window.location.href)
+                                        }
+                                    }}
+                                    article={{
+                                        id: article.id,
+                                        title: article.title,
+                                        excerpt: article.excerpt,
+                                        author: article.author,
+                                        publishDate: article.publishedAt || article.createdAt,
+                                        category: article.category,
+                                        coverImage: article.coverImage
+                                    }}
+                                    shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                                />
                             </div>
                         </div>
                     </div>
 
                     {/* 评论区域 */}
-                    <div id="comments" className="mt-12">
-                        <CommentSection
+                    <div id="comments" className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+                        <CommentSection 
                             targetType="article"
                             targetId={article.id}
                         />
                     </div>
                 </article>
-
-                {/* 悬浮操作按钮 */}
-                <FloatingActions
-                    targetType="article"
-                    targetId={article.id}
-                    autoLoad={true}
-                    onComment={() => {
-                        const commentSection = document.getElementById('comments')
-                        commentSection?.scrollIntoView({ behavior: 'smooth' })
-                    }}
-                    onShare={() => {
-                        if (navigator.share) {
-                            navigator.share({
-                                title: article.title,
-                                text: article.excerpt || '',
-                                url: window.location.href,
-                            })
-                        } else {
-                            navigator.clipboard.writeText(window.location.href)
-                            // 可以添加一个提示消息
-                        }
-                    }}
-                    article={{
-                        id: article.id,
-                        title: article.title,
-                        excerpt: article.excerpt,
-                        author: article.author,
-                        publishDate: article.publishedAt || article.createdAt,
-                        category: article.category,
-                        coverImage: article.coverImage
-                    }}
-                    shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
-                />
             </div>
         </div>
     )
