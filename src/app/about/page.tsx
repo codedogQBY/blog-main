@@ -26,7 +26,7 @@ export default function AboutPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-gray-600 dark:text-gray-400">加载中...</p>
@@ -37,7 +37,7 @@ export default function AboutPage() {
 
     if (!aboutData) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <p className="text-gray-600 dark:text-gray-400">加载失败，请刷新重试</p>
                 </div>
@@ -49,7 +49,7 @@ export default function AboutPage() {
     const allTags = [...aboutData.hero.leftTags, ...aboutData.hero.rightTags]
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="min-h-screen">
             {/* 英雄区域 - 标签展示 */}
             <section className="relative min-h-screen flex items-center justify-center pt-20 pb-10">
                 <div className="max-w-7xl mx-auto px-6 w-full">

@@ -17,10 +17,12 @@ export default function RootLayout({
 }) {
     return (
         <html lang="zh-CN" suppressHydrationWarning>
-        <body className="font-sans">
+        <body className="font-sans bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen">
         <ThemeProvider defaultTheme="system" storageKey="xa-theme">
             <Header />
-            {children}
+            <main className="relative">
+                {children}
+            </main>
             <ScrollToTop />
         </ThemeProvider>
         </body>

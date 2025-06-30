@@ -94,7 +94,7 @@ export default function NotesPage() {
 
     if (isInitialLoading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10 flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-gray-600 dark:text-gray-400">加载随记中...</p>
@@ -104,8 +104,8 @@ export default function NotesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 dark:from-gray-900 dark:via-blue-900/10 dark:to-purple-900/10">
-            <div className="pt-16">
+        <div className="min-h-screen">
+            <div className="pt-20">
                 <div className="max-w-7xl mx-auto px-6 py-8 h-[calc(100vh-4rem)]">
                     {/* 移动端顶部导航 */}
                     <div className="lg:hidden mb-4">

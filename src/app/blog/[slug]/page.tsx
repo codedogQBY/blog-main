@@ -62,7 +62,7 @@ export default function ArticleDetailPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
                     <p className="text-gray-600 dark:text-gray-400">加载中...</p>
@@ -73,7 +73,7 @@ export default function ArticleDetailPage() {
 
     if (error || !article) {
         return (
-            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
+            <div className="min-h-screen flex items-center justify-center">
                 <div className="text-center">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">文章不存在</h1>
                     <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
@@ -89,8 +89,8 @@ export default function ArticleDetailPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            <div className="pt-16">
+        <div className="min-h-screen">
+            <div className="pt-20">
                 <article className="max-w-4xl mx-auto px-6 py-12">
                     {/* 返回按钮 */}
                     <div className="mb-8">
