@@ -125,11 +125,11 @@ export default function GalleryPage() {
                 {/* 页面标题 */}
                 <div className="text-center mb-10">
                     <div className="relative">
-                        <h1 className="text-5xl lg:text-6xl font-bold bg-gradient-to-r from-pink-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6 relative">
+                        <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-pink-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6 relative">
                             图库展示
-                            <div className="absolute -top-2 -right-2 text-2xl animate-bounce">📸</div>
+                            <div className="absolute -top-2 -right-2 text-xl animate-bounce">📸</div>
                         </h1>
-                        <div className="w-24 h-1 bg-gradient-to-r from-pink-600 to-purple-600 mx-auto rounded-full mb-4"></div>
+                        <div className="w-16 h-1 bg-gradient-to-r from-pink-600 to-purple-600 mx-auto rounded-full mb-4"></div>
                     </div>
                     <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
                         探索精美的图片收藏，每一张都承载着独特的故事与美好的回忆

@@ -41,7 +41,7 @@ export default function GalleryCard({ item, onClick }: GalleryCardProps) {
         if (shouldStartCarousel && item.images.length > 1) {
             intervalRef.current = setInterval(() => {
                 setCurrentImageIndex((prev) => (prev + 1) % item.images.length)
-            }, 3000)
+            }, 2000)
         } else {
             if (intervalRef.current) {
                 clearInterval(intervalRef.current)

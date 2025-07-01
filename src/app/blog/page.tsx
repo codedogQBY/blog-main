@@ -158,9 +158,17 @@ export default function ArticlesPage() {
             <div className="pt-20">
                 <main className="max-w-7xl mx-auto px-6 py-12">
                     {/* 页面头部 */}
-                    <div className="text-center mb-12">
-                        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">文章</h1>
-                        <p className="text-lg text-gray-600 dark:text-gray-300">记录生活，分享思考，探索世界</p>
+                    <div className="text-center mb-10">
+                        <div className="relative">
+                            <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-pink-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6 relative">
+                                文章
+                                <div className="absolute -top-2 -right-2 text-xl animate-bounce">✍️</div>
+                            </h1>
+                            <div className="w-16 h-1 bg-gradient-to-r from-pink-600 to-purple-600 mx-auto rounded-full mb-4"></div>
+                        </div>
+                        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
+                            记录生活，分享思考，探索世界
+                        </p>
                     </div>
 
                     {/* 搜索和筛选 */}
