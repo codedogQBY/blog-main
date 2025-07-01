@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { useTheme } from "@/components/header/theme-provider"
+import { useEffect, useState } from "react"
 
 export default function AnimatedBackground() {
     const { actualTheme } = useTheme()
@@ -53,20 +53,6 @@ export default function AnimatedBackground() {
                         <div className="w-full h-full bg-yellow-300 rounded-full animate-pulse shadow-lg shadow-yellow-200">
                             <div className="absolute inset-0 bg-yellow-400 rounded-full animate-spin-slow opacity-60"></div>
                         </div>
-                        {/* 阳光射线 */}
-                        {[...Array(8)].map((_, i) => (
-                            <div
-                                key={i}
-                                className="absolute w-1 h-8 bg-yellow-300 opacity-40"
-                                style={{
-                                    top: '50%',
-                                    left: '50%',
-                                    transform: `translate(-50%, -50%) rotate(${i * 45}deg)`,
-                                    transformOrigin: '50% 100%',
-                                    animation: `sunRay 3s ease-in-out infinite ${i * 0.2}s`
-                                }}
-                            />
-                        ))}
                     </div>
 
                     {/* 云朵 */}
@@ -96,15 +82,15 @@ export default function AnimatedBackground() {
                                 }}
                             >
                                 <div 
-                                    className="bg-gray-200 rounded-full shadow-md"
+                                    className="bg-white/95 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.8)]"
                                     style={{
                                         width: `${element.size * cloudScale}px`,
                                         height: `${element.size * cloudScale * 0.6}px`,
-                                        filter: 'drop-shadow(2px 2px 4px rgba(0,0,0,0.1))'
+                                        filter: 'drop-shadow(2px 2px 8px rgba(0,0,0,0.3))'
                                     }}
                                 >
                                     <div 
-                                        className="absolute bg-gray-200 rounded-full"
+                                        className="absolute bg-white/95 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.8)]"
                                         style={{
                                             width: `${element.size * cloudScale * leftBubble.scale}px`,
                                             height: `${element.size * cloudScale * leftBubble.scale}px`,
@@ -113,7 +99,7 @@ export default function AnimatedBackground() {
                                         }}
                                     />
                                     <div 
-                                        className="absolute bg-gray-200 rounded-full"
+                                        className="absolute bg-white/95 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.8)]"
                                         style={{
                                             width: `${element.size * cloudScale * rightBubble.scale}px`,
                                             height: `${element.size * cloudScale * rightBubble.scale}px`,
@@ -130,7 +116,7 @@ export default function AnimatedBackground() {
                                         return (
                                             <div
                                                 key={i}
-                                                className="absolute bg-gray-200 rounded-full"
+                                                className="absolute bg-white/95 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.8)]"
                                                 style={{
                                                     width: `${element.size * cloudScale * bubble.scale}px`,
                                                     height: `${element.size * cloudScale * bubble.scale}px`,
@@ -147,8 +133,8 @@ export default function AnimatedBackground() {
 
                     {/* 更多云朵 */}
                     {elements.slice(6, 16).map((element) => {
-                        const cloudScale = Math.random() * 2 + 0.3; // 0.3-2.3倍随机缩放
-                        const bubbleCount = Math.floor(Math.random() * 4) + 2; // 2-5个泡泡
+                        const cloudScale = Math.random() * 3 + 0.3; // 0.3-3.3倍随机缩放
+                        const bubbleCount = Math.floor(Math.random() * 8) + 2; // 2-8个泡泡
                         const bubbles = Array.from({ length: bubbleCount }).map(() => ({
                             scale: Math.random() * 0.6 + 0.3,
                             x: Math.random() * (element.size * cloudScale * 0.9),
@@ -168,17 +154,17 @@ export default function AnimatedBackground() {
                                 }}
                             >
                                 <div 
-                                    className="bg-gray-300 rounded-full relative"
+                                    className="bg-white/95 rounded-full relative shadow-[0_0_25px_rgba(255,255,255,0.8)]"
                                     style={{
                                         width: `${element.size * cloudScale}px`,
                                         height: `${element.size * cloudScale * 0.7}px`,
-                                        filter: 'drop-shadow(1px 2px 3px rgba(0,0,0,0.12))'
+                                        filter: 'drop-shadow(2px 2px 8px rgba(0,0,0,0.3))'
                                     }}
                                 >
                                     {bubbles.map((bubble, i) => (
                                         <div 
                                             key={i}
-                                            className="absolute bg-gray-300 rounded-full"
+                                            className="absolute bg-white/95 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.8)]"
                                             style={{
                                                 width: `${element.size * cloudScale * bubble.scale}px`,
                                                 height: `${element.size * cloudScale * bubble.scale}px`,
@@ -325,8 +311,6 @@ export default function AnimatedBackground() {
                     ))}
                 </>
             )}
-
-
         </div>
     )
 } 
