@@ -212,46 +212,13 @@ export default function ArticleDetailPage() {
 
                     {/* 底部导航 */}
                     <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-center">
                             <Link href="/blog">
                                 <Button variant="outline">
                                     <ArrowLeft className="w-4 h-4 mr-2" />
                                     返回文章列表
                                 </Button>
                             </Link>
-                            
-                            <div className="flex items-center space-x-4">
-                                <FloatingActions 
-                                    targetType="article"
-                                    targetId={article.id}
-                                    autoLoad={true}
-                                    onComment={() => {
-                                        const commentSection = document.getElementById('comments')
-                                        commentSection?.scrollIntoView({ behavior: 'smooth' })
-                                    }}
-                                    onShare={() => {
-                                        if (navigator.share) {
-                                            navigator.share({
-                                                title: article.title,
-                                                text: article.excerpt || '',
-                                                url: window.location.href,
-                                            })
-                                        } else {
-                                            navigator.clipboard.writeText(window.location.href)
-                                        }
-                                    }}
-                                    article={{
-                                        id: article.id,
-                                        title: article.title,
-                                        excerpt: article.excerpt,
-                                        author: article.author,
-                                        publishDate: article.publishedAt || article.createdAt,
-                                        category: article.category,
-                                        coverImage: article.coverImage
-                                    }}
-                                    shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
-                                />
-                            </div>
                         </div>
                     </div>
 
@@ -264,6 +231,38 @@ export default function ArticleDetailPage() {
                     </div>
                 </article>
             </div>
+
+            {/* 浮动操作按钮 */}
+            <FloatingActions 
+                targetType="article"
+                targetId={article.id}
+                autoLoad={true}
+                onComment={() => {
+                    const commentSection = document.getElementById('comments')
+                    commentSection?.scrollIntoView({ behavior: 'smooth' })
+                }}
+                onShare={() => {
+                    if (navigator.share) {
+                        navigator.share({
+                            title: article.title,
+                            text: article.excerpt || '',
+                            url: window.location.href,
+                        })
+                    } else {
+                        navigator.clipboard.writeText(window.location.href)
+                    }
+                }}
+                article={{
+                    id: article.id,
+                    title: article.title,
+                    excerpt: article.excerpt,
+                    author: article.author,
+                    publishDate: article.publishedAt || article.createdAt,
+                    category: article.category,
+                    coverImage: article.coverImage
+                }}
+                shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
+            />
         </div>
     )
 } 

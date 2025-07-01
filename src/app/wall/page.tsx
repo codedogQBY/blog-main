@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import StickyNote from "@/components/wall/sticky-note"
 import AddMessageModal from "@/components/wall/add-message-modal"
 import MessageDetailModal from "@/components/wall/message-detail-modal"
+import FloatingWallActions from "@/components/wall/floating-wall-actions"
 import InfiniteScrollLoader from "@/components/loading/infinite-scroll-loader"
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
 import { getStickyNotes, getStickyNoteCategories, type StickyNoteData, type CreateStickyNoteData, createStickyNote } from "@/lib/sticky-note-api"
@@ -299,14 +300,6 @@ export default function MessagesPage() {
                         }
                     />
 
-                    {/* 添加留言按钮 */}
-                    <Button
-                        onClick={() => setIsModalOpen(true)}
-                        className="fixed bottom-8 right-8 h-12 w-12 rounded-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-200 shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110"
-                    >
-                        <Plus className="h-5 w-5" />
-                    </Button>
-
                     {/* 添加留言弹窗 */}
                     <AddMessageModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSubmit={handleAddMessage} />
 
@@ -323,6 +316,9 @@ export default function MessagesPage() {
                     />
                 </main>
             </div>
+
+            {/* 浮动操作按钮 */}
+            <FloatingWallActions onAddMessage={() => setIsModalOpen(true)} />
         </div>
     )
 }

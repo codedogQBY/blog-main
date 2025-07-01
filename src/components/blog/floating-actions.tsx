@@ -125,7 +125,7 @@ export default function FloatingActions({
 
   if (loading && displayLikes === 0 && displayComments === 0) {
     return (
-      <div className="fixed right-6 bottom-6 z-50">
+      <div className="fixed right-6 top-1/2 transform -translate-y-1/2 z-50">
         <div className="bg-white dark:bg-gray-800 rounded-full p-3 shadow-lg border border-gray-200 dark:border-gray-700">
           <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
         </div>
@@ -134,7 +134,7 @@ export default function FloatingActions({
   }
 
   return (
-    <div className="fixed right-6 bottom-6 z-50 flex flex-col gap-3">
+    <div className="fixed right-6 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-3">
       {/* 点赞按钮 */}
       <div className="group relative">
         <Button
