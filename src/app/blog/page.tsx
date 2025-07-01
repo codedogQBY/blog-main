@@ -173,22 +173,6 @@ export default function ArticlesPage() {
 
                     {/* 搜索和筛选 */}
                     <div className="mb-8 space-y-4">
-                        {/* 搜索框 */}
-                        <div className="flex justify-center">
-                            <div className="relative max-w-md w-full">
-                                <form onSubmit={handleSearch} className="relative">
-                                    <Input
-                                        type="text"
-                                        placeholder="搜索文章..."
-                                        value={searchQuery}
-                                        onChange={(e) => setSearchQuery(e.target.value)}
-                                        className="pl-10 pr-4 h-12 rounded-2xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200/50 dark:border-gray-600/50 focus:border-blue-400 dark:focus:border-blue-500 transition-all duration-300"
-                                    />
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                                </form>
-                            </div>
-                        </div>
-
                         {/* 分类筛选 */}
                         <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl border border-white/20 dark:border-gray-700/20 shadow-sm p-4">
                             <div className="flex flex-wrap justify-center gap-2">

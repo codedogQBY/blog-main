@@ -7,6 +7,7 @@ import type { Note } from "@/types/note"
 import { diaryApi, type DiaryNote } from "@/lib/diary-api"
 import NoteListItem from "@/components/diary/note-list-item"
 import NotePaper from "@/components/diary/note-paper"
+import { useRouter } from "next/navigation"
 
 export default function NotesPage() {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null)
@@ -17,6 +18,7 @@ export default function NotesPage() {
     const [showMobileList, setShowMobileList] = useState(true) // 移动端显示状态
     const [hasMore, setHasMore] = useState(true)
     const pageSize = 8
+    const router = useRouter()
 
     // 将API响应转换为Note格式
     const convertToNote = (diaryNote: DiaryNote): Note => ({
@@ -48,7 +50,31 @@ export default function NotesPage() {
                 setDisplayedNotes(notes)
                 setHasMore(response.pagination.hasMore)
                 
-                if (notes.length > 0) {
+                // 检查URL中是否有指定的随记ID
+                const hash = window.location.hash.slice(1)
+                if (hash) {
+                    // 先在已加载的笔记中查找
+                    const targetNote = notes.find(note => note.id === hash)
+                    if (targetNote) {
+                        setSelectedNote(targetNote)
+                        setShowMobileList(false)
+                    } else {
+                        // 如果在第一页没找到，尝试直接获取这篇随记
+                        try {
+                            const response = await diaryApi.getNote(hash)
+                            const note = convertToNote(response)
+                            setSelectedNote(note)
+                            setShowMobileList(false)
+                            // 将这篇随记添加到列表中
+                            setDisplayedNotes(prev => [note, ...prev])
+                        } catch (error) {
+                            console.error('获取指定随记失败:', error)
+                            if (notes.length > 0) {
+                                setSelectedNote(notes[0])
+                            }
+                        }
+                    }
+                } else if (notes.length > 0) {
                     setSelectedNote(notes[0])
                 }
             } catch (error) {
@@ -60,6 +86,23 @@ export default function NotesPage() {
 
         loadInitialData()
     }, [])
+
+    // 监听hash变化
+    useEffect(() => {
+        const handleHashChange = () => {
+            const hash = window.location.hash.slice(1)
+            if (hash) {
+                const targetNote = displayedNotes.find(note => note.id === hash)
+                if (targetNote) {
+                    setSelectedNote(targetNote)
+                    setShowMobileList(false)
+                }
+            }
+        }
+
+        window.addEventListener('hashchange', handleHashChange)
+        return () => window.removeEventListener('hashchange', handleHashChange)
+    }, [displayedNotes])
 
     // 手动加载更多
     const handleLoadMore = async () => {
