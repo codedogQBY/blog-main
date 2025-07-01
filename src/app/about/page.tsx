@@ -51,79 +51,75 @@ export default function AboutPage() {
     return (
         <div className="min-h-screen">
             {/* 英雄区域 - 标签展示 */}
-            <section className="relative min-h-screen flex items-center justify-center pt-20 pb-10">
-                <div className="max-w-7xl mx-auto px-6 w-full">
+            <section 
+                className="relative min-h-screen flex items-center justify-center pt-20 pb-10 bg-cover bg-center bg-no-repeat overflow-hidden"
+                style={{
+                    backgroundImage: `url(${aboutData.hero.avatar || "/placeholder.svg"})`,
+                }}
+            >
+                {/* 背景遮罩 */}
+                <div className="absolute inset-0 bg-black/30 dark:bg-black/50"></div>
+                
+                <div className="w-full px-4 lg:px-8 relative z-10">
                     {/* 桌面端布局 */}
-                    <div className="hidden lg:grid lg:grid-cols-3 lg:gap-8 items-center">
+                    <div className="hidden lg:flex lg:justify-between lg:items-center lg:h-full">
                         {/* 左侧标签 */}
-                        <div className="flex flex-col space-y-4 items-end">
-                            {aboutData.hero.leftTags.map((tag, index) => (
-                                <div
-                                    key={`left-${index}`}
-                                    className="inline-block px-6 py-3 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full text-gray-700 dark:text-gray-300 font-medium shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105"
-                                    style={{
-                                        animationDelay: `${index * 0.1}s`,
-                                        animation: "fadeInUp 0.6s ease-out forwards",
-                                    }}
-                                >
-                                    {tag}
-                                </div>
-                            ))}
+                        <div className="flex flex-col space-y-4 items-end pl-28">
+                            {aboutData.hero.leftTags.map((tag, index) => {
+                                const totalTags = aboutData.hero.leftTags.length;
+                                const normalizedPosition = index / (totalTags - 1); // 0 到 1
+                                const curve = (1 - Math.sin(normalizedPosition * Math.PI)) * 120; // 弧形计算
+                                return (
+                                    <div
+                                        key={`left-${index}`}
+                                        className="inline-block px-6 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full text-gray-700 dark:text-gray-300 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                                        style={{
+                                            animationDelay: `${index * 0.1}s`,
+                                            animation: "fadeInUp 0.6s ease-out forwards",
+                                            transform: `translateX(${curve}px)`,
+                                        }}
+                                    >
+                                        {tag}
+                                    </div>
+                                );
+                            })}
                         </div>
 
-                        {/* 中间头像 */}
-                        <div className="flex justify-center">
-                            <div className="relative">
-                                <div className="w-96 h-96 rounded-full overflow-hidden shadow-2xl">
-                                    <Image
-                                        src={aboutData.hero.avatar || "/placeholder.svg"}
-                                        alt="个人头像"
-                                        width={400}
-                                        height={400}
-                                        className="w-full h-full object-cover"
-                                    />
-                                </div>
-                                {/* 签名 */}
-                                <div className="absolute bottom-4 right-4 text-white/80 font-handwriting text-lg">
-                                    {aboutData.hero.signature}
-                                </div>
+                        {/* 中间签名 */}
+                        <div className="flex justify-center items-center">
+                            <div className="text-white font-handwriting text-3xl drop-shadow-lg">
+                                {aboutData.hero.signature}
                             </div>
                         </div>
 
                         {/* 右侧标签 */}
-                        <div className="flex flex-col space-y-4 items-start">
-                            {aboutData.hero.rightTags.map((tag, index) => (
-                                <div
-                                    key={`right-${index}`}
-                                    className="inline-block px-6 py-3 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-full text-gray-700 dark:text-gray-300 font-medium shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105"
-                                    style={{
-                                        animationDelay: `${(index + aboutData.hero.leftTags.length) * 0.1}s`,
-                                        animation: "fadeInUp 0.6s ease-out forwards",
-                                    }}
-                                >
-                                    {tag}
-                                </div>
-                            ))}
+                        <div className="flex flex-col space-y-4 items-start pr-28">
+                            {aboutData.hero.rightTags.map((tag, index) => {
+                                const totalTags = aboutData.hero.rightTags.length;
+                                const normalizedPosition = index / (totalTags - 1); // 0 到 1
+                                const curve = (1 - Math.sin(normalizedPosition * Math.PI)) * 120; // 弧形计算
+                                return (
+                                    <div
+                                        key={`right-${index}`}
+                                        className="inline-block px-6 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full text-gray-700 dark:text-gray-300 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                                        style={{
+                                            animationDelay: `${(index + aboutData.hero.leftTags.length) * 0.1}s`,
+                                            animation: "fadeInUp 0.6s ease-out forwards",
+                                            transform: `translateX(-${curve}px)`,
+                                        }}
+                                    >
+                                        {tag}
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
 
                     {/* 移动端布局 */}
-                    <div className="lg:hidden flex flex-col items-center space-y-8">
-                        {/* 头像 */}
-                        <div className="relative">
-                            <div className="w-64 h-64 rounded-full overflow-hidden shadow-2xl">
-                                <Image
-                                    src={aboutData.hero.avatar || "/placeholder.svg"}
-                                    alt="个人头像"
-                                    width={300}
-                                    height={300}
-                                    className="w-full h-full object-cover"
-                                />
-                            </div>
-                            {/* 签名 */}
-                            <div className="absolute bottom-2 right-2 text-white/80 font-handwriting text-base">
-                                {aboutData.hero.signature}
-                            </div>
+                    <div className="lg:hidden flex flex-col items-center space-y-8 relative z-10">
+                        {/* 签名 */}
+                        <div className="text-white font-handwriting text-2xl text-center drop-shadow-lg">
+                            {aboutData.hero.signature}
                         </div>
 
                         {/* 标签云 - 移动端优化布局 */}
@@ -132,7 +128,7 @@ export default function AboutPage() {
                                 {allTags.map((tag, index) => (
                                     <div
                                         key={`mobile-${index}`}
-                                        className="inline-block px-4 py-2 bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-full text-gray-700 dark:text-gray-300 font-medium shadow-sm hover:shadow-md transition-all duration-300 hover:scale-105 text-sm"
+                                        className="inline-block px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full text-gray-700 dark:text-gray-300 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 text-sm"
                                         style={{
                                             animationDelay: `${index * 0.05}s`,
                                             animation: "fadeInUp 0.6s ease-out forwards",
