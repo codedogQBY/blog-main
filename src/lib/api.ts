@@ -144,6 +144,34 @@ class ApiClient {
   async getCategoryBySlug(slug: string): Promise<Category> {
     return this.request<Category>(`/categories/${slug}`);
   }
+
+  // 通用GET请求方法
+  async get<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint);
+  }
+
+  // 通用POST请求方法
+  async post<T>(endpoint: string, data?: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // 通用PATCH请求方法
+  async patch<T>(endpoint: string, data?: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+  }
+
+  // 通用DELETE请求方法
+  async delete<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'DELETE',
+    });
+  }
 }
 
 // 创建API客户端实例

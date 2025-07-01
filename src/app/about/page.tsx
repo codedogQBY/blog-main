@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image"
 import { useState, useEffect } from "react"
-import { getAboutConfig } from "@/data/about"
+import { getAboutConfig } from "@/lib/about-api"
 import type { AboutConfig } from "@/types/about"
 
 export default function AboutPage() {
@@ -161,12 +161,21 @@ export default function AboutPage() {
                             </div>
                         </div>
                         <div className="flex flex-col items-center">
-                            <div className="w-64 h-64 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
-                                <div className="text-white text-6xl font-bold">XA</div>
-                            </div>
-                            <div className="text-center mt-4">
-                                <div className="text-lg font-medium text-gray-900 dark:text-white">YIKE</div>
-                            </div>
+                            {aboutData.intro.logo ? (
+                                <div className="w-64 h-64 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden bg-white dark:bg-gray-800">
+                                    <Image
+                                        src={aboutData.intro.logo}
+                                        alt="Logo"
+                                        width={256}
+                                        height={256}
+                                        className="w-full h-full object-contain p-4"
+                                    />
+                                </div>
+                            ) : (
+                                <div className="w-64 h-64 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
+                                    <div className="text-white text-6xl font-bold">XA</div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -183,12 +192,21 @@ export default function AboutPage() {
                             ))}
                         </div>
                         <div className="flex flex-col items-center">
-                            <div className="w-48 h-48 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
-                                <div className="text-white text-4xl font-bold">XA</div>
-                            </div>
-                            <div className="text-center mt-4">
-                                <div className="text-base font-medium text-gray-900 dark:text-white">YIKE</div>
-                            </div>
+                            {aboutData.intro.logo ? (
+                                <div className="w-48 h-48 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden bg-white dark:bg-gray-800">
+                                    <Image
+                                        src={aboutData.intro.logo}
+                                        alt="Logo"
+                                        width={192}
+                                        height={192}
+                                        className="w-full h-full object-contain p-4"
+                                    />
+                                </div>
+                            ) : (
+                                <div className="w-48 h-48 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
+                                    <div className="text-white text-4xl font-bold">XA</div>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
