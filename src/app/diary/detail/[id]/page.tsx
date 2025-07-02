@@ -7,12 +7,16 @@ import NotePaper from "@/components/diary/note-paper"
 import { Button } from "@/components/ui/button"
 import { ArrowLeft } from "lucide-react"
 import type { Note } from "@/types/note"
+import { use } from "react"
 
-export default function DiaryDetailPage({ params }: { params: { id: string } }) {
+type PageParams = Promise<{ id: string }>
+
+export default function DiaryDetailPage({ params }: { params: PageParams }) {
     const router = useRouter()
     const [note, setNote] = useState<Note | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const { id } = use(params)
 
     // 将API响应转换为Note格式
     const convertToNote = (diaryNote: DiaryNote): Note => ({
@@ -35,7 +39,7 @@ export default function DiaryDetailPage({ params }: { params: { id: string } }) 
             try {
                 setIsLoading(true)
                 setError(null)
-                const response = await diaryApi.getNote(params.id)
+                const response = await diaryApi.getNote(id)
                 setNote(convertToNote(response))
             } catch (error) {
                 console.error('获取随记失败:', error)
@@ -45,10 +49,10 @@ export default function DiaryDetailPage({ params }: { params: { id: string } }) 
             }
         }
 
-        if (params.id) {
+        if (id) {
             loadNote()
         }
-    }, [params.id])
+    }, [id])
 
     const handleBack = () => {
         router.push('/diary')
@@ -95,16 +99,15 @@ export default function DiaryDetailPage({ params }: { params: { id: string } }) 
 
     return (
         <div className="min-h-screen">
-            <div className="pt-20">
-                <div className="max-w-4xl mx-auto px-6 py-8">
+            <div className="pt-16 lg:pt-20">
+                <div className="max-w-4xl mx-auto px-4 lg:px-6 py-4 lg:py-8">
                     <Button
                         variant="ghost"
-                        size="sm"
+                        size="icon"
                         onClick={handleBack}
-                        className="mb-6 flex items-center space-x-2"
+                        className="h-8 w-8 mb-4 lg:mb-6"
                     >
                         <ArrowLeft className="w-4 h-4" />
-                        <span>返回列表</span>
                     </Button>
                     {note && (
                         <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl border border-white/20 dark:border-gray-700/20 shadow-sm overflow-hidden">
