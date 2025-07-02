@@ -25,15 +25,30 @@ export default function AnimatedBackground() {
         const newElements = []
         
         // 生成随机位置的元素
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 30; i++) {
+            const isCloud = i < 12;
+            const cloudType = isCloud ? (
+                i < 4 ? 'small' :
+                i < 8 ? 'medium' :
+                'large'
+            ) : 'other';
+            
             newElements.push({
                 id: `element-${i}`,
-                type: i % 3 === 0 ? 'primary' : i % 3 === 1 ? 'secondary' : 'tertiary',
-                x: Math.random() * 100,
-                y: Math.random() * 100,
-                size: Math.random() * 30 + 10,
-                delay: Math.random() * 5,
-                duration: Math.random() * 10 + 8
+                type: cloudType,
+                x: -20, // 所有云朵从屏幕左侧开始
+                y: Math.random() * 70 + 5,
+                size: isCloud ? (
+                    cloudType === 'small' ? 60 : // 减小云朵尺寸
+                    cloudType === 'medium' ? 90 :
+                    120
+                ) : Math.random() * 30 + 10,
+                delay: isCloud ? (Math.random() * 40) : (Math.random() * 15), // 云朵延迟更长，确保持续有云飘过
+                duration: isCloud ? (
+                    cloudType === 'small' ? 25000 : // 增加动画时间，让云朵飘得更慢
+                    cloudType === 'medium' ? 30000 :
+                    35000
+                ) : Math.random() * 10 + 8
             })
         }
         setElements(newElements)
@@ -56,20 +71,10 @@ export default function AnimatedBackground() {
                     </div>
 
                     {/* 云朵 */}
-                    {elements.slice(0, 6).map((element) => {
-                        const cloudScale = Math.random() * 1.5 + 0.5; // 0.5-2倍随机缩放
-                        const leftBubble = {
-                            scale: Math.random() * 0.4 + 0.5, // 0.5-0.9
-                            x: Math.random() * 4 + 1, // 1-5
-                            y: Math.random() * 4 - 2 // -2到2
-                        };
-                        const rightBubble = {
-                            scale: Math.random() * 0.4 + 0.3, // 0.3-0.7
-                            x: Math.random() * 4 + 1, // 1-5
-                            y: Math.random() * 3 - 1 // -1到2
-                        };
-                        const extraBubbles = Math.random() > 0.5 ? Math.floor(Math.random() * 2) + 1 : 0; // 0-2个额外泡泡
-                        
+                    {elements.filter(e => ['small', 'medium', 'large'].includes(e.type)).map((element) => {
+                        const cloudScale = element.type === 'small' ? 1 :
+                                         element.type === 'medium' ? 1.5 :
+                                         2;
                         return (
                             <div
                                 key={element.id}
@@ -78,102 +83,37 @@ export default function AnimatedBackground() {
                                     left: `${element.x}%`,
                                     top: `${element.y}%`,
                                     animationDelay: `${element.delay}s`,
-                                    animationDuration: `${element.duration}s`
+                                    animationDuration: `${element.duration}ms`
                                 }}
                             >
                                 <div 
-                                    className="bg-white/95 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.8)]"
+                                    className="relative bg-white rounded-[50px] shadow-lg"
                                     style={{
                                         width: `${element.size * cloudScale}px`,
-                                        height: `${element.size * cloudScale * 0.6}px`,
-                                        filter: 'drop-shadow(2px 2px 8px rgba(0,0,0,0.3))'
+                                        height: `${element.size * cloudScale * 0.4}px`,
+                                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
                                     }}
                                 >
+                                    {/* 左侧圆形 */}
                                     <div 
-                                        className="absolute bg-white/95 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.8)]"
+                                        className="absolute bg-white rounded-[50px]"
                                         style={{
-                                            width: `${element.size * cloudScale * leftBubble.scale}px`,
-                                            height: `${element.size * cloudScale * leftBubble.scale}px`,
-                                            top: `${leftBubble.y}px`,
-                                            left: `${leftBubble.x}px`
+                                            width: `${element.size * cloudScale * 0.5}px`,
+                                            height: `${element.size * cloudScale * 0.5}px`,
+                                            top: `-${element.size * cloudScale * 0.25}px`,
+                                            left: `${element.size * cloudScale * 0.15}px`
                                         }}
                                     />
+                                    {/* 右侧圆形 */}
                                     <div 
-                                        className="absolute bg-white/95 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.8)]"
+                                        className="absolute bg-white rounded-[50px]"
                                         style={{
-                                            width: `${element.size * cloudScale * rightBubble.scale}px`,
-                                            height: `${element.size * cloudScale * rightBubble.scale}px`,
-                                            top: `${rightBubble.y}px`,
-                                            right: `${rightBubble.x}px`
+                                            width: `${element.size * cloudScale * 0.7}px`,
+                                            height: `${element.size * cloudScale * 0.7}px`,
+                                            top: `-${element.size * cloudScale * 0.35}px`,
+                                            right: `${element.size * cloudScale * 0.15}px`
                                         }}
                                     />
-                                    {Array.from({ length: extraBubbles }).map((_, i) => {
-                                        const bubble = {
-                                            scale: Math.random() * 0.3 + 0.2,
-                                            x: Math.random() * (element.size * cloudScale * 0.8),
-                                            y: Math.random() * 6 - 3
-                                        };
-                                        return (
-                                            <div
-                                                key={i}
-                                                className="absolute bg-white/95 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.8)]"
-                                                style={{
-                                                    width: `${element.size * cloudScale * bubble.scale}px`,
-                                                    height: `${element.size * cloudScale * bubble.scale}px`,
-                                                    top: `${bubble.y}px`,
-                                                    left: `${bubble.x}px`
-                                                }}
-                                            />
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        );
-                    })}
-
-                    {/* 更多云朵 */}
-                    {elements.slice(6, 16).map((element) => {
-                        const cloudScale = Math.random() * 3 + 0.3; // 0.3-3.3倍随机缩放
-                        const bubbleCount = Math.floor(Math.random() * 8) + 2; // 2-8个泡泡
-                        const bubbles = Array.from({ length: bubbleCount }).map(() => ({
-                            scale: Math.random() * 0.6 + 0.3,
-                            x: Math.random() * (element.size * cloudScale * 0.9),
-                            y: Math.random() * 8 - 4,
-                            opacity: Math.random() * 0.3 + 0.7
-                        }));
-                        
-                        return (
-                            <div
-                                key={`extra-cloud-${element.id}`}
-                                className="absolute opacity-18 animate-cloud-drift"
-                                style={{
-                                    left: `${element.x}%`,
-                                    top: `${element.y}%`,
-                                    animationDelay: `${element.delay}s`,
-                                    animationDuration: `${element.duration + 5}s`
-                                }}
-                            >
-                                <div 
-                                    className="bg-white/95 rounded-full relative shadow-[0_0_25px_rgba(255,255,255,0.8)]"
-                                    style={{
-                                        width: `${element.size * cloudScale}px`,
-                                        height: `${element.size * cloudScale * 0.7}px`,
-                                        filter: 'drop-shadow(2px 2px 8px rgba(0,0,0,0.3))'
-                                    }}
-                                >
-                                    {bubbles.map((bubble, i) => (
-                                        <div 
-                                            key={i}
-                                            className="absolute bg-white/95 rounded-full shadow-[0_0_25px_rgba(255,255,255,0.8)]"
-                                            style={{
-                                                width: `${element.size * cloudScale * bubble.scale}px`,
-                                                height: `${element.size * cloudScale * bubble.scale}px`,
-                                                left: `${bubble.x}px`,
-                                                top: `${bubble.y}px`,
-                                                opacity: bubble.opacity
-                                            }}
-                                        />
-                                    ))}
                                 </div>
                             </div>
                         );
@@ -194,7 +134,7 @@ export default function AnimatedBackground() {
 
                     {/* 星星 */}
                     {elements.map((element) => {
-                        const starSize = Math.random() * 3 + 1; // 1-4px 随机大小
+                        const starSize = Math.random() * 3 + 1;
                         return (
                             <div
                                 key={`star-${element.id}`}
@@ -203,7 +143,7 @@ export default function AnimatedBackground() {
                                     left: `${element.x}%`,
                                     top: `${element.y}%`,
                                     animationDelay: `${element.delay}s`,
-                                    animationDuration: `${element.duration / 2}s`
+                                    animationDuration: `${element.duration}s`
                                 }}
                             >
                                 <div 
@@ -218,10 +158,10 @@ export default function AnimatedBackground() {
                     })}
 
                     {/* 流星 */}
-                    {elements.slice(0, 12).map((element, index) => {
-                        const angle = 30 + Math.random() * 30; // 30-60度随机角度
-                        const startX = Math.random() * 100 - 10; // -10% 到 90%（整个上边）
-                        const startY = -(Math.random() * 20 + 15); // -35% 到 -15%（上边屏幕外）
+                    {elements.slice(0, 32).map((element, index) => {
+                        const angle = 30 + Math.random() * 30;
+                        const startX = Math.random() * 40 - 10;
+                        const startY = -(Math.random() * 30 + 10);
                         return (
                             <div
                                 key={`meteor-${element.id}`}
@@ -229,8 +169,8 @@ export default function AnimatedBackground() {
                                 style={{
                                     left: `${startX}%`,
                                     top: `${startY}%`,
-                                    animationDelay: `${element.delay + index * 1.5}s`,
-                                    animationDuration: `${element.duration * 1}s`,
+                                    animationDelay: `${element.delay + index * 0.8}s`,
+                                    animationDuration: `${element.duration * 0.8}s`,
                                 }}
                             >
                                 {/* 流星主体 */}
@@ -255,9 +195,9 @@ export default function AnimatedBackground() {
                                     <div 
                                         className="absolute bg-gradient-to-r from-white via-blue-200 to-transparent"
                                         style={{
-                                            width: '40px',
+                                            width: '60px',
                                             height: '2px',
-                                            left: '-40px',
+                                            left: '-60px',
                                             top: '0.5px',
                                             opacity: 0.8,
                                             filter: 'blur(0.5px)'
@@ -267,9 +207,9 @@ export default function AnimatedBackground() {
                                     <div 
                                         className="absolute bg-gradient-to-r from-blue-200 via-blue-300 to-transparent"
                                         style={{
-                                            width: '60px',
+                                            width: '80px',
                                             height: '1px',
-                                            left: '-60px',
+                                            left: '-80px',
                                             top: '1px',
                                             opacity: 0.4,
                                             filter: 'blur(1px)'

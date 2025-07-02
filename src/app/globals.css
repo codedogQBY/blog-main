@@ -222,17 +222,17 @@
 
 @keyframes cloudDrift {
   0% { 
-    transform: translateX(-20vw) translateY(0px) scale(1);
-    opacity: 0.15;
+    transform: translateX(0);
+    opacity: 0;
   }
-  10% { 
-    opacity: 0.25;
+  5% {
+    opacity: 0.2;
   }
-  90% { 
-    opacity: 0.25;
+  90% {
+    opacity: 0.2;
   }
   100% { 
-    transform: translateX(120vw) translateY(10px) scale(1.1);
+    transform: translateX(120vw);
     opacity: 0;
   }
 }
