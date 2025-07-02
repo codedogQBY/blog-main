@@ -25,30 +25,15 @@ export default function AnimatedBackground() {
         const newElements = []
         
         // 生成随机位置的元素
-        for (let i = 0; i < 30; i++) {
-            const isCloud = i < 12;
-            const cloudType = isCloud ? (
-                i < 4 ? 'small' :
-                i < 8 ? 'medium' :
-                'large'
-            ) : 'other';
-            
+        for (let i = 0; i < 50; i++) {  // 增加星星数量
             newElements.push({
                 id: `element-${i}`,
-                type: cloudType,
-                x: -20, // 所有云朵从屏幕左侧开始
+                type: 'star',
+                x: Math.random() * 100,
                 y: Math.random() * 70 + 5,
-                size: isCloud ? (
-                    cloudType === 'small' ? 60 : // 减小云朵尺寸
-                    cloudType === 'medium' ? 90 :
-                    120
-                ) : Math.random() * 30 + 10,
-                delay: isCloud ? (Math.random() * 40) : (Math.random() * 15), // 云朵延迟更长，确保持续有云飘过
-                duration: isCloud ? (
-                    cloudType === 'small' ? 25000 : // 增加动画时间，让云朵飘得更慢
-                    cloudType === 'medium' ? 30000 :
-                    35000
-                ) : Math.random() * 10 + 8
+                size: Math.random() * 2 + 1,  // 调整星星尺寸范围为1-3px
+                delay: Math.random() * 15,
+                duration: Math.random() * 3 + 2  // 调整闪烁动画时间
             })
         }
         setElements(newElements)
@@ -69,55 +54,6 @@ export default function AnimatedBackground() {
                             <div className="absolute inset-0 bg-yellow-400 rounded-full animate-spin-slow opacity-60"></div>
                         </div>
                     </div>
-
-                    {/* 云朵 */}
-                    {elements.filter(e => ['small', 'medium', 'large'].includes(e.type)).map((element) => {
-                        const cloudScale = element.type === 'small' ? 1 :
-                                         element.type === 'medium' ? 1.5 :
-                                         2;
-                        return (
-                            <div
-                                key={element.id}
-                                className="absolute opacity-20 animate-cloud-drift"
-                                style={{
-                                    left: `${element.x}%`,
-                                    top: `${element.y}%`,
-                                    animationDelay: `${element.delay}s`,
-                                    animationDuration: `${element.duration}ms`
-                                }}
-                            >
-                                <div 
-                                    className="relative bg-white rounded-[50px] shadow-lg"
-                                    style={{
-                                        width: `${element.size * cloudScale}px`,
-                                        height: `${element.size * cloudScale * 0.4}px`,
-                                        filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
-                                    }}
-                                >
-                                    {/* 左侧圆形 */}
-                                    <div 
-                                        className="absolute bg-white rounded-[50px]"
-                                        style={{
-                                            width: `${element.size * cloudScale * 0.5}px`,
-                                            height: `${element.size * cloudScale * 0.5}px`,
-                                            top: `-${element.size * cloudScale * 0.25}px`,
-                                            left: `${element.size * cloudScale * 0.15}px`
-                                        }}
-                                    />
-                                    {/* 右侧圆形 */}
-                                    <div 
-                                        className="absolute bg-white rounded-[50px]"
-                                        style={{
-                                            width: `${element.size * cloudScale * 0.7}px`,
-                                            height: `${element.size * cloudScale * 0.7}px`,
-                                            top: `-${element.size * cloudScale * 0.35}px`,
-                                            right: `${element.size * cloudScale * 0.15}px`
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        );
-                    })}
                 </>
             )}
 
@@ -133,29 +69,26 @@ export default function AnimatedBackground() {
                     </div>
 
                     {/* 星星 */}
-                    {elements.map((element) => {
-                        const starSize = Math.random() * 3 + 1;
-                        return (
-                            <div
-                                key={`star-${element.id}`}
-                                className="absolute opacity-30 animate-twinkle"
+                    {elements.map((element) => (
+                        <div
+                            key={`star-${element.id}`}
+                            className="absolute opacity-30 animate-twinkle"
+                            style={{
+                                left: `${element.x}%`,
+                                top: `${element.y}%`,
+                                animationDelay: `${element.delay}s`,
+                                animationDuration: `${element.duration}s`
+                            }}
+                        >
+                            <div 
+                                className="bg-white rounded-full shadow-sm"
                                 style={{
-                                    left: `${element.x}%`,
-                                    top: `${element.y}%`,
-                                    animationDelay: `${element.delay}s`,
-                                    animationDuration: `${element.duration}s`
+                                    width: `${element.size}px`,
+                                    height: `${element.size}px`
                                 }}
-                            >
-                                <div 
-                                    className="bg-white rounded-full shadow-sm"
-                                    style={{
-                                        width: `${starSize}px`,
-                                        height: `${starSize}px`
-                                    }}
-                                />
-                            </div>
-                        );
-                    })}
+                            />
+                        </div>
+                    ))}
 
                     {/* 流星 */}
                     {elements.slice(0, 32).map((element, index) => {
@@ -169,8 +102,8 @@ export default function AnimatedBackground() {
                                 style={{
                                     left: `${startX}%`,
                                     top: `${startY}%`,
-                                    animationDelay: `${element.delay + index * 0.8}s`,
-                                    animationDuration: `${element.duration * 0.8}s`,
+                                    animationDelay: `${element.delay + index * 2}s`,
+                                    animationDuration: `${element.duration * 2}s`,
                                 }}
                             >
                                 {/* 流星主体 */}

@@ -200,7 +200,7 @@ export default function GalleryCard({ item, onClick }: GalleryCardProps) {
                         )}
                         
                         {/* 标题 */}
-                        <h3 className="text-white font-semibold text-lg leading-tight line-clamp-2 drop-shadow-lg">
+                        <h3 className="text-white font-semibold text-lg leading-tight line-clamp-1 drop-shadow-lg">
                             {item.title}
                         </h3>
                         
@@ -221,7 +221,7 @@ export default function GalleryCard({ item, onClick }: GalleryCardProps) {
                         
                         {/* 标题 */}
                         <div>
-                            <h3 className="text-white font-bold text-xl leading-tight mb-1 drop-shadow-lg">
+                            <h3 className="text-white font-bold text-xl leading-tight mb-1 drop-shadow-lg line-clamp-1">
                                 {item.title}
                             </h3>
                             
@@ -246,10 +246,10 @@ export default function GalleryCard({ item, onClick }: GalleryCardProps) {
                                 <div className="text-sm text-white/90">
                                     <span className="text-xs text-white/70">正在显示：</span>
                                     {item.images[currentImageIndex].title && (
-                                        <div className="font-medium truncate">{item.images[currentImageIndex].title}</div>
+                                        <div className="font-medium truncate line-clamp-1">{item.images[currentImageIndex].title}</div>
                                     )}
                                     {item.images[currentImageIndex].description && (
-                                        <div className="text-white/80 text-xs line-clamp-1">{item.images[currentImageIndex].description}</div>
+                                        <div className="text-xs text-white/70 mt-0.5 line-clamp-1">{item.images[currentImageIndex].description}</div>
                                     )}
                                 </div>
                             </div>

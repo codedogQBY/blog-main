@@ -70,17 +70,17 @@ export default function AboutPage() {
                                 const normalizedPosition = index / (totalTags - 1); // 0 到 1
                                 const curve = (1 - Math.sin(normalizedPosition * Math.PI)) * 120; // 弧形计算
                                 return (
-                                    <div
-                                        key={`left-${index}`}
+                                <div
+                                    key={`left-${index}`}
                                         className="inline-block px-6 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full text-gray-700 dark:text-gray-300 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                                        style={{
-                                            animationDelay: `${index * 0.1}s`,
-                                            animation: "fadeInUp 0.6s ease-out forwards",
+                                    style={{
+                                        animationDelay: `${index * 0.1}s`,
+                                        animation: "fadeInUp 0.6s ease-out forwards",
                                             transform: `translateX(${curve}px)`,
-                                        }}
-                                    >
-                                        {tag}
-                                    </div>
+                                    }}
+                                >
+                                    {tag}
+                                </div>
                                 );
                             })}
                         </div>
@@ -88,7 +88,7 @@ export default function AboutPage() {
                         {/* 中间签名 */}
                         <div className="flex justify-center items-center">
                             <div className="text-white font-handwriting text-3xl drop-shadow-lg">
-                                {aboutData.hero.signature}
+                                    {aboutData.hero.signature}
                             </div>
                         </div>
 
@@ -99,17 +99,17 @@ export default function AboutPage() {
                                 const normalizedPosition = index / (totalTags - 1); // 0 到 1
                                 const curve = (1 - Math.sin(normalizedPosition * Math.PI)) * 120; // 弧形计算
                                 return (
-                                    <div
-                                        key={`right-${index}`}
+                                <div
+                                    key={`right-${index}`}
                                         className="inline-block px-6 py-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur-md rounded-full text-gray-700 dark:text-gray-300 font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
-                                        style={{
-                                            animationDelay: `${(index + aboutData.hero.leftTags.length) * 0.1}s`,
-                                            animation: "fadeInUp 0.6s ease-out forwards",
+                                    style={{
+                                        animationDelay: `${(index + aboutData.hero.leftTags.length) * 0.1}s`,
+                                        animation: "fadeInUp 0.6s ease-out forwards",
                                             transform: `translateX(-${curve}px)`,
-                                        }}
-                                    >
-                                        {tag}
-                                    </div>
+                                    }}
+                                >
+                                    {tag}
+                                </div>
                                 );
                             })}
                         </div>
@@ -117,9 +117,9 @@ export default function AboutPage() {
 
                     {/* 移动端布局 */}
                     <div className="lg:hidden flex flex-col items-center space-y-8 relative z-10">
-                        {/* 签名 */}
+                            {/* 签名 */}
                         <div className="text-white font-handwriting text-2xl text-center drop-shadow-lg">
-                            {aboutData.hero.signature}
+                                {aboutData.hero.signature}
                         </div>
 
                         {/* 标签云 - 移动端优化布局 */}
