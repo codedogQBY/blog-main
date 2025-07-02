@@ -7,7 +7,6 @@ import type { Note } from "@/types/note"
 import { diaryApi, type DiaryNote } from "@/lib/diary-api"
 import NoteListItem from "@/components/diary/note-list-item"
 import NotePaper from "@/components/diary/note-paper"
-import { useRouter } from "next/navigation"
 
 export default function NotesPage() {
     const [selectedNote, setSelectedNote] = useState<Note | null>(null)
@@ -18,7 +17,6 @@ export default function NotesPage() {
     const [showMobileList, setShowMobileList] = useState(true) // 移动端显示状态
     const [hasMore, setHasMore] = useState(true)
     const pageSize = 8
-    const router = useRouter()
 
     // 将API响应转换为Note格式
     const convertToNote = (diaryNote: DiaryNote): Note => ({
@@ -148,30 +146,24 @@ export default function NotesPage() {
 
     return (
         <div className="min-h-screen">
-            <div className="pt-20">
-                <div className="max-w-7xl mx-auto px-6 py-8 h-[calc(100vh-4rem)]">
+            <div className="pt-16 lg:pt-20">
+                <div className="max-w-7xl mx-auto px-4 lg:px-6 py-4 lg:py-8 h-[calc(100vh-4rem)]">
                     {/* 移动端顶部导航 */}
                     <div className="lg:hidden mb-4">
                         {!showMobileList && selectedNote ? (
-                            <div className="flex items-center space-x-3">
-                                <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => setShowMobileList(true)}
-                                    className="flex items-center space-x-2"
-                                >
-                                    <ArrowLeft className="w-4 h-4" />
-                                    <span>返回列表</span>
-                                </Button>
-                                <div className="flex-1 text-center">
-                                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white truncate">{selectedNote.title}</h2>
-                                </div>
-                            </div>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => setShowMobileList(true)}
+                                className="h-8 w-8"
+                            >
+                                <ArrowLeft className="w-4 h-4" />
+                            </Button>
                         ) : (
-                            <div className="flex items-center space-x-3">
-                                <List className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                                <h2 className="text-xl font-bold text-gray-900 dark:text-white">随记</h2>
-                                <span className="text-sm text-gray-500 dark:text-gray-400">{displayedNotes.length} 篇</span>
+                            <div className="flex items-center space-x-2">
+                                <List className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                                <h2 className="text-lg font-medium text-gray-900 dark:text-white">随记</h2>
+                                <span className="text-sm text-gray-500 dark:text-gray-400">({displayedNotes.length})</span>
                             </div>
                         )}
                     </div>

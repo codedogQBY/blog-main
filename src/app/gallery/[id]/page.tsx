@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import CommentSection from "@/components/blog/comment-section"
 import FloatingActions from "@/components/blog/floating-actions"
@@ -96,22 +95,11 @@ export default function GalleryDetailPage() {
             {/* 返回列表 */}
             <Link
                 href="/gallery"
-                className="absolute -left-20 top-0 hidden items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 lg:flex"
+                className="absolute -left-20 top-0 hidden lg:flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
                 <ArrowLeft className="mr-1 h-4 w-4" />
                 <span>返回列表</span>
             </Link>
-
-            {/* 移动端返回按钮 */}
-            <div className="mb-4 lg:hidden">
-                <Link
-                    href="/gallery"
-                    className="inline-flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                >
-                    <ArrowLeft className="mr-1 h-4 w-4" />
-                    <span>返回列表</span>
-                </Link>
-            </div>
 
             <div className="min-h-screen pt-20">
                 <div className="container mx-auto px-4 py-8 max-w-4xl">

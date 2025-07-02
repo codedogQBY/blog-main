@@ -93,22 +93,11 @@ export default function ArticleDetailPage() {
             {/* 返回列表 */}
             <Link
                 href="/blog"
-                className="absolute -left-20 top-0 hidden items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 lg:flex"
+                className="absolute -left-20 top-0 hidden lg:flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             >
                 <ArrowLeft className="mr-1 h-4 w-4" />
                 <span>返回列表</span>
             </Link>
-
-            {/* 移动端返回按钮 */}
-            <div className="mb-4 lg:hidden">
-                <Link
-                    href="/blog"
-                    className="inline-flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-                >
-                    <ArrowLeft className="mr-1 h-4 w-4" />
-                    <span>返回列表</span>
-                </Link>
-            </div>
 
             <div className="min-h-screen">
                 <div className="pt-20">

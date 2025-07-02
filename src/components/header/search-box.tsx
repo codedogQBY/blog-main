@@ -11,6 +11,7 @@ import { useDebounce } from "../../hooks/use-debounce"
 
 interface SearchBoxProps {
     className?: string
+    onSelect?: () => void
 }
 
 interface CategoryConfig {
@@ -19,7 +20,7 @@ interface CategoryConfig {
     color: string
 }
 
-export default function SearchBox({ className = "" }: SearchBoxProps) {
+export default function SearchBox({ className = "", onSelect }: SearchBoxProps) {
     const [isExpanded, setIsExpanded] = useState(false)
     const [searchValue, setSearchValue] = useState("")
     const [isFocused, setIsFocused] = useState(false)
@@ -132,6 +133,7 @@ export default function SearchBox({ className = "" }: SearchBoxProps) {
         setSearchValue("")
         setShowSuggestions(false)
         handleCollapse()
+        onSelect?.()
         
         // 根据类型导航到不同页面
         switch (item.type) {

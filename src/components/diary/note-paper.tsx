@@ -86,9 +86,16 @@ export default function NotePaper({ note }: NotePaperProps) {
         <div className="h-full bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col">
             {/* 信纸头部 */}
             <div className="p-8 pb-2 border-b border-gray-100 dark:border-gray-700 flex-shrink-0">
-                <div className="flex items-center justify-between mb-2">
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{note.title}</h1>
-                    <div className="flex items-center space-x-3">
+                {/* 标题和元信息 */}
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-2">
+                    {/* 标题 */}
+                    <div className="max-w-full lg:max-w-[60%] mb-3 lg:mb-0">
+                        <h1 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white truncate" title={note.title}>
+                            {note.title}
+                        </h1>
+                    </div>
+                    {/* 时间、心情和天气 */}
+                    <div className="flex flex-wrap lg:flex-nowrap items-center gap-3 lg:gap-0 lg:space-x-3 shrink-0">
                         <span className="text-sm text-gray-500 dark:text-gray-400 font-mono">
                             {note.date.replace("2025-", "").replace("-", "-")} {note.time.slice(0, 5)}
                         </span>

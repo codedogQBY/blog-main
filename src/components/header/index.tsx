@@ -134,7 +134,7 @@ export default function Header() {
 
                         {/* Right Actions */}
                         <div className="flex items-center space-x-4">
-                            <SearchBox className="hidden lg:block" />
+                            <SearchBox className="hidden lg:block" onSelect={() => setIsMobileMenuOpen(false)} />
                             <ThemeToggle />
 
                             {/* Mobile Menu Button */}
@@ -184,7 +184,7 @@ export default function Header() {
                 <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                     {/* Search */}
                     <div className="p-4 border-b border-gray-100 dark:border-gray-800">
-                        <SearchBox />
+                        <SearchBox onSelect={() => setIsMobileMenuOpen(false)} />
                     </div>
 
                     {/* Navigation */}
