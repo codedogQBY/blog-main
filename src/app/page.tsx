@@ -7,6 +7,9 @@ import { useEffect, useState, useRef } from "react";
 import { api } from "@/lib/api";
 import ArticleCard from "@/components/blog/article-card";
 import type { Article } from "@/types/article";
+import DiaryCarousel from "@/components/diary/diary-carousel";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Note } from "@/types/note";
 
 export default function Home() {
   const { theme } = useTheme();
@@ -14,6 +17,7 @@ export default function Home() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const secondScreenRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<{ handlePrevious: () => void; handleNext: () => void }>(null);
   
   const scrollToSecondScreen = () => {
     secondScreenRef.current?.scrollIntoView({ 
@@ -124,7 +128,7 @@ export default function Home() {
       </div>
       
       {/* 第二屏：博客文章部分 */}
-      <div ref={secondScreenRef} className="py-20 bg-gray-50 dark:bg-gray-900">
+      <div ref={secondScreenRef} className="py-20">
           <div className="container mx-auto px-4 lg:px-10">
               {/* 标题部分 */}
               <div className="mb-10">
@@ -160,6 +164,51 @@ export default function Home() {
                   </Link>
               </div>
           </div>
+      </div>
+      
+      {/* 第三屏：随笔随记部分 */}
+      <div className="py-20">
+        <div className="container mx-auto px-4 lg:px-10">
+          {/* 标题部分 */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">随写随记</h2>
+              <p className="text-gray-600 dark:text-gray-400">平淡的日子里留下浅浅的痕迹</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full bg-white/80 backdrop-blur-sm hover:bg-white/90 dark:bg-gray-800/80 dark:hover:bg-gray-800/90"
+                onClick={() => carouselRef.current?.handlePrevious()}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                className="rounded-full bg-white/80 backdrop-blur-sm hover:bg-white/90 dark:bg-gray-800/80 dark:hover:bg-gray-800/90"
+                onClick={() => carouselRef.current?.handleNext()}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          
+          {/* 随记轮播 */}
+          <div className="w-full mx-auto lg:w-[70.83%] h-[calc(100vh-12rem)] lg:h-[calc(125vh-15rem)] min-h-[500px]">
+            <DiaryCarousel ref={carouselRef} />
+          </div>
+          
+          {/* 更多按钮 */}
+          <div className="flex justify-center mt-6">
+            <Link href="/diary">
+              <Button className="bg-blue-500 hover:bg-blue-600 text-white px-10 py-6 text-lg rounded-full">
+                更多
+              </Button>
+            </Link>
+          </div>
+        </div>
       </div>
     </>
   );

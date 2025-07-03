@@ -132,7 +132,7 @@ export default function GalleryPage() {
                         <div className="w-16 h-1 bg-gradient-to-r from-pink-600 to-purple-600 mx-auto rounded-full mb-4"></div>
                     </div>
                     <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
-                        探索精美的图片收藏，每一张都承载着独特的故事与美好的回忆
+                        每一张照片都承载着独特的故事与美好的回忆
                     </p>
                 </div>
 

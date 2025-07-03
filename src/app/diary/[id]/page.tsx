@@ -94,9 +94,9 @@ export default function DiaryDetailPage({ params }: { params: { id: string } }) 
     }
 
     return (
-        <div className="min-h-screen">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
             <div className="pt-20">
-                <div className="max-w-4xl mx-auto px-6 py-8">
+                <div className="max-w-4xl mx-auto px-6">
                     <Button
                         variant="ghost"
                         size="sm"
@@ -107,7 +107,7 @@ export default function DiaryDetailPage({ params }: { params: { id: string } }) 
                         <span>返回列表</span>
                     </Button>
                     {note && (
-                        <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl border border-white/20 dark:border-gray-700/20 shadow-sm overflow-hidden">
+                        <div className="bg-white/40 dark:bg-gray-900/40 backdrop-blur-md rounded-2xl border border-white/20 dark:border-gray-700/20 shadow-sm overflow-hidden h-[calc(100vh-12rem)]">
                             <NotePaper note={note} />
                         </div>
                     )}

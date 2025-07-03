@@ -117,7 +117,7 @@ export default function NotePaper({ note }: NotePaperProps) {
             {/* 信纸内容区域 */}
             <div className="flex-1 overflow-y-auto">
                 {/* 信纸背景样式 - 左右留白，顶部不留白 */}
-                <div className="max-w-4xl mx-auto h-full px-8">
+                <div className="h-full px-8">
                     <div
                         className="relative min-h-full"
                         style={{
@@ -128,6 +128,7 @@ export default function NotePaper({ note }: NotePaperProps) {
                 #e5e7eb 36px
               )`,
                             backgroundSize: "100% 36px",
+                            backgroundAttachment: "local"
                         }}
                     >
                         {/* 文字内容 - 手写体字体 */}
@@ -167,7 +168,7 @@ export default function NotePaper({ note }: NotePaperProps) {
 
                 {/* 图片展示区域 - 移出信纸背景，在签名下方 */}
                 {note.images && note.images.length > 0 && (
-                    <div className="px-8 pb-8 max-w-4xl mx-auto">
+                    <div className="px-8 pb-8">
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                             {note.images.map((image, index) => (
                                 <div key={index} className="relative group">
