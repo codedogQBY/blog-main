@@ -53,7 +53,7 @@ export interface Comment {
   content: string
   userInfo: {
     nickname: string
-    city: string
+    location: string
     deviceType: string
     browserInfo: {
       name: string
@@ -147,7 +147,7 @@ class InteractionAPI {
       limit: limit.toString(),
     })
 
-    const response = await fetch(`${this.baseUrl}/interactions/comment?${params}`)
+    const response = await fetch(`${this.baseUrl}/interactions/comments?${params}`)
 
     if (!response.ok) {
       throw new Error(`获取评论失败: ${response.statusText}`)

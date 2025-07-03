@@ -15,7 +15,6 @@ interface Comment {
   author: string
   content: string
   date: string
-  avatar?: string
 }
 
 interface MessageDetailModalProps {
@@ -434,11 +433,9 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
                      className="bg-white/40 dark:bg-gray-800/40 backdrop-blur-sm rounded-2xl p-4 border border-white/20 dark:border-gray-600/20"
                    >
                      <div className="flex space-x-3">
-                       <img
-                         src={comment.avatar || "/placeholder.svg"}
-                         alt={comment.author}
-                         className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 shadow-lg"
-                       />
+                       <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 shadow-lg flex items-center justify-center text-white text-sm font-bold">
+                         {comment.author.charAt(0).toUpperCase()}
+                       </div>
                        <div className="flex-1">
                          <div className="flex items-center space-x-2 mb-2">
                            <span className="font-semibold text-gray-900 dark:text-white text-sm">{comment.author}</span>
