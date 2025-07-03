@@ -8,16 +8,7 @@ declare global {
 }
 
 // 生成浏览器指纹
-export function getOrGenerateFingerprint(): string {
-  if (typeof window === 'undefined') {
-    return 'server-side-' + Math.random().toString(36).substr(2, 9);
-  }
-
-  const stored = localStorage.getItem('browser-fingerprint');
-  if (stored) {
-    return stored;
-  }
-
+function generateFingerprint(): string {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   if (ctx) {
@@ -37,10 +28,25 @@ export function getOrGenerateFingerprint(): string {
     navigator.deviceMemory || 0,
   ].join('|');
 
-  const hash = btoa(fingerprint).replace(/[^a-zA-Z0-9]/g, '').substr(0, 32);
-  localStorage.setItem('browser-fingerprint', hash);
+  return btoa(fingerprint).replace(/[^a-zA-Z0-9]/g, '').substr(0, 32);
+}
+
+// 获取或生成浏览器指纹
+export function getOrGenerateFingerprint(): string {
+  if (typeof window === 'undefined') {
+    return 'server-side-' + Math.random().toString(36).substr(2, 9);
+  }
+
+  const stored = localStorage.getItem('browser-fingerprint');
+  const current = generateFingerprint();
   
-  return hash;
+  // 如果存储的指纹不存在或者与当前生成的不一致（可能被篡改），使用新生成的
+  if (!stored || stored !== current) {
+    localStorage.setItem('browser-fingerprint', current);
+    return current;
+  }
+  
+  return stored;
 }
 
 // 获取用户地理位置（使用服务器端 API）
