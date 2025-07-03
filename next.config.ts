@@ -15,6 +15,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'huohuo90.com',
+        port: '',
+        pathname: '/images/**',
+      },
     ],
   },
 };
