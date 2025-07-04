@@ -1,11 +1,12 @@
 import { Share2, Copy, Download, Triangle } from 'lucide-react'
 import { Button } from '../ui/button'
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '../ui/hover-card'
-import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '../ui/dialog'
 import { toast } from 'sonner'
 import { snapdom } from '@zumer/snapdom'
 import QRCode from 'qrcode'
 import { useRef, useState, useEffect } from 'react'
+import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 
 interface ShareButtonProps {
     title: string
@@ -406,6 +407,9 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
                         </Button>
                     </DialogTrigger>
                     <DialogContent className="sm:max-w-[425px] p-0">
+                        <VisuallyHidden asChild>
+                            <DialogTitle>分享文章</DialogTitle>
+                        </VisuallyHidden>
                         <div className="max-h-[90vh] overflow-y-auto">
                             <ShareActions />
                         </div>
