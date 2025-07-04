@@ -212,18 +212,6 @@ export default function ArticleDetailPage() {
                             </div>
                         )}
 
-                        {/* 底部导航 */}
-                        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-                            <div className="flex justify-center">
-                                <Link href="/blog">
-                                    <Button variant="outline">
-                                        <ArrowLeft className="w-4 h-4 mr-2" />
-                                        返回文章列表
-                                    </Button>
-                                </Link>
-                            </div>
-                        </div>
-
                         {/* 评论区域 */}
                         <div id="comments" className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
                             <CommentSection 

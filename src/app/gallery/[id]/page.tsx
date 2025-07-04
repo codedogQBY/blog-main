@@ -202,7 +202,7 @@ export default function GalleryDetailPage() {
                 </div>
 
                 {/* 浮动操作按钮 */}
-                <FloatingActions 
+                <FloatingActions
                     targetType="gallery_image"
                     targetId={galleryItem.id}
                     autoLoad={true}
