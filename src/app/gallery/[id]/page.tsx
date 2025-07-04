@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
@@ -10,11 +10,13 @@ import { getGalleryItem } from "@/lib/gallery-api"
 import type { GalleryItem } from "@/types/gallery"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
+import ShareButton from '@/components/share/share-button'
 
 export default function GalleryDetailPage() {
     const params = useParams()
     const router = useRouter()
     const id = params.id as string
+    const containerRef = useRef<HTMLDivElement>(null)
 
     const [galleryItem, setGalleryItem] = useState<GalleryItem | null>(null)
     const [loading, setLoading] = useState(true)
@@ -91,7 +93,7 @@ export default function GalleryDetailPage() {
     }
 
     return (
-        <div className="relative">
+        <div ref={containerRef} className="relative">
             {/* 返回列表 */}
             <Link
                 href="/gallery"
@@ -200,11 +202,14 @@ export default function GalleryDetailPage() {
                 </div>
 
                 {/* 浮动操作按钮 */}
-                <FloatingActions
+                <FloatingActions 
                     targetType="gallery_image"
                     targetId={galleryItem.id}
                     autoLoad={true}
                     onComment={handleComment}
+                    shareTitle={galleryItem.title}
+                    shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                    coverImage={galleryItem.coverImage || galleryItem.images?.[0]?.imageUrl}
                 />
             </div>
         </div>

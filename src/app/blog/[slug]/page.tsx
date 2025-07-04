@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import { useParams } from "next/navigation"
 import { Calendar, Eye, MessageCircle, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,7 @@ import Link from "next/link"
 import Image from "next/image"
 import FloatingActions from '@/components/blog/floating-actions'
 import CommentSection from '@/components/blog/comment-section'
+import ShareButton from '@/components/share/share-button'
 
 export default function ArticleDetailPage() {
     const params = useParams()
@@ -17,6 +18,7 @@ export default function ArticleDetailPage() {
     const [article, setArticle] = useState<Article | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
+    const containerRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const fetchArticle = async () => {
@@ -89,7 +91,7 @@ export default function ArticleDetailPage() {
     }
 
     return (
-        <div className="relative">
+        <div ref={containerRef} className="relative">
             {/* 返回列表 */}
             <Link
                 href="/blog"
@@ -242,27 +244,9 @@ export default function ArticleDetailPage() {
                     const commentSection = document.getElementById('comments')
                     commentSection?.scrollIntoView({ behavior: 'smooth' })
                 }}
-                onShare={() => {
-                    if (navigator.share) {
-                        navigator.share({
-                            title: article.title,
-                            text: article.excerpt || '',
-                            url: window.location.href,
-                        })
-                    } else {
-                        navigator.clipboard.writeText(window.location.href)
-                    }
-                }}
-                article={{
-                    id: article.id,
-                    title: article.title,
-                    excerpt: article.excerpt,
-                    author: article.author,
-                    publishDate: article.publishedAt || article.createdAt,
-                    category: article.category,
-                    coverImage: article.coverImage
-                }}
+                shareTitle={article.title}
                 shareUrl={typeof window !== 'undefined' ? window.location.href : ''}
+                coverImage={article.coverImage}
             />
         </div>
     )
