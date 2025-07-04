@@ -92,15 +92,6 @@ export default function ArticleDetailPage() {
 
     return (
         <div ref={containerRef} className="relative">
-            {/* 返回列表 */}
-            <Link
-                href="/blog"
-                className="absolute -left-20 top-0 hidden lg:flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-            >
-                <ArrowLeft className="mr-1 h-4 w-4" />
-                <span>返回列表</span>
-            </Link>
-
             <div className="min-h-screen">
                 <div className="pt-20">
                     <article className="max-w-4xl mx-auto px-6 py-12">
