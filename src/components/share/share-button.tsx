@@ -32,17 +32,17 @@ const ShareCardContent = ({
     return (
         <div 
             ref={cardRef}
-            className="w-[300px] md:w-[364px] h-[420px] md:h-[600px] bg-gradient-to-br from-sky-200 via-blue-100 to-purple-200 shadow-lg p-4 md:p-8 flex flex-col justify-between"
-            style={{ borderRadius: '24px' }}
+            className="w-[300px] md:w-[280px] h-[420px] md:h-[460px] bg-gradient-to-br from-sky-200 via-blue-100 to-purple-200 shadow-lg p-4 md:p-6 flex flex-col justify-between"
+            style={{ borderRadius: '20px' }}
         >
             {/* YIKE Logo */}
-            <div className="flex justify-center mb-3 md:mb-6">
-                <div className="flex items-center space-x-2">
+            <div className="flex justify-center mb-3 md:mb-4">
+                <div className="flex items-center space-x-1.5">
                     <div className="relative">
-                        <Triangle className="w-5 h-5 md:w-6 md:h-6 text-cyan-500 fill-current rotate-90" />
-                        <Triangle className="w-5 h-5 md:w-6 md:h-6 text-cyan-500 fill-current absolute -top-0.5 -left-0.5 rotate-45" />
+                        <Triangle className="w-4 h-4 md:w-5 md:h-5 text-cyan-500 fill-current rotate-90" />
+                        <Triangle className="w-4 h-4 md:w-5 md:h-5 text-cyan-500 fill-current absolute -top-0.5 -left-0.5 rotate-45" />
                     </div>
-                    <h1 className="text-xl md:text-2xl font-bold text-gray-800">YIKE</h1>
+                    <h1 className="text-lg md:text-xl font-bold text-gray-800">YIKE</h1>
                 </div>
             </div>
 
@@ -50,8 +50,8 @@ const ShareCardContent = ({
             <div className="flex-1 flex flex-col items-center">
                 {/* Image */}
                 {coverImage && coverImageBase64 && (
-                    <div className="mb-3 md:mb-6">
-                        <div className="w-56 md:w-72 h-32 md:h-44 overflow-hidden shadow-md rounded-2xl">
+                    <div className="mb-3 md:mb-4">
+                        <div className="w-56 md:w-56 h-32 md:h-[136px] overflow-hidden shadow-md rounded-xl">
                             <img
                                 src={coverImageBase64}
                                 alt={title}
@@ -62,32 +62,32 @@ const ShareCardContent = ({
                 )}
                 
                 {/* Text Content */}
-                <div className="text-center mb-3 md:mb-6">
-                    <p className="text-gray-600 text-xs md:text-sm mb-1 md:mb-2">YIKE博客文章</p>
-                    <h2 className="text-base md:text-xl font-bold text-gray-800 leading-tight line-clamp-2">
+                <div className="text-center mb-3 md:mb-4">
+                    <p className="text-gray-600 text-xs mb-1">YIKE博客文章</p>
+                    <h2 className="text-base md:text-base font-bold text-gray-800 leading-tight line-clamp-2">
                         {title}
                     </h2>
                 </div>
 
                 {/* QR Code Section */}
-                <div className="flex flex-col items-center mb-3 md:mb-4">
-                    <div className="w-20 h-20 md:w-28 md:h-28 bg-white flex items-center justify-center mb-1 md:mb-2 rounded-2xl">
+                <div className="flex flex-col items-center mb-3">
+                    <div className="w-20 md:w-[86px] h-20 md:h-[86px] bg-white flex items-center justify-center mb-1 rounded-xl">
                         {qrCodeUrl && (
                             <img 
                                 src={qrCodeUrl} 
                                 alt="QR Code" 
-                                className="w-16 h-16 md:w-24 md:h-24"
+                                className="w-16 md:w-[74px] h-16 md:h-[74px]"
                             />
                         )}
                     </div>
-                    <p className="text-gray-600 text-xs md:text-sm">长按扫码查看详情</p>
+                    <p className="text-gray-600 text-xs">长按扫码查看详情</p>
                 </div>
             </div>
 
             {/* Footer */}
-            <div className="text-center space-y-0.5 md:space-y-1">
-                <p className="text-gray-500 text-xs md:text-sm">YIKE个人博客网站提供</p>
-                <p className="text-gray-400 text-[10px] md:text-xs">生成时间：{new Date().toLocaleString('zh-CN')}</p>
+            <div className="text-center space-y-0.5">
+                <p className="text-gray-500 text-xs">YIKE个人博客网站提供</p>
+                <p className="text-gray-400 text-[10px]">生成时间：{new Date().toLocaleString('zh-CN')}</p>
             </div>
         </div>
     )
@@ -180,8 +180,9 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
             
             // 等待下一个渲染周期，确保 isGenerating 状态已更新
             await new Promise(resolve => setTimeout(resolve, 0))
-            const cardWidth = 364
-            const cardHeight = 600
+
+            const cardWidth = 280
+            const cardHeight = 460
 
             // 创建一个临时的 div 来渲染卡片
             const tempDiv = document.createElement('div')
@@ -193,6 +194,90 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
 
             // 克隆卡片内容到临时 div
             const clone = element.cloneNode(true) as HTMLElement
+            
+            // 强制使用固定尺寸，移除所有响应式样式
+            clone.style.width = `${cardWidth}px`
+            clone.style.height = `${cardHeight}px`
+            clone.style.padding = '24px'
+            clone.style.display = 'flex'
+            clone.style.flexDirection = 'column'
+            clone.style.justifyContent = 'space-between'
+            clone.style.background = 'linear-gradient(to bottom right, rgb(186 230 253) 0%, rgb(219 234 254) 50%, rgb(233 213 255) 100%)'
+            
+            // 移除所有响应式类名并设置固定样式
+            const processElement = (el: HTMLElement) => {
+                // 移除响应式类名
+                if (el.className && typeof el.className === 'string') {
+                    el.className = el.className
+                        .split(' ')
+                        .filter(cls => !cls.startsWith('md:') && !cls.includes('w-[') && !cls.includes('h-['))
+                        .join(' ')
+                }
+
+                // 处理特定元素的样式
+                // Logo 图标
+                if (el.tagName === 'svg' && el.classList.contains('text-cyan-500')) {
+                    el.style.width = '20px'
+                    el.style.height = '20px'
+                }
+
+                // Logo 文字
+                if (el.tagName === 'H1' && el.classList.contains('font-bold')) {
+                    el.style.fontSize = '1.125rem'
+                }
+
+                // 文章封面图容器
+                if (el.classList.contains('w-56')) {
+                    el.style.width = '224px'  // 原来是 288px，缩小到 224px
+                    el.style.height = '136px' // 原来是 176px，缩小到 136px
+                    el.style.marginBottom = '16px'
+                    el.style.borderRadius = '12px'
+                }
+
+                // 二维码容器
+                if (el.classList.contains('w-20')) {
+                    el.style.width = '86px'  // 原来是 112px，缩小到 86px
+                    el.style.height = '86px' // 原来是 112px，缩小到 86px
+                    el.style.borderRadius = '12px'
+                }
+
+                // 二维码图片
+                if (el.tagName === 'IMG' && el.classList.contains('w-16')) {
+                    el.style.width = '74px'   // 原来是 96px，缩小到 74px
+                    el.style.height = '74px'  // 原来是 96px，缩小到 74px
+                }
+
+                // 标题容器
+                if (el.classList.contains('space-y-0.5')) {
+                    el.style.display = 'flex'
+                    el.style.flexDirection = 'column'
+                    el.style.gap = '0.125rem'
+                    el.style.marginBottom = '16px'
+                }
+
+                // 标题文本
+                if (el.classList.contains('text-base')) {
+                    el.style.fontSize = '1rem'
+                    el.style.lineHeight = '1.5rem'
+                    el.style.fontWeight = '500'
+                }
+
+                // 描述文本
+                if (el.classList.contains('text-xs')) {
+                    el.style.fontSize = '0.75rem'
+                    el.style.lineHeight = '1rem'
+                    el.style.color = 'rgb(107 114 128)'
+                }
+
+                // 处理子元素
+                Array.from(el.children).forEach(child => {
+                    if (child instanceof HTMLElement) {
+                        processElement(child)
+                    }
+                })
+            }
+            
+            processElement(clone)
             tempDiv.appendChild(clone)
 
             try {
@@ -220,7 +305,7 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
                 }
 
                 const result = await snapdom(tempDiv, {
-                    scale: 2,
+                    scale: 1,
                     embedFonts: true,
                     backgroundColor: '#ffffff'
                 })
@@ -249,7 +334,7 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
                 <h3 className="text-xl font-semibold mb-4">分享</h3>
 
                 {/* 预览卡片 */}
-                <div className="max-w-[300px] md:max-w-[416px] mx-auto">
+                <div className="max-w-[300px] md:max-w-[280px] mx-auto">
                     <ShareCardContent 
                         cardRef={cardRef}
                         title={title}
@@ -301,7 +386,7 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
                         side="left" 
                         align="center"
                         sideOffset={16}
-                        className="w-[416px] p-0"
+                        className="w-[332px] p-0"
                     >
                         <ShareActions />
                     </HoverCardContent>
