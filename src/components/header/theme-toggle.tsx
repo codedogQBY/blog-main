@@ -29,13 +29,13 @@ export default function ThemeToggle() {
         <button
             onClick={toggleTheme}
             className={`
-        relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300 ease-in-out
+        relative inline-flex h-6 w-11 items-center rounded-full transition-all duration-300 ease-in-out cursor-pointer
         ${
                 theme === "dark"
                     ? "bg-gradient-to-r from-slate-700 to-slate-800 shadow-inner"
                     : "bg-gradient-to-r from-blue-100 to-sky-200 shadow-inner"
             }
-        hover:shadow-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
+        hover:shadow-md hover:scale-110 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1
         dark:focus:ring-slate-400 dark:focus:ring-offset-slate-900
       `}
             aria-label={`切换到${theme === "light" ? "黑暗" : "明亮"}主题`}

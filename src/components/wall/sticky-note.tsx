@@ -106,7 +106,7 @@ export default function StickyNote({ note, onLike, onComment, onClick }: StickyN
         transition-all duration-500 ease-out transform-gpu
         bg-gradient-to-br ${theme.gradient} ${theme.darkGradient}
         ${theme.border} ${theme.darkBorder} ${theme.glow}
-        ${isHovered ? `scale-[1.02] shadow-2xl ${theme.hover} backdrop-blur-xl` : "shadow-lg hover:shadow-xl"}
+        ${isHovered ? `scale-[1.03] shadow-2xl ${theme.hover} backdrop-blur-xl` : "shadow-lg hover:shadow-xl"}
         ${isPressed ? "scale-95" : ""}
       `}
             onMouseEnter={() => setIsHovered(true)}
@@ -116,23 +116,24 @@ export default function StickyNote({ note, onLike, onComment, onClick }: StickyN
             onClick={handleClick}
             style={{
                 transform: isHovered ? "perspective(1000px) rotateX(2deg) rotateY(-2deg)" : "none",
+                transition: "transform 0.5s cubic-bezier(0.4, 0, 0.2, 1)"
             }}
         >
             {/* Top accent bar */}
-            <div className={`h-6 w-full ${theme.accent} opacity-80`} />
+            <div className={`h-6 w-full ${theme.accent} opacity-80 transition-opacity duration-300 group-hover:opacity-100`} />
 
             <div className="relative p-8 space-y-6">
                 {/* Header */}
                 <header className="flex items-start justify-between">
-                    <div className="flex items-center space-x-2 opacity-70 group-hover:opacity-100 transition-opacity duration-300">
-                        <Calendar className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400" />
-                        <time className="text-xs font-medium text-gray-600 dark:text-gray-300">{note.date}</time>
+                    <div className="flex items-center space-x-2 opacity-70 group-hover:opacity-100 transition-all duration-300">
+                        <Calendar className="w-3.5 h-3.5 text-gray-500 dark:text-gray-400 transition-transform duration-300 group-hover:scale-110" />
+                        <time className="text-xs font-medium text-gray-600 dark:text-gray-300 transition-colors duration-300 group-hover:text-gray-900 dark:group-hover:text-white">{note.date}</time>
                     </div>
                 </header>
 
                 {/* Content */}
                 <div className="space-y-3">
-                    <p className="text-gray-800 dark:text-gray-100 text-sm leading-relaxed font-medium whitespace-pre-wrap break-words">
+                    <p className="text-gray-800 dark:text-gray-100 text-sm leading-relaxed font-medium whitespace-pre-wrap break-words transition-colors duration-300 group-hover:text-black dark:group-hover:text-white">
                         {note.content}
                     </p>
                 </div>
@@ -144,10 +145,10 @@ export default function StickyNote({ note, onLike, onComment, onClick }: StickyN
               inline-flex items-center space-x-1 px-3 py-1.5 rounded-full text-xs font-semibold
               bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm border border-white/20 dark:border-gray-600/20
               ${theme.text} dark:text-gray-300
-              transform transition-all duration-300 group-hover:scale-105
+              transform transition-all duration-300 group-hover:scale-110 group-hover:shadow-md
             `}
           >
-            <Tag className="w-3 h-3" />
+            <Tag className="w-3 h-3 transition-transform duration-300 group-hover:scale-110" />
             <span>{note.category}</span>
           </span>
                 </div>
@@ -163,7 +164,7 @@ export default function StickyNote({ note, onLike, onComment, onClick }: StickyN
                 hover:scale-110 active:scale-95 transform-gpu
                 ${
                                 note.isLiked
-                                    ? "bg-red-500/20 text-red-500 shadow-red-500/20 shadow-lg"
+                                    ? "bg-red-500/20 text-red-500 shadow-red-500/20 shadow-lg hover:bg-red-500/30"
                                     : "hover:bg-white/30 dark:hover:bg-gray-700/30 text-gray-500 dark:text-gray-400 hover:text-red-500"
                             }
               `}
@@ -174,7 +175,7 @@ export default function StickyNote({ note, onLike, onComment, onClick }: StickyN
                   ${note.isLiked ? "fill-current animate-pulse" : "group-hover/like:fill-current"}
                 `}
                             />
-                            <span className="text-sm font-medium">{note.likes}</span>
+                            <span className="text-sm font-medium transition-transform duration-300 group-hover/like:scale-110">{note.likes}</span>
                         </button>
                         <button
                             onClick={handleComment}
@@ -183,7 +184,7 @@ export default function StickyNote({ note, onLike, onComment, onClick }: StickyN
                             <MessageCircle
                                 className="w-4 h-4 transition-all duration-300 group-hover/comment:scale-125 group-hover/comment:fill-current"
                             />
-                            <span className="text-sm font-medium">{note.comments}</span>
+                            <span className="text-sm font-medium transition-transform duration-300 group-hover/comment:scale-110">{note.comments}</span>
                         </button>
                     </div>
                 </footer>

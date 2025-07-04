@@ -35,14 +35,14 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
 
     return (
         <article
-            className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer p-6 space-y-4"
+            className="group bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer hover:border-blue-200 dark:hover:border-blue-800 p-6 space-y-4"
             onClick={handleClick}
         >
             {/* 顶部：左侧图片 + 右侧标题和时间 */}
             <div className="flex space-x-4">
                 {/* 左侧图片 */}
                 <div className="w-20 h-20 flex-shrink-0">
-                    <div className="relative w-full h-full rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-shadow duration-300">
+                    <div className="relative w-full h-full rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-all duration-300">
                         <Image
                             src={article.coverImage || "/placeholder.svg"}
                             alt={article.title}
@@ -60,14 +60,14 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
                     </h3>
 
                     <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
-                        <Calendar className="w-4 h-4" />
-                        <time>{formatDate(article.publishDate)}</time>
+                        <Calendar className="w-4 h-4 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-200" />
+                        <time className="group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-200">{formatDate(article.publishDate)}</time>
                     </div>
                 </div>
             </div>
 
             {/* 中间：摘要 */}
-            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 leading-relaxed">{article.excerpt}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 leading-relaxed group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors duration-200">{article.excerpt}</p>
 
             {/* 底部：分类标签 + 统计信息 */}
             <div className="flex items-center justify-between pt-2">
@@ -75,14 +75,14 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
                 <div className="flex items-center space-x-2">
           <span
               className={`
-              px-3 py-1 rounded-full text-sm font-medium
+              px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 group-hover:scale-105
               ${categoryColors[typeof article.category === 'string' ? article.category : article.category?.name || ''] || "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"}
             `}
           >
             {typeof article.category === 'string' ? article.category : article.category?.name || ''}
           </span>
                     {article.tags && article.tags.length > 0 && (
-                        <span className="text-sm text-gray-400 dark:text-gray-500">
+                        <span className="text-sm text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-400 transition-colors duration-200">
                             / {typeof article.tags[0] === 'string' ? article.tags[0] : article.tags[0]?.tag?.name || ''}
                         </span>
                     )}
@@ -90,11 +90,11 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
 
                 {/* 统计信息 */}
                 <div className="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-1 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-200">
                         <MessageCircle className="w-4 h-4" />
                         <span>{article.comments}</span>
                     </div>
-                    <div className="flex items-center space-x-1">
+                    <div className="flex items-center space-x-1 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors duration-200">
                         <Eye className="w-4 h-4" />
                         <span>{article.views}</span>
                     </div>

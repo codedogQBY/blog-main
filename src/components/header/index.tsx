@@ -101,7 +101,7 @@ export default function Header() {
                 <div className="max-w-6xl mx-auto px-6">
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center group">
+                        <Link href="/" className="flex items-center group cursor-pointer">
                             <div className="relative">
                                 <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent transition-all duration-300 group-hover:scale-110">
                                     XA
@@ -119,7 +119,7 @@ export default function Header() {
                                         key={item.name}
                                         href={item.href}
                                         className={`
-                      relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg group
+                      relative px-4 py-2 text-sm font-medium transition-all duration-200 rounded-lg group cursor-pointer
                       ${
                                             isActive
                                                 ? "text-blue-600 dark:text-blue-400"
@@ -160,7 +160,7 @@ export default function Header() {
                             <Button
                                 variant="ghost"
                                 size="sm"
-                                className="md:hidden p-2"
+                                className="md:hidden p-2 cursor-pointer hover:scale-105 transition-transform"
                                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             >
                                 <div className="w-5 h-5 flex flex-col justify-center space-y-1">

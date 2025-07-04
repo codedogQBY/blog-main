@@ -376,10 +376,10 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
                 <HoverCard>
                     <HoverCardTrigger asChild>
                         <Button
-                            className="w-14 h-14 rounded-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-lg transition-all duration-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+                            className="w-14 h-14 rounded-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-lg transition-all duration-300 hover:scale-110 cursor-pointer dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                         >
                             <div className="flex flex-col items-center">
-                                <Share2 className="w-5 h-5" />
+                                <Share2 className="w-5 h-5 transition-transform group-hover:scale-110" />
                             </div>
                         </Button>
                     </HoverCardTrigger>
@@ -399,10 +399,10 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
                 <Dialog>
                     <DialogTrigger asChild>
                         <Button
-                            className="w-14 h-14 rounded-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-lg transition-all duration-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+                            className="w-14 h-14 rounded-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-lg transition-all duration-300 hover:scale-110 cursor-pointer dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
                         >
                             <div className="flex flex-col items-center">
-                                <Share2 className="w-5 h-5" />
+                                <Share2 className="w-5 h-5 transition-transform group-hover:scale-110" />
                             </div>
                         </Button>
                     </DialogTrigger>

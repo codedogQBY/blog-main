@@ -99,7 +99,7 @@ export default function FloatingActions({
         <Button
           onClick={handleLike}
           disabled={loading}
-          className={`w-14 h-14 rounded-full shadow-lg transition-all duration-300 ${
+          className={`w-14 h-14 rounded-full shadow-lg transition-all duration-300 hover:scale-110 cursor-pointer ${
             displayIsLiked
               ? 'bg-red-500 hover:bg-red-600 text-white'
               : 'bg-white hover:bg-gray-50 text-gray-700 border border-gray-200'

@@ -27,7 +27,7 @@ export default function NoteListItem({ note, isSelected, onClick }: NoteListItem
     return (
         <div
             className={`
-        p-4 rounded-xl cursor-pointer transition-all duration-200 border
+        p-4 rounded-xl cursor-pointer transition-all duration-200 border hover:scale-[1.02] hover:shadow-md
         ${
                 isSelected
                     ? "bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 shadow-sm"
@@ -37,13 +37,13 @@ export default function NoteListItem({ note, isSelected, onClick }: NoteListItem
             onClick={() => onClick(note)}
         >
             <div className="flex items-start justify-between mb-2">
-                <div className="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                <div className="text-xs text-gray-500 dark:text-gray-400 font-mono transition-colors duration-200 group-hover:text-gray-700 dark:group-hover:text-gray-300">
                     {note.date} {note.time}
                 </div>
                 <div className="flex items-center space-x-2">
                     {/* 心情显示 */}
                     {note.mood !== undefined && note.mood !== null && (
-                        <span className="text-sm">{getMoodEmoji(note.mood)}</span>
+                        <span className="text-sm transition-transform duration-200 hover:scale-125">{getMoodEmoji(note.mood)}</span>
                     )}
                     <WeatherIcon weather={note.weather} />
                 </div>
@@ -51,14 +51,14 @@ export default function NoteListItem({ note, isSelected, onClick }: NoteListItem
 
             <h3
                 className={`
-        font-medium mb-2 transition-colors duration-200
+        font-medium mb-2 transition-all duration-200 hover:text-blue-600 dark:hover:text-blue-400
         ${isSelected ? "text-blue-900 dark:text-blue-100" : "text-gray-900 dark:text-white"}
       `}
             >
                 {note.title}
             </h3>
 
-            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 leading-relaxed">{note.excerpt}</p>
+            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 leading-relaxed transition-colors duration-200 group-hover:text-gray-900 dark:group-hover:text-gray-200">{note.excerpt}</p>
         </div>
     )
 }
