@@ -180,11 +180,8 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
             
             // 等待下一个渲染周期，确保 isGenerating 状态已更新
             await new Promise(resolve => setTimeout(resolve, 0))
-
-            // 确保卡片尺寸已经设置
-            const isMobile = window.innerWidth < 768
-            const cardWidth = isMobile ? 300 : 364
-            const cardHeight = isMobile ? 420 : 600
+            const cardWidth = 364
+            const cardHeight = 600
 
             // 创建一个临时的 div 来渲染卡片
             const tempDiv = document.createElement('div')

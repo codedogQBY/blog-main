@@ -18,6 +18,16 @@ const categoryColors: Record<string, string> = {
     设计: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300",
 }
 
+// 格式化时间
+const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 export default function ArticleCard({ article, onClick }: ArticleCardProps) {
     const handleClick = () => {
         onClick?.(article)
@@ -51,7 +61,7 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
 
                     <div className="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400">
                         <Calendar className="w-4 h-4" />
-                        <time>{article.publishDate}</time>
+                        <time>{formatDate(article.publishDate)}</time>
                     </div>
                 </div>
             </div>

@@ -1,12 +1,12 @@
 "use client"
 
-import { useTheme } from "@/components/header/theme-provider"
+import { useTheme } from "next-themes"
 import { usePathname } from "next/navigation"
 import Image from "next/image"
 import { useEffect, useState } from "react"
 
 export default function BackgroundImage() {
-    const { actualTheme } = useTheme()
+    const { theme } = useTheme()
     const [mounted, setMounted] = useState(false)
     const pathname = usePathname()
     const isHomePage = pathname === "/"
@@ -17,7 +17,7 @@ export default function BackgroundImage() {
 
     if (!mounted || !isHomePage) return null
 
-    const isDark = actualTheme === 'dark'
+    const isDark = theme === 'dark'
 
     return (
         <div className="absolute right-0 bottom-0 md:top-0 md:bottom-auto w-full flex justify-end z-0 pointer-events-none">

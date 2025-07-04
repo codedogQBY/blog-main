@@ -1,11 +1,11 @@
 "use client"
 
-import { useTheme } from "@/components/header/theme-provider"
+import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 
 export default function AnimatedBackground() {
-    const { actualTheme } = useTheme()
+    const { theme } = useTheme()
     const [mounted, setMounted] = useState(false)
     const [elements, setElements] = useState<Array<{
         id: string
@@ -50,7 +50,7 @@ export default function AnimatedBackground() {
     // 服务端渲染或未挂载时不渲染任何内容
     if (!mounted) return null
 
-    const isDark = actualTheme === 'dark'
+    const isDark = theme === 'dark'
 
     return (
         <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">

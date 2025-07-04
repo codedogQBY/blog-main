@@ -6,14 +6,15 @@ import { useEffect, useState } from "react"
 import { usePathname } from "next/navigation"
 import SearchBox from "./search-box"
 import ThemeToggle from "./theme-toggle"
-import { useTheme } from "./theme-provider"
+import { useTheme } from "next-themes"
 
 export default function Header() {
     const [scrollY, setScrollY] = useState(0)
     const [previousScrollY, setPreviousScrollY] = useState(0)
     const [isHeaderVisible, setIsHeaderVisible] = useState(true)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-    const { actualTheme } = useTheme()
+    const [mounted, setMounted] = useState(false)
+    const { theme } = useTheme()
     const pathname = usePathname()
 
     const navigationItems = [
@@ -34,6 +35,7 @@ export default function Header() {
     }
 
     useEffect(() => {
+        setMounted(true)
         const handleScroll = () => {
             const currentScrollY = window.scrollY
             const scrollThreshold = 50
@@ -54,6 +56,25 @@ export default function Header() {
         return () => window.removeEventListener("scroll", handleScroll)
     }, [previousScrollY])
 
+    // 如果还没有挂载，返回一个基础的 header 结构
+    if (!mounted) {
+        return (
+            <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out translate-y-0">
+                <div className="max-w-6xl mx-auto px-6">
+                    <div className="flex items-center justify-between h-16">
+                        <Link href="/" className="flex items-center group">
+                            <div className="relative">
+                                <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+                                    XA
+                                </div>
+                            </div>
+                        </Link>
+                    </div>
+                </div>
+            </header>
+        )
+    }
+
     // 计算背景透明度
     const scrollProgress = Math.min(scrollY / 100, 1)
     const backgroundOpacity = scrollProgress * 0.9
@@ -67,16 +88,14 @@ export default function Header() {
           ${isHeaderVisible ? "translate-y-0" : "-translate-y-full"}
         `}
                 style={{
-                    backgroundColor:
-                        actualTheme === "dark"
-                            ? `rgba(15, 23, 42, ${backgroundOpacity})`
-                            : `rgba(255, 255, 255, ${backgroundOpacity})`,
+                    backgroundColor: theme === "dark"
+                        ? `rgba(15, 23, 42, ${backgroundOpacity})`
+                        : `rgba(255, 255, 255, ${backgroundOpacity})`,
                     backdropFilter: `blur(${blurIntensity}px)`,
                     WebkitBackdropFilter: `blur(${blurIntensity}px)`,
-                    borderBottom:
-                        scrollY > 10
-                            ? `1px solid ${actualTheme === "dark" ? "rgba(148, 163, 184, 0.1)" : "rgba(0, 0, 0, 0.05)"}`
-                            : "1px solid transparent",
+                    borderBottom: scrollY > 10
+                        ? `1px solid ${theme === "dark" ? "rgba(148, 163, 184, 0.1)" : "rgba(0, 0, 0, 0.05)"}`
+                        : "1px solid transparent",
                 }}
             >
                 <div className="max-w-6xl mx-auto px-6">

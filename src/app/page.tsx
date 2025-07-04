@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
-import { useTheme } from "@/components/header/theme-provider";
+import { useTheme } from "next-themes";
 import { useEffect, useState, useRef } from "react";
 import { api } from "@/lib/api";
 import ArticleCard from "@/components/blog/article-card";
@@ -13,11 +13,15 @@ import { Note } from "@/types/note";
 
 export default function Home() {
   const { theme } = useTheme();
-  const isDark = theme === 'dark';
+  const [mounted, setMounted] = useState(false);
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const secondScreenRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<{ handlePrevious: () => void; handleNext: () => void }>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   const scrollToSecondScreen = () => {
     secondScreenRef.current?.scrollIntoView({ 
@@ -59,6 +63,10 @@ export default function Home() {
       window.location.href = `/blog/${article.slug}`;
     }
   };
+
+  if (!mounted) return null;
+  
+  const isDark = theme === 'dark';
   
   return (
     <>
