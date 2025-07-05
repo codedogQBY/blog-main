@@ -12,6 +12,7 @@ import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
 import { getStickyNotes, getStickyNoteCategories, type StickyNoteData, type CreateStickyNoteData, createStickyNote } from "@/lib/sticky-note-api"
 import { toggleLike, addComment, getInteractionStats } from "@/lib/interaction-api"
 import { getOrGenerateFingerprint, collectUserInfo } from "@/lib/fingerprint"
+import { useSearchParams } from 'next/navigation'
 
 export default function MessagesPage() {
     const [selectedCategory, setSelectedCategory] = useState("全部")
@@ -21,6 +22,7 @@ export default function MessagesPage() {
     const [columns, setColumns] = useState<StickyNoteData[][]>([[], [], [], []])
     const [categories, setCategories] = useState<string[]>(["全部", "留言", "目标", "理想", "过去", "将来"])
     const [fingerprint, setFingerprint] = useState<string>("")
+    const searchParams = useSearchParams()
 
     // 获取用户指纹
     useEffect(() => {
@@ -35,6 +37,27 @@ export default function MessagesPage() {
         initFingerprint()
     }, [])
 
+    // 检查URL参数并打开弹框
+    useEffect(() => {
+        const noteId = searchParams.get('noteId')
+        if (noteId) {
+            const findAndOpenNote = async () => {
+                try {
+                    const response = await getStickyNotes()
+                    const notes = response.data
+                    const note = notes.find(n => n.id === noteId)
+                    if (note) {
+                        setSelectedNote(note)
+                        setIsDetailModalOpen(true)
+                    }
+                } catch (error) {
+                    console.error('获取留言失败:', error)
+                }
+            }
+            findAndOpenNote()
+        }
+    }, [searchParams])
+
     // 加载留言数据
     const loadMessages = useCallback(
         async (page: number, pageSize: number): Promise<StickyNoteData[]> => {
@@ -42,7 +65,7 @@ export default function MessagesPage() {
                 const response = await getStickyNotes({
                     page,
                     limit: pageSize,
-                    category: selectedCategory
+                    category: selectedCategory === "全部" ? undefined : selectedCategory
                 })
                 
                 // 如果有用户指纹，获取每个留言的点赞状态
@@ -208,6 +231,20 @@ export default function MessagesPage() {
     const handleNoteClick = (note: StickyNoteData) => {
         setSelectedNote(note)
         setIsDetailModalOpen(true)
+        // 更新URL
+        const url = new URL(window.location.href)
+        url.searchParams.set('noteId', note.id)
+        window.history.replaceState({}, '', url)
+    }
+
+    // 关闭详情弹框
+    const handleCloseDetailModal = () => {
+        setIsDetailModalOpen(false)
+        setSelectedNote(null)
+        // 移除URL中的noteId参数
+        const url = new URL(window.location.href)
+        url.searchParams.delete('noteId')
+        window.history.replaceState({}, '', url)
     }
 
     // 渲染单个便签
@@ -314,10 +351,7 @@ export default function MessagesPage() {
                     {/* 留言详情弹窗 */}
                     <MessageDetailModal
                         isOpen={isDetailModalOpen}
-                        onClose={() => {
-                            setIsDetailModalOpen(false)
-                            setSelectedNote(null)
-                        }}
+                        onClose={handleCloseDetailModal}
                         note={selectedNote}
                         onLike={handleLike}
                         onCommentAdded={handleCommentAdded}
