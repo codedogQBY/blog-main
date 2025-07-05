@@ -194,7 +194,7 @@ export default function Home() {
                   {/* 副标题 */}
                   <div className="space-y-6 mb-12 text-left">
                       <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-gray-100">码上拾光​</h2>
-                      <p className="text-3xl lg:text-4xl font-medium text-gray-700 dark:text-gray-200">在代码缝隙里打捞落日余温</p>
+                      <p className="text-3xl lg:text-4xl font-medium text-gray-700 dark:text-gray-200">在代码间里打捞落日余辉</p>
                   </div>
                   
                   {/* 按钮 */}
@@ -440,7 +440,7 @@ export default function Home() {
           {/* 标题部分 */}
           <div className="mb-10">
             <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">留言墙</h2>
-            <p className="text-gray-600 dark:text-gray-400">一面可以留言的墙，写下你想说的话</p>
+            <p className="text-gray-600 dark:text-gray-400">很多事情值得记录，当然也值得回忆</p>
           </div>
 
           {/* 留言卡片列表 */}

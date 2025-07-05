@@ -1,0 +1,193 @@
+"use client"
+
+import { useEffect, useState } from 'react'
+import Image from 'next/image'
+import { api } from '@/lib/api'
+import { Github, Mail, QrCode } from 'lucide-react'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
+
+interface FriendLink {
+  id: string
+  name: string
+  url: string
+  logo?: string | null
+  description?: string | null
+}
+
+const TECH_STACK = [
+  {
+    name: 'Next.js',
+    url: 'https://nextjs.org',
+    logo: '/next.svg',
+    invert: true
+  },
+  {
+    name: 'Nest.js',
+    url: 'https://nestjs.com',
+    logo: '/nestjs.svg'
+  },
+  {
+    name: 'Cursor',
+    url: 'https://cursor.com/',
+    logo: '/cursor.png'
+  },
+  {
+    name: 'React',
+    url: 'https://react.dev/',
+    logo: '/react.svg'
+  },
+  {
+    name: 'Vite',
+    url: 'https://vitejs.dev/',
+    logo: '/vite.svg'
+  },
+  {
+    name: 'Tailwind CSS',
+    url: 'https://tailwindcss.com/',
+    logo: '/tailwind.png'
+  },{
+    name: 'TypeScript',
+    url: 'https://www.typescriptlang.org/',
+    logo: '/typescript.png'
+  },
+  {
+    name: 'Shadcn UI',
+    url: 'https://ui.shadcn.com/',
+    logo: '/shadcn.png'
+  }
+]
+
+export default function Footer() {
+  const [friendLinks, setFriendLinks] = useState<FriendLink[]>([])
+
+  useEffect(() => {
+    api.get<FriendLink[]>('/friend-links').then(setFriendLinks)
+  }, [])
+
+  return (
+    <footer className="mt-auto text-muted-foreground">
+      <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* 友情链接区域 */}
+        <div className="mb-8">
+          <h2 className="mb-4 flex items-center gap-2 text-xl font-medium text-foreground">
+            友情链接
+          </h2>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+            {friendLinks.map((link) => (
+              <a
+                key={link.id}
+                href={link.url}
+                target="_blank"
+                rel="noreferrer"
+                className="group flex items-center gap-3 rounded-lg bg-gray-200/80 p-3 backdrop-blur-md transition-all hover:bg-gray-200/80 dark:bg-white/10 dark:backdrop-blur-md dark:hover:bg-white/20"
+              >
+                {link.logo ? (
+                  <Image
+                    src={link.logo}
+                    alt={link.name}
+                    width={36}
+                    height={36}
+                    className="aspect-square rounded-full object-cover ring-1 ring-border/50"
+                  />
+                ) : (
+                  <div className="flex aspect-square h-9 w-9 items-center justify-center rounded-full bg-accent text-lg font-bold text-accent-foreground ring-1 ring-border/50">
+                    {link.name[0]}
+                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  <h3 className="truncate font-medium text-foreground transition-colors group-hover:text-accent-foreground">{link.name}</h3>
+                  {link.description && (
+                    <p className="mt-0.5 text-sm text-muted-foreground line-clamp-1 transition-colors group-hover:text-muted-foreground/80">{link.description}</p>
+                  )}
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        {/* 中间区域 */}
+        <div className="mb-8 grid grid-cols-1 gap-8 border-t border-border py-8 md:grid-cols-4">
+          {/* 技术栈 */}
+          <div className="md:col-span-3">
+            <h3 className="mb-6 text-lg font-medium text-foreground">建站技术</h3>
+            <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
+              {TECH_STACK.map((tech) => (
+                <a
+                  key={tech.name}
+                  href={tech.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-3 transition-colors hover:text-foreground"
+                >
+                  <Image
+                    src={tech.logo}
+                    alt={tech.name}
+                    width={24}
+                    height={24}
+                    className={tech.invert ? 'dark:invert' : ''}
+                  />
+                  <span>{tech.name}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* 联系方式 */}
+          <div className="flex flex-col items-start gap-4">
+            <h3 className="text-lg font-medium text-foreground">联系我</h3>
+            <div className="flex items-center gap-4">
+              <a
+                href="https://github.com/tuntuntutu"
+                target="_blank"
+                rel="noreferrer"
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <Github size={20} />
+              </a>
+              <HoverCard>
+                <HoverCardTrigger asChild>
+                  <button className="text-muted-foreground transition-colors hover:text-foreground">
+                    <QrCode size={20} />
+                  </button>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-64 p-0">
+                  <Image
+                    src="/qrcode.jpg"
+                    alt="WeChat QR Code"
+                    width={256}
+                    height={256}
+                    className="rounded-lg"
+                  />
+                </HoverCardContent>
+              </HoverCard>
+              <a
+                href="mailto:chenhuofire@163.com"
+                className="text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <Mail size={20} />
+              </a>
+            </div>
+            <div className="space-y-1 text-sm text-muted-foreground">
+              <div>微信：yikeyjkech</div>
+              <div>QQ：133478536</div>
+              <div>邮箱：chenhuofire@163.com</div>
+            </div>
+          </div>
+        </div>
+
+        {/* 备案信息 */}
+        <div className="flex flex-col items-center gap-3 border-t border-border pt-6 text-center text-sm text-muted-foreground">
+          <p>© {new Date().getFullYear()} Code Shine. All rights reserved.</p>
+          <a
+            href="https://beian.miit.gov.cn"
+            target="_blank"
+            rel="noreferrer"
+            className="transition-colors hover:text-foreground"
+          >
+            粤ICP备19012866号
+          </a>
+        </div>
+      </div>
+    </footer>
+  )
+} 

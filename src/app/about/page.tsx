@@ -168,8 +168,14 @@ export default function AboutPage() {
                                     />
                                 </div>
                             ) : (
-                                <div className="w-64 h-64 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
-                                    <div className="text-white text-6xl font-bold">XA</div>
+                                <div className="flex items-center gap-4">
+                                    <Image
+                                        src="/logo.png"
+                                        alt="Logo"
+                                        width={64}
+                                        height={64}
+                                        className="rounded-full"
+                                    />
                                 </div>
                             )}
                         </div>
@@ -199,8 +205,14 @@ export default function AboutPage() {
                                     />
                                 </div>
                             ) : (
-                                <div className="w-48 h-48 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-xl">
-                                    <div className="text-white text-4xl font-bold">XA</div>
+                                <div className="flex items-center gap-3">
+                                    <Image
+                                        src="/logo.png"
+                                        alt="Logo"
+                                        width={48}
+                                        height={48}
+                                        className="rounded-full"
+                                    />
                                 </div>
                             )}
                         </div>

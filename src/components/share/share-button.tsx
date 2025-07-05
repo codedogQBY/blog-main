@@ -1,4 +1,4 @@
-import { Share2, Copy, Download, Triangle } from 'lucide-react'
+import { Share2, Copy, Download } from 'lucide-react'
 import { Button } from '../ui/button'
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '../ui/hover-card'
 import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '../ui/dialog'
@@ -38,10 +38,11 @@ const ShareCardContent = ({
         >
             <div className="flex justify-center mb-3 md:mb-4">
                 <div className="flex items-center space-x-1.5">
-                    <div className="relative">
-                        <Triangle className="w-4 h-4 md:w-5 md:h-5 text-cyan-500 fill-current rotate-90" />
-                        <Triangle className="w-4 h-4 md:w-5 md:h-5 text-cyan-500 fill-current absolute -top-0.5 -left-0.5 rotate-45" />
-                    </div>
+                    <img
+                        src="/logo.png"
+                        alt="Logo"
+                        className="w-5 h-5 rounded-full"
+                    />
                     <h1 className="text-lg md:text-xl font-bold text-gray-800">CODE SHINE</h1>
                 </div>
             </div>
@@ -64,7 +65,15 @@ const ShareCardContent = ({
                 {/* Text Content */}
                 <div className="text-center mb-3 md:mb-4">
                     <p className="text-gray-600 text-xs mb-1">码上拾光 博客文章</p>
-                    <h2 className="text-base md:text-base font-bold text-gray-800 leading-tight line-clamp-2">
+                    <h2 
+                        className="text-base md:text-base font-bold text-gray-800"
+                        style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            maxWidth: '100%'
+                        }}
+                    >
                         {title}
                     </h2>
                 </div>

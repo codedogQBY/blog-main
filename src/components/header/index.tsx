@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation"
 import SearchBox from "./search-box"
 import ThemeToggle from "./theme-toggle"
 import { useTheme } from "next-themes"
+import Image from "next/image"
 
 export default function Header() {
     const [scrollY, setScrollY] = useState(0)
@@ -62,12 +63,14 @@ export default function Header() {
             <header className="fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out translate-y-0">
                 <div className="max-w-6xl mx-auto px-6">
                     <div className="flex items-center justify-between h-16">
-                        <Link href="/" className="flex items-center group">
-                            <div className="relative">
-                                <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-                                    XA
-                                </div>
-                            </div>
+                        <Link href="/" className="flex items-center gap-2">
+                            <Image
+                                src="/logo.png"
+                                alt="Logo"
+                                width={32}
+                                height={32}
+                                className="rounded-full"
+                            />
                         </Link>
                     </div>
                 </div>
@@ -101,13 +104,14 @@ export default function Header() {
                 <div className="max-w-6xl mx-auto px-6">
                     <div className="flex items-center justify-between h-16">
                         {/* Logo */}
-                        <Link href="/" className="flex items-center group cursor-pointer">
-                            <div className="relative">
-                                <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent transition-all duration-300 group-hover:scale-110">
-                                    XA
-                                </div>
-                                <div className="absolute -inset-2 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 blur-sm -z-10"></div>
-                            </div>
+                        <Link href="/" className="flex items-center gap-2">
+                            <Image
+                                src="/logo.png"
+                                alt="Logo"
+                                width={32}
+                                height={32}
+                                className="rounded-full"
+                            />
                         </Link>
 
                         {/* Desktop Navigation */}

@@ -3,11 +3,12 @@ import type { Metadata } from "next"
 import "./globals.css"
 import { ThemeProvider } from "next-themes"
 import Header from "@/components/header";
+import Footer from "@/components/footer"
 import ScrollToTop from "@/components/scroll-to-top"
 import AnimatedBackground from "@/components/animated-background"
 
 export const metadata: Metadata = {
-    title: "CODE SHINE - 码上拾光 在代码缝隙里打捞落日余温",
+    title: "CODE SHINE - 码上拾光 在代码间里打捞落日余辉",
     description: "一个记录个人成长和思考的博客",
     icons: {
         icon: '/favicon.ico',
@@ -61,13 +62,14 @@ export default function RootLayout({
             <head>
                 <ThemeScript />
             </head>
-            <body className="font-sans bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen theme-transition theme-mask" suppressHydrationWarning>
+            <body className="font-sans bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen theme-transition theme-mask flex flex-col" suppressHydrationWarning>
                 <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="xa-theme">
                     <AnimatedBackground />
                     <Header />
-                    <main className="relative">
+                    <main className="relative flex-1">
                         {children}
                     </main>
+                    <Footer />
                     <ScrollToTop />
                 </ThemeProvider>
             </body>
