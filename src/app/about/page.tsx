@@ -158,7 +158,7 @@ export default function AboutPage() {
                         </div>
                         <div className="flex flex-col items-center">
                             {aboutData.intro.logo ? (
-                                <div className="w-64 h-64 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden bg-white dark:bg-gray-800">
+                                <div className="w-64 h-64 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden">
                                     <Image
                                         src={aboutData.intro.logo}
                                         alt="Logo"
@@ -195,7 +195,7 @@ export default function AboutPage() {
                         </div>
                         <div className="flex flex-col items-center">
                             {aboutData.intro.logo ? (
-                                <div className="w-48 h-48 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden bg-white dark:bg-gray-800">
+                                <div className="w-48 h-48 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden">
                                     <Image
                                         src={aboutData.intro.logo}
                                         alt="Logo"

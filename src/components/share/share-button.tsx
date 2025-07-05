@@ -43,7 +43,7 @@ const ShareCardContent = ({
                         alt="Logo"
                         className="w-5 h-5 rounded-full"
                     />
-                    <h1 className="text-lg md:text-xl font-bold text-gray-800">CODE SHINE</h1>
+                    <h1 className="text-lg md:text-xl font-bold text-gray-800">Code Shine</h1>
                 </div>
             </div>
 

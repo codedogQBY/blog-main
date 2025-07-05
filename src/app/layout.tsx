@@ -8,7 +8,7 @@ import ScrollToTop from "@/components/scroll-to-top"
 import AnimatedBackground from "@/components/animated-background"
 
 export const metadata: Metadata = {
-    title: "CODE SHINE - 码上拾光 在代码间里打捞落日余辉",
+    title: "码上拾光 - 在代码间里打捞落日余辉",
     description: "一个记录个人成长和思考的博客",
     icons: {
         icon: '/favicon.ico',
