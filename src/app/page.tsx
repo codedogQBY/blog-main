@@ -8,10 +8,13 @@ import { api } from "@/lib/api";
 import ArticleCard from "@/components/blog/article-card";
 import type { Article } from "@/types/article";
 import DiaryCarousel from "@/components/diary/diary-carousel";
-import { ChevronLeft, ChevronRight, MessageCircle, Heart, X } from "lucide-react";
+import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Heart, MessageCircle } from "lucide-react";
 import { Note } from "@/types/note";
 import type { GalleryItem } from "@/lib/gallery-api";
 import { getGalleryImages } from "@/lib/gallery-api";
+import { getStickyNotes, type StickyNoteData } from '@/lib/sticky-note-api';
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const { theme } = useTheme();
@@ -26,6 +29,9 @@ export default function Home() {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const secondScreenRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<{ handlePrevious: () => void; handleNext: () => void }>(null);
+  const [stickyNotes, setStickyNotes] = useState<StickyNoteData[]>([]);
+  const [stickyNotesLoading, setStickyNotesLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -86,6 +92,25 @@ export default function Home() {
     fetchGalleries();
   }, []);
   
+  // 获取留言数据
+  useEffect(() => {
+    const fetchStickyNotes = async () => {
+      try {
+        const response = await getStickyNotes({
+          page: 1,
+          limit: 8,
+        });
+        setStickyNotes(response.data);
+      } catch (error) {
+        console.error('获取留言失败:', error);
+      } finally {
+        setStickyNotesLoading(false);
+      }
+    };
+
+    fetchStickyNotes();
+  }, []);
+
   const handleArticleClick = (article: Article) => {
     if (article.slug) {
       window.location.href = `/blog/${article.slug}`;
@@ -118,6 +143,11 @@ export default function Home() {
   const prevImage = () => {
     setSelectedImageIndex((prev) => (prev - 1 + selectedGalleryImages.length) % selectedGalleryImages.length);
     setSelectedImage(selectedGalleryImages[(selectedImageIndex - 1 + selectedGalleryImages.length) % selectedGalleryImages.length].imageUrl);
+  };
+
+  // 点击留言跳转到留言墙页面
+  const handleStickyNoteClick = (noteId: string) => {
+    router.push(`/wall?noteId=${noteId}`);
   };
 
   if (!mounted) return null;
@@ -260,7 +290,7 @@ export default function Home() {
           </div>
           
           {/* 随记轮播 */}
-          <div className="w-full mx-auto lg:w-[60%] h-[calc(100vh-12rem)] lg:h-[calc(125vh-12rem)] min-h-[500px]">
+          <div className="w-full mx-auto lg:w-[60%] h-[calc(100vh-12rem)] lg:h-[calc(100vh-12rem)] min-h-[500px]">
             <DiaryCarousel ref={carouselRef} />
           </div>
           
@@ -396,6 +426,108 @@ export default function Home() {
           {/* 更多按钮 */}
           <div className="flex justify-center mt-12">
             <Link href="/gallery" className="cursor-pointer">
+              <Button className="bg-blue-500 hover:bg-blue-600 text-white px-10 py-6 text-lg rounded-full cursor-pointer hover:scale-105 transition-transform">
+                更多
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* 第五屏：留言墙部分 */}
+      <div className="py-20">
+        <div className="container mx-auto px-4 lg:px-10">
+          {/* 标题部分 */}
+          <div className="mb-10">
+            <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">留言墙</h2>
+            <p className="text-gray-600 dark:text-gray-400">一面可以留言的墙，写下你想说的话</p>
+          </div>
+
+          {/* 留言卡片列表 */}
+          {stickyNotesLoading ? (
+            <div className="flex justify-center items-center h-64">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+            </div>
+          ) : (
+            <div className="w-full mx-auto lg:w-full">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {stickyNotes.map((note, index) => {
+                  // 定义颜色映射
+                  const colorMap = {
+                    pink: {
+                      normal: "bg-[#FF6B8A]",
+                      hover: "hover:bg-[#E65F7C]"
+                    },
+                    yellow: {
+                      normal: "bg-[#FFA53F]",
+                      hover: "hover:bg-[#E69438]"
+                    },
+                    blue: {
+                      normal: "bg-[#5EBBFF]",
+                      hover: "hover:bg-[#54A8E6]"
+                    },
+                    green: {
+                      normal: "bg-[#3FD6A7]",
+                      hover: "hover:bg-[#38BF95]"
+                    },
+                    purple: {
+                      normal: "bg-[#8A70FF]",
+                      hover: "hover:bg-[#7B64E6]"
+                    }
+                  };
+
+                  return (
+                    <div
+                      key={note.id}
+                      onClick={() => handleStickyNoteClick(note.id)}
+                      className={`relative ${colorMap[note.color].normal} ${colorMap[note.color].hover} rounded-lg p-4 cursor-pointer transition-colors h-[252px] w-[300px] mx-auto sm:w-full ${index >= 4 ? 'hidden sm:block' : ''}`}
+                    >
+                      {/* 顶部区域：时间和分类 */}
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-white/80 text-xs">
+                          {note.date}
+                        </div>
+                        <div className="text-white/90 text-xs px-2 py-1 bg-white/10 rounded-full">
+                          {note.category}
+                        </div>
+                      </div>
+
+                      {/* 内容区域 */}
+                      <div className="flex-1 h-[164px]">
+                        <p className="text-white text-sm leading-relaxed font-medium break-words line-clamp-6 overflow-hidden">
+                          {note.content}
+                        </p>
+                      </div>
+
+                      {/* 底部信息 - 固定在底部 */}
+                      <div className="h-[30px] flex items-center justify-between">
+                        {/* 互动信息 */}
+                        <div className="flex items-center space-x-3 text-white/80">
+                          <div className="flex items-center space-x-1">
+                            <Heart className={`w-3.5 h-3.5 ${note.isLiked ? "fill-white text-white" : ""}`} />
+                            <span className="text-xs">{note.likes}</span>
+                          </div>
+                          <div className="flex items-center space-x-1">
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span className="text-xs">{note.comments}</span>
+                          </div>
+                        </div>
+
+                        {/* 作者 */}
+                        <div className="text-white text-xs">
+                          {note.author}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* 更多按钮 */}
+          <div className="flex justify-center mt-12">
+            <Link href="/wall" className="cursor-pointer">
               <Button className="bg-blue-500 hover:bg-blue-600 text-white px-10 py-6 text-lg rounded-full cursor-pointer hover:scale-105 transition-transform">
                 更多
               </Button>

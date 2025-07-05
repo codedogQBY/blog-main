@@ -231,7 +231,7 @@ export default function NotesPage() {
                         {/* 右侧信纸详情 */}
                         <div
                             className={`
-                lg:col-span-3
+                lg:col-span-3 h-[calc(100vh-8rem)]
                 ${!showMobileList ? "block" : "hidden lg:block"}
               `}
                         >

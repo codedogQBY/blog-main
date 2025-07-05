@@ -85,7 +85,7 @@ export default function NotePaper({ note }: NotePaperProps) {
     return (
         <div className="h-full bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden flex flex-col">
             {/* 信纸头部 */}
-            <div className="p-8 pb-2 border-b border-gray-100 dark:border-gray-700 flex-shrink-0">
+            <div className="p-6 pb-2 border-b border-gray-100 dark:border-gray-700 flex-shrink-0">
                 {/* 标题和元信息 */}
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-2">
                     {/* 标题 */}
@@ -117,17 +117,17 @@ export default function NotePaper({ note }: NotePaperProps) {
             {/* 信纸内容区域 */}
             <div className="flex-1 overflow-y-auto">
                 {/* 信纸背景样式 - 左右留白，顶部不留白 */}
-                <div className="h-full px-8">
+                <div className="h-full px-6">
                     <div
-                        className="relative min-h-full"
+                        className="relative"
                         style={{
                             backgroundImage: `repeating-linear-gradient(
                 transparent,
-                transparent 35px,
-                #e5e7eb 35px,
-                #e5e7eb 36px
+                transparent 32px,
+                #e5e7eb 32px,
+                #e5e7eb 33px
               )`,
-                            backgroundSize: "100% 36px",
+                            backgroundSize: "100% 33px",
                             backgroundAttachment: "local"
                         }}
                     >
@@ -136,8 +136,8 @@ export default function NotePaper({ note }: NotePaperProps) {
                             <div
                                 className="text-gray-700 dark:text-gray-300 text-base whitespace-pre-wrap"
                                 style={{
-                                    lineHeight: "36px", // 与背景线条高度一致
-                                    paddingBottom: "10px", // 让文字更远离横线
+                                    lineHeight: "33px", // 与背景线条高度一致
+                                    paddingBottom: "6px", // 让文字更远离横线
                                     fontFamily: "'Kalam', 'Comic Sans MS', cursive", // 手写体字体
                                 }}
                             >
@@ -146,12 +146,12 @@ export default function NotePaper({ note }: NotePaperProps) {
                         </div>
 
                         {/* 签名 - 在信纸背景上 */}
-                        <div className="flex justify-end mt-8 pb-8">
+                        <div className="flex justify-end mt-6 pb-6">
                             <div className="text-right">
                                 <div
                                     className="font-bold italic"
                                     style={{
-                                        lineHeight: "36px",
+                                        lineHeight: "33px",
                                         fontFamily: signature?.fontFamily || "'Kalam', 'Comic Sans MS', cursive",
                                         fontSize: getFontSizeValue(signature?.fontSize || '2xl'),
                                         color: getColorValue(signature?.color || 'gray-400'),
@@ -168,7 +168,7 @@ export default function NotePaper({ note }: NotePaperProps) {
 
                 {/* 图片展示区域 - 移出信纸背景，在签名下方 */}
                 {note.images && note.images.length > 0 && (
-                    <div className="px-8 pb-8">
+                    <div className="px-6 pb-6">
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                             {note.images.map((image, index) => (
                                 <div key={index} className="relative group">
