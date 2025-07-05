@@ -361,7 +361,7 @@ export default function Home() {
                     
                     {/* 左下角图片列表 */}
                     <div className="absolute bottom-8 left-4 lg:bottom-12 lg:left-12 z-20">
-                      <div className="w-[calc(120px*3.3+12px*2.3)] lg:w-[calc(192px*3.3+24px*2.3)] overflow-x-auto mb-4 [&::-webkit-scrollbar]:h-[2px] [&::-webkit-scrollbar-thumb]:bg-white/20 [&::-webkit-scrollbar-thumb]:hover:bg-white/40 [&::-webkit-scrollbar-track]:bg-transparent">
+                      <div className="w-[85vw] lg:w-[calc(192px*3+24px*4)] overflow-x-auto mb-4 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:bg-white/30 [&::-webkit-scrollbar-thumb]:hover:bg-white/50 [&::-webkit-scrollbar-track]:bg-white/10">
                         <div className="flex gap-3 lg:gap-6 pb-2">
                           {gallery.images.filter(image => image.imageUrl !== gallery.coverImage).map((image, imageIndex) => (
                             <button
