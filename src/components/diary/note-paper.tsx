@@ -159,7 +159,7 @@ export default function NotePaper({ note }: NotePaperProps) {
                                         display: 'inline-block'
                                     }}
                                 >
-                                    {signature?.signatureName || 'Yike'}
+                                    {signature?.signatureName || 'CodeShine'}
                                 </div>
                             </div>
                         </div>

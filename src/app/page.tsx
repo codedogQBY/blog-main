@@ -187,14 +187,14 @@ export default function Home() {
               <div className="flex flex-col items-start w-full lg:w-3/5 lg:ml-[8%]">
                   {/* 大标题 */}
                   <h1 className="text-6xl sm:text-7xl lg:text-9xl font-bold mb-8 tracking-tighter whitespace-nowrap">
-                      <span className="text-black dark:text-white">YIKE</span>
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 dark:from-blue-300 dark:to-purple-300"> 时光</span>
+                      <span className="text-black dark:text-white">CODE</span>
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 dark:from-blue-300 dark:to-purple-300"> SHINE</span>
                   </h1>
                   
                   {/* 副标题 */}
                   <div className="space-y-6 mb-12 text-left">
-                      <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-gray-100">慢下脚步</h2>
-                      <p className="text-3xl lg:text-4xl font-medium text-gray-700 dark:text-gray-200">让心灵照亮前行的路</p>
+                      <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-gray-100">码上拾光​</h2>
+                      <p className="text-3xl lg:text-4xl font-medium text-gray-700 dark:text-gray-200">在代码缝隙里打捞落日余温</p>
                   </div>
                   
                   {/* 按钮 */}

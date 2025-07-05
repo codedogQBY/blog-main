@@ -7,8 +7,11 @@ import ScrollToTop from "@/components/scroll-to-top"
 import AnimatedBackground from "@/components/animated-background"
 
 export const metadata: Metadata = {
-    title: "XA - 现代化网站",
-    description: "使用 Next.js、Tailwind CSS 和 shadcn/ui 构建的现代化网站",
+    title: "CODE SHINE - 码上拾光 在代码缝隙里打捞落日余温",
+    description: "一个记录个人成长和思考的博客",
+    icons: {
+        icon: '/favicon.ico',
+    },
 }
 
 function ThemeScript() {

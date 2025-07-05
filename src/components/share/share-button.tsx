@@ -36,14 +36,13 @@ const ShareCardContent = ({
             className="w-[300px] md:w-[280px] h-[420px] md:h-[460px] bg-gradient-to-br from-sky-200 via-blue-100 to-purple-200 shadow-lg p-4 md:p-6 flex flex-col justify-between"
             style={{ borderRadius: '20px' }}
         >
-            {/* YIKE Logo */}
             <div className="flex justify-center mb-3 md:mb-4">
                 <div className="flex items-center space-x-1.5">
                     <div className="relative">
                         <Triangle className="w-4 h-4 md:w-5 md:h-5 text-cyan-500 fill-current rotate-90" />
                         <Triangle className="w-4 h-4 md:w-5 md:h-5 text-cyan-500 fill-current absolute -top-0.5 -left-0.5 rotate-45" />
                     </div>
-                    <h1 className="text-lg md:text-xl font-bold text-gray-800">YIKE</h1>
+                    <h1 className="text-lg md:text-xl font-bold text-gray-800">CODE SHINE</h1>
                 </div>
             </div>
 
@@ -64,7 +63,7 @@ const ShareCardContent = ({
                 
                 {/* Text Content */}
                 <div className="text-center mb-3 md:mb-4">
-                    <p className="text-gray-600 text-xs mb-1">YIKE博客文章</p>
+                    <p className="text-gray-600 text-xs mb-1">码上拾光 博客文章</p>
                     <h2 className="text-base md:text-base font-bold text-gray-800 leading-tight line-clamp-2">
                         {title}
                     </h2>
@@ -87,7 +86,7 @@ const ShareCardContent = ({
 
             {/* Footer */}
             <div className="text-center space-y-0.5">
-                <p className="text-gray-500 text-xs">YIKE个人博客网站提供</p>
+                <p className="text-gray-500 text-xs">码上拾光 个人博客网站提供</p>
                 <p className="text-gray-400 text-[10px]">生成时间：{new Date().toLocaleString('zh-CN')}</p>
             </div>
         </div>
