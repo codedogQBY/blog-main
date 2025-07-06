@@ -32,6 +32,12 @@ export interface Article {
   _count?: {
     comments: number;
   };
+  
+  // SEO相关字段
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+  canonicalUrl?: string;
 }
 
 export interface Category {

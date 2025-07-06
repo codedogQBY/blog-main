@@ -36,4 +36,10 @@ export interface Article {
     }
     publishDate?: string
     comments?: number
+    
+    // SEO相关字段
+    metaTitle?: string
+    metaDescription?: string
+    metaKeywords?: string
+    canonicalUrl?: string
 }
