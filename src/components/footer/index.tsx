@@ -14,6 +14,22 @@ interface FriendLink {
   description?: string | null
 }
 
+// 网站开始运行时间
+const START_TIME = new Date('2025-06-06T00:00:00+08:00')
+
+// 计算运行时间
+function getRunningTime() {
+  const now = new Date()
+  const diff = now.getTime() - START_TIME.getTime()
+  
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+  
+  return { days, hours, minutes, seconds }
+}
+
 const TECH_STACK = [
   {
     name: 'Next.js',
@@ -59,9 +75,17 @@ const TECH_STACK = [
 
 export default function Footer() {
   const [friendLinks, setFriendLinks] = useState<FriendLink[]>([])
+  const [runningTime, setRunningTime] = useState(getRunningTime())
 
   useEffect(() => {
     api.get<FriendLink[]>('/friend-links').then(setFriendLinks)
+
+    // 每秒更新运行时间
+    const timer = setInterval(() => {
+      setRunningTime(getRunningTime())
+    }, 1000)
+
+    return () => clearInterval(timer)
   }, [])
 
   return (
@@ -178,6 +202,7 @@ export default function Footer() {
         {/* 备案信息 */}
         <div className="flex flex-col items-center gap-3 border-t border-border pt-6 text-center text-sm text-muted-foreground">
           <p>© {new Date().getFullYear()} Code Shine. All rights reserved.</p>
+          <p>本站已运行：{runningTime.days}天{runningTime.hours}时{runningTime.minutes}分{runningTime.seconds}秒</p>
           <a
             href="https://beian.miit.gov.cn"
             target="_blank"
