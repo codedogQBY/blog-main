@@ -75,9 +75,13 @@ const TECH_STACK = [
 
 export default function Footer() {
   const [friendLinks, setFriendLinks] = useState<FriendLink[]>([])
-  const [runningTime, setRunningTime] = useState(getRunningTime())
+  const [runningTime, setRunningTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  const [mounted, setMounted] = useState(false)
+  const [currentYear, setCurrentYear] = useState(2025)
 
   useEffect(() => {
+    setMounted(true)
+    setCurrentYear(new Date().getFullYear())
     api.get<FriendLink[]>('/friend-links').then(setFriendLinks)
 
     // 每秒更新运行时间
@@ -201,8 +205,10 @@ export default function Footer() {
 
         {/* 备案信息 */}
         <div className="flex flex-col items-center gap-3 border-t border-border pt-6 text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Code Shine. All rights reserved.</p>
-          <p>本站已运行：{runningTime.days}天{runningTime.hours}时{runningTime.minutes}分{runningTime.seconds}秒</p>
+          <p>© {currentYear} Code Shine. All rights reserved.</p>
+          <p suppressHydrationWarning>
+            本站已运行：{mounted ? `${runningTime.days}天${runningTime.hours}时${runningTime.minutes}分${runningTime.seconds}秒` : '加载中...'}
+          </p>
           <a
             href="https://beian.miit.gov.cn"
             target="_blank"
