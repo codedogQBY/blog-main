@@ -8,9 +8,10 @@ import WeatherIcon from "./weather-icon"
 
 interface NotePaperProps {
     note: Note | null
+    variant?: 'home' | 'diary' // 添加variant属性，默认为diary
 }
 
-export default function NotePaper({ note }: NotePaperProps) {
+export default function NotePaper({ note, variant = 'diary' }: NotePaperProps) {
     const [signature, setSignature] = useState<DiarySignature | null>(null)
 
     // 加载签名配置
@@ -117,9 +118,9 @@ export default function NotePaper({ note }: NotePaperProps) {
             {/* 信纸内容区域 */}
             <div className="flex-1 overflow-y-auto">
                 {/* 信纸背景样式 - 左右留白，顶部不留白 */}
-                <div className="h-full px-6">
+                <div className="h-full px-6 flex flex-col">
                     <div
-                        className="relative"
+                        className="flex-1 relative"
                         style={{
                             backgroundImage: `repeating-linear-gradient(
                 transparent,

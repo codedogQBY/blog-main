@@ -35,7 +35,7 @@ interface FriendLinkFormData {
 }
 
 // 网站开始运行时间
-const START_TIME = new Date(2025, 0, 1, 0, 0, 0) // 2025年1月1日 00:00:00
+const START_TIME = new Date(2025, 5, 6, 10, 0, 0) // 2025-06-06 10:00:00
 
 // 计算运行时间
 function getRunningTime() {

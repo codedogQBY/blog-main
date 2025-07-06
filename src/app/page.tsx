@@ -194,7 +194,7 @@ export default function Home() {
                   {/* 副标题 */}
                   <div className="space-y-6 mb-12 text-left">
                       <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-gray-100">码上拾光​</h2>
-                      <p className="text-3xl lg:text-4xl font-medium text-gray-700 dark:text-gray-200">在代码间里打捞落日余辉</p>
+                      <p className="text-3xl lg:text-4xl font-medium text-gray-700 dark:text-gray-200">在代码间打捞落日余辉</p>
                   </div>
                   
                   {/* 按钮 */}
@@ -290,7 +290,7 @@ export default function Home() {
           </div>
           
           {/* 随记轮播 */}
-          <div className="w-full mx-auto lg:w-[60%] h-[calc(100vh-12rem)] lg:h-[calc(100vh-12rem)] min-h-[500px]">
+          <div className="w-full mx-auto lg:w-[60%] h-[calc(100vh-8rem)] lg:h-[calc(110vh-8rem)] min-h-[600px]">
             <DiaryCarousel ref={carouselRef} />
           </div>
           
