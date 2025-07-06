@@ -7,13 +7,15 @@ import { Input } from '@/components/ui/input'
 import { MessageCircle, Send, MapPin, Monitor, Smartphone, Tablet, Reply } from 'lucide-react'
 import { interactionAPI, type Comment } from '@/lib/interaction-api'
 import { getOrGenerateFingerprint, collectUserInfo } from '@/lib/fingerprint'
+import { useAuthStore } from '@/lib/auth'
 
 interface CommentSectionProps {
   targetType: 'article' | 'sticky_note' | 'gallery_image'
   targetId: string
+  onCommentAdded?: () => void
 }
 
-export default function CommentSection({ targetType, targetId }: CommentSectionProps) {
+export default function CommentSection({ targetType, targetId, onCommentAdded }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([])
   const [loading, setLoading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -25,12 +27,46 @@ export default function CommentSection({ targetType, targetId }: CommentSectionP
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const [total, setTotal] = useState(0)
+  const [mounted, setMounted] = useState(true)
+  const { isLoggedIn, username, isSuperAdmin } = useAuthStore()
+
+  useEffect(() => {
+    setMounted(true)
+    return () => {
+      setMounted(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    // 添加调试信息
+    console.log('评论组件状态变化:', {
+      isLoggedIn,
+      username,
+      isSuperAdmin,
+      currentNickname: nickname
+    })
+    
+    // 如果已登录，使用登录用户名
+    if (isLoggedIn && username) {
+      console.log('设置登录用户名:', username)
+      setNickname(username)
+    } else {
+      // 否则使用本地存储的昵称
+      const savedNickname = localStorage.getItem('comment-nickname')
+      console.log('使用本地存储昵称:', savedNickname)
+      if (savedNickname) {
+        setNickname(savedNickname)
+      }
+    }
+  }, [isLoggedIn, username])
 
   // 加载评论
   const loadComments = async (pageNum = 1, append = false) => {
     try {
       setLoading(true)
       const response = await interactionAPI.getComments(targetType, targetId, pageNum, 10)
+      
+      if (!mounted) return
       
       if (append) {
         setComments(prev => [...prev, ...response.comments])
@@ -44,7 +80,9 @@ export default function CommentSection({ targetType, targetId }: CommentSectionP
     } catch (error) {
       console.error('加载评论失败:', error)
     } finally {
-      setLoading(false)
+      if (mounted) {
+        setLoading(false)
+      }
     }
   }
 
@@ -57,12 +95,14 @@ export default function CommentSection({ targetType, targetId }: CommentSectionP
       const fingerprint = getOrGenerateFingerprint()
       const userInfo = await collectUserInfo()
       
-      // 保存用户输入的昵称和邮箱
-      if (nickname) {
-        localStorage.setItem('comment-nickname', nickname)
-      }
-      if (email) {
-        localStorage.setItem('comment-email', email)
+      // 保存用户输入的昵称和邮箱（仅未登录时）
+      if (!isLoggedIn) {
+        if (nickname) {
+          localStorage.setItem('comment-nickname', nickname)
+        }
+        if (email) {
+          localStorage.setItem('comment-email', email)
+        }
       }
 
       const newComment = await interactionAPI.addComment({
@@ -72,19 +112,27 @@ export default function CommentSection({ targetType, targetId }: CommentSectionP
         content: content.trim(),
         userInfo: {
           ...userInfo,
-          nickname: nickname || undefined,
+          nickname: nickname || '匿名用户',
           email: email || undefined,
+          isAdmin: isSuperAdmin,
         },
       })
+
+      if (!mounted) return
 
       // 添加到评论列表顶部
       setComments(prev => [newComment, ...prev])
       setContent('')
       setTotal(prev => prev + 1)
+      
+      // 通知父组件评论已添加
+      onCommentAdded?.()
     } catch (error) {
       console.error('评论失败:', error)
     } finally {
-      setSubmitting(false)
+      if (mounted) {
+        setSubmitting(false)
+      }
     }
   }
 
@@ -105,10 +153,13 @@ export default function CommentSection({ targetType, targetId }: CommentSectionP
         parentId,
         userInfo: {
           ...userInfo,
-          nickname: nickname || undefined,
+          nickname: nickname || '匿名用户',
           email: email || undefined,
+          isAdmin: isSuperAdmin,
         },
       })
+
+      if (!mounted) return
 
       // 更新评论列表，添加回复
       setComments(prev => prev.map(comment => {
@@ -124,10 +175,15 @@ export default function CommentSection({ targetType, targetId }: CommentSectionP
       setReplyContent('')
       setReplyTo(null)
       setTotal(prev => prev + 1)
+      
+      // 通知父组件评论已添加
+      onCommentAdded?.()
     } catch (error) {
       console.error('回复失败:', error)
     } finally {
-      setSubmitting(false)
+      if (mounted) {
+        setSubmitting(false)
+      }
     }
   }
 
@@ -170,8 +226,13 @@ export default function CommentSection({ targetType, targetId }: CommentSectionP
             {comment.userInfo.nickname.charAt(0).toUpperCase()}
           </div>
           <div>
-            <div className="font-medium text-gray-900 dark:text-white">
+            <div className="font-medium text-gray-900 dark:text-white flex items-center gap-2">
               {comment.userInfo.nickname}
+              {comment.userInfo.isAdmin && (
+                <span className="px-1.5 py-0.5 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded">
+                  站长
+                </span>
+              )}
             </div>
             <div className="flex items-center space-x-2 text-xs text-gray-500 dark:text-gray-400">
               <div className="flex items-center space-x-1">
@@ -266,6 +327,9 @@ export default function CommentSection({ targetType, targetId }: CommentSectionP
         setLoading(true)
         const response = await interactionAPI.getComments(targetType, targetId, 1, 10)
         
+        // 检查组件是否仍然挂载
+        if (!mounted) return
+        
         setComments(response.comments)
         setHasMore(response.hasMore)
         setTotal(response.total)
@@ -273,7 +337,9 @@ export default function CommentSection({ targetType, targetId }: CommentSectionP
       } catch (error) {
         console.error('加载评论失败:', error)
       } finally {
-        setLoading(false)
+        if (mounted) {
+          setLoading(false)
+        }
       }
     }
 
@@ -282,9 +348,9 @@ export default function CommentSection({ targetType, targetId }: CommentSectionP
     // 恢复用户信息
     const savedNickname = localStorage.getItem('comment-nickname')
     const savedEmail = localStorage.getItem('comment-email')
-    if (savedNickname) setNickname(savedNickname)
-    if (savedEmail) setEmail(savedEmail)
-  }, [targetType, targetId])
+    if (savedNickname && mounted) setNickname(savedNickname)
+    if (savedEmail && mounted) setEmail(savedEmail)
+  }, [targetType, targetId, mounted])
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -327,7 +393,7 @@ export default function CommentSection({ targetType, targetId }: CommentSectionP
           </div>
           <Button
             onClick={submitComment}
-            disabled={!content.trim() || submitting}
+            disabled={!content.trim() || (!isLoggedIn && !nickname) || submitting}
             className="min-w-[100px]"
           >
             {submitting ? (

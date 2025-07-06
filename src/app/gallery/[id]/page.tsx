@@ -22,6 +22,13 @@ export default function GalleryDetailPage() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
+    const handleCommentAdded = () => {
+        // 评论添加后，刷新悬浮按钮的统计数据
+        if (typeof window !== 'undefined' && (window as any).refreshFloatingStats) {
+            (window as any).refreshFloatingStats()
+        }
+    }
+
     useEffect(() => {
         const fetchGalleryItem = async () => {
             try {
@@ -184,10 +191,11 @@ export default function GalleryDetailPage() {
                     </article>
 
                     {/* 评论区域 */}
-                    <div id="comment-section" className="mt-16">
-                        <CommentSection
+                    <div id="comment-section" className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+                        <CommentSection 
                             targetType="gallery_image"
                             targetId={galleryItem.id}
+                            onCommentAdded={handleCommentAdded}
                         />
                     </div>
                 </div>

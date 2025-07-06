@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
+import { useAuthStore } from '@/lib/auth'
 import {
   Tooltip,
   TooltipContent,
@@ -34,7 +35,7 @@ interface FriendLinkFormData {
 }
 
 // 网站开始运行时间
-const START_TIME = new Date('2025-06-06T00:00:00+08:00')
+const START_TIME = new Date(2025, 0, 1, 0, 0, 0) // 2025年1月1日 00:00:00
 
 // 计算运行时间
 function getRunningTime() {
@@ -106,6 +107,12 @@ export default function Footer() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [loginDialogOpen, setLoginDialogOpen] = useState(false)
+  const [clickCount, setClickCount] = useState(0)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const { login, logout, isLoggedIn } = useAuthStore()
 
   useEffect(() => {
     const fetchFriendLinks = async () => {
@@ -122,9 +129,12 @@ export default function Footer() {
     setMounted(true)
     setCurrentYear(new Date().getFullYear())
 
+    // 立即设置一次运行时间
+    setRunningTime(getRunningTime())
+
     // 每秒更新运行时间
     const timer = setInterval(() => {
-      setMounted(true)
+      setRunningTime(getRunningTime())
     }, 1000)
 
     return () => {
@@ -168,6 +178,43 @@ export default function Footer() {
       ...prev,
       [field]: value
     }))
+  }
+
+  const handleLogoClick = () => {
+    setClickCount(prev => {
+      const newCount = prev + 1
+      if (newCount >= 5) {
+        setLoginDialogOpen(true)
+        return 0
+      }
+      return newCount
+    })
+  }
+
+  const handleLogin = async () => {
+    if (!email || !password) {
+      toast.error('请输入邮箱和密码')
+      return
+    }
+
+    try {
+      setIsLoggingIn(true)
+      const success = await login(email, password)
+      
+      if (success) {
+        setLoginDialogOpen(false)
+        setEmail('')
+        setPassword('')
+        toast.success('登录成功')
+      } else {
+        toast.error('登录失败，只有超级管理员才能登录前台')
+      }
+    } catch (error) {
+      console.error('登录失败:', error)
+      toast.error('登录失败，请稍后重试')
+    } finally {
+      setIsLoggingIn(false)
+    }
   }
 
   return (
@@ -372,7 +419,7 @@ export default function Footer() {
 
         {/* 备案信息 */}
         <div className="flex flex-col items-center gap-3 border-t border-border pt-6 text-center text-sm text-muted-foreground">
-          <p>© {currentYear} Code Shine. All rights reserved.</p>
+          <p>© {currentYear} <span onClick={handleLogoClick}>Code Shine</span>. All rights reserved.</p>
           <p suppressHydrationWarning>
             本站已运行：{mounted ? `${runningTime.days}天${runningTime.hours}时${runningTime.minutes}分${runningTime.seconds}秒` : '加载中...'}
           </p>
@@ -386,6 +433,41 @@ export default function Footer() {
           </a>
         </div>
       </div>
+
+      {/* 登录弹窗 */}
+      <Dialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>登录</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">邮箱</label>
+              <Input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="请输入邮箱"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">密码</label>
+              <Input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="请输入密码"
+              />
+            </div>
+            <Button 
+              className="w-full" 
+              onClick={handleLogin}
+              disabled={isLoggingIn}
+            >
+              {isLoggingIn ? '登录中...' : '登录'}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </footer>
   )
 } 

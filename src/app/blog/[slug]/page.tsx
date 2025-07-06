@@ -20,6 +20,13 @@ export default function ArticleDetailPage() {
     const [error, setError] = useState<string | null>(null)
     const containerRef = useRef<HTMLDivElement>(null)
 
+    const handleCommentAdded = () => {
+        // 评论添加后，刷新悬浮按钮的统计数据
+        if (typeof window !== 'undefined' && (window as any).refreshFloatingStats) {
+            (window as any).refreshFloatingStats()
+        }
+    }
+
     useEffect(() => {
         const fetchArticle = async () => {
             if (!slug) return
@@ -208,6 +215,7 @@ export default function ArticleDetailPage() {
                             <CommentSection 
                                 targetType="article"
                                 targetId={article.id}
+                                onCommentAdded={handleCommentAdded}
                             />
                         </div>
                     </article>

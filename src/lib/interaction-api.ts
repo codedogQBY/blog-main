@@ -1,16 +1,19 @@
 export interface UserInfo {
-  userAgent: string
+  nickname: string
+  email?: string
+  city?: string
   deviceType: string
-  ipAddress?: string
   browserInfo: {
     name: string
     version: string
     os: string
-  }
+  } | null
+  isAdmin?: boolean
+  userAgent: string
+  ipAddress?: string
   timestamp: string
   country?: string
   region?: string
-  city?: string
   latitude?: number
   longitude?: number
   timezone?: string
@@ -23,8 +26,6 @@ export interface UserInfo {
   screenHeight?: number
   language?: string
   languages?: string
-  nickname?: string
-  email?: string
 }
 
 export interface LikeRequest {
@@ -53,13 +54,14 @@ export interface Comment {
   content: string
   userInfo: {
     nickname: string
-    location: string
+    city: string
     deviceType: string
     browserInfo: {
       name: string
       version: string
       os: string
     } | null
+    isAdmin?: boolean
   }
   createdAt: string
   replies: Comment[]

@@ -15,6 +15,7 @@ interface FloatingActionsProps {
   shareTitle?: string
   shareUrl?: string
   coverImage?: string
+  onStatsUpdate?: (stats: { likes: number; comments: number; isLiked: boolean }) => void
 }
 
 export default function FloatingActions({
@@ -24,30 +25,42 @@ export default function FloatingActions({
   onComment,
   shareTitle = '',
   shareUrl,
-  coverImage = ''
+  coverImage = '',
+  onStatsUpdate
 }: FloatingActionsProps) {
   const [loading, setLoading] = useState(false)
   const [displayLikes, setDisplayLikes] = useState(0)
   const [displayComments, setDisplayComments] = useState(0)
   const [displayIsLiked, setDisplayIsLiked] = useState(false)
   const [showScrollTop, setShowScrollTop] = useState(false)
+  const [mounted, setMounted] = useState(true)
+
+  // 组件挂载和卸载
+  useEffect(() => {
+    setMounted(true)
+    return () => {
+      setMounted(false)
+    }
+  }, [])
 
   // 监听滚动位置
   useEffect(() => {
     const handleScroll = () => {
-      setShowScrollTop(window.scrollY > 300)
+      if (mounted) {
+        setShowScrollTop(window.scrollY > 300)
+      }
     }
 
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
+  }, [mounted])
 
   // 新的自动加载功能
   useEffect(() => {
-    if (autoLoad && targetType && targetId) {
+    if (autoLoad && targetType && targetId && mounted) {
       loadInteractionStats()
     }
-  }, [autoLoad, targetType, targetId])
+  }, [autoLoad, targetType, targetId, mounted])
 
   const loadInteractionStats = async () => {
     if (!targetType || !targetId) return
@@ -55,13 +68,40 @@ export default function FloatingActions({
     try {
       const fingerprint = await getOrGenerateFingerprint()
       const stats = await interactionAPI.getInteractionStats(targetType, targetId, fingerprint)
+      
+      // 检查组件是否仍然挂载
+      if (!mounted) return
+      
       setDisplayLikes(stats.likes)
       setDisplayComments(stats.comments)
       setDisplayIsLiked(stats.isLiked)
+      
+      // 通知父组件统计数据已更新
+      onStatsUpdate?.(stats)
     } catch (error) {
       console.error('Failed to load interaction stats:', error)
     }
   }
+
+  // 暴露刷新方法给父组件
+  const refreshStats = () => {
+    if (mounted) {
+      loadInteractionStats()
+    }
+  }
+
+  // 将refreshStats方法暴露到window对象，供父组件调用
+  useEffect(() => {
+    if (typeof window !== 'undefined' && mounted) {
+      (window as any).refreshFloatingStats = refreshStats
+    }
+    
+    return () => {
+      if (typeof window !== 'undefined') {
+        delete (window as any).refreshFloatingStats
+      }
+    }
+  }, [targetType, targetId, mounted])
 
   const handleLike = async () => {
     if (!targetType || !targetId || loading) return
@@ -74,14 +114,23 @@ export default function FloatingActions({
         targetType,
         targetId,
         fingerprint,
-        userInfo
+        userInfo: {
+          ...userInfo,
+          nickname: '匿名用户',
+        }
       })
+      
+      // 检查组件是否仍然挂载
+      if (!mounted) return
+      
       setDisplayLikes(result.totalLikes)
       setDisplayIsLiked(result.isLiked)
     } catch (error) {
       console.error('Failed to like:', error)
     } finally {
-      setLoading(false)
+      if (mounted) {
+        setLoading(false)
+      }
     }
   }
 
