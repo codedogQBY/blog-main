@@ -294,6 +294,7 @@ export default function AboutPage() {
                                                         width={200}
                                                         height={150}
                                                         className="w-full h-32 object-cover rounded-lg mb-3"
+                                                        style={{ height: 'auto' }}
                                                     />
                                                     {/* 图片标题 */}
                                                     <div className="text-center text-sm text-gray-700 dark:text-gray-300 font-medium">
@@ -331,6 +332,7 @@ export default function AboutPage() {
                                                     width={150}
                                                     height={100}
                                                     className="w-full h-24 object-cover rounded-lg mb-2"
+                                                    style={{ height: 'auto' }}
                                                 />
                                                 {/* 图片标题 */}
                                                 <div className="text-center text-xs text-gray-700 dark:text-gray-300 font-medium">

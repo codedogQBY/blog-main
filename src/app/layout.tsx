@@ -6,6 +6,11 @@ import Header from "@/components/header";
 import Footer from "@/components/footer"
 import ScrollToTop from "@/components/scroll-to-top"
 import AnimatedBackground from "@/components/animated-background"
+import { Inter } from 'next/font/google';
+import { MonitoringInitializer } from '@/components/monitoring-initializer';
+import { ErrorBoundary } from '@/components/error-boundary';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
     title: "码上拾光 - 在代码间打捞落日余辉",
@@ -63,15 +68,18 @@ export default function RootLayout({
                 <ThemeScript />
             </head>
             <body className="font-sans bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen theme-transition theme-mask flex flex-col" suppressHydrationWarning>
-                <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="xa-theme">
-                    <AnimatedBackground />
-                    <Header />
-                    <main className="relative flex-1">
-                        {children}
-                    </main>
-                    <Footer />
-                    <ScrollToTop />
-                </ThemeProvider>
+                <ErrorBoundary>
+                    <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="xa-theme" disableTransitionOnChange>
+                        <AnimatedBackground />
+                        <Header />
+                        <main className="relative flex-1">
+                            {children}
+                        </main>
+                        <Footer />
+                        <ScrollToTop />
+                        <MonitoringInitializer />
+                    </ThemeProvider>
+                </ErrorBoundary>
             </body>
         </html>
     )
