@@ -158,24 +158,42 @@ export default function AboutPage() {
                         </div>
                         <div className="flex flex-col items-center">
                             {aboutData.intro.logo ? (
-                                <div className="w-64 h-64 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden">
-                                    <Image
-                                        src={aboutData.intro.logo}
-                                        alt="Logo"
-                                        width={256}
-                                        height={256}
-                                        className="w-full h-full object-contain p-4"
-                                    />
+                                <div className="relative group">
+                                    {/* 相框样式 */}
+                                    <div className="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-3 rounded-xl shadow-lg border border-gray-100 dark:border-gray-600 dark:shadow-gray-900/50 group-hover:shadow-xl group-hover:shadow-gray-200/50 dark:group-hover:shadow-xl dark:group-hover:shadow-gray-800/50 transition-all duration-300 group-hover:scale-105">
+                                        <div className="w-48 h-48 rounded-lg flex items-center justify-center overflow-hidden mb-3">
+                                            <Image
+                                                src={aboutData.intro.logo}
+                                                alt="Logo"
+                                                width={192}
+                                                height={192}
+                                                className="w-full h-full object-contain"
+                                            />
+                                        </div>
+                                        {/* Logo标题 */}
+                                        <div className="text-center text-sm text-gray-700 dark:text-gray-300 font-medium">
+                                            码上拾光
+                                        </div>
+                                    </div>
                                 </div>
                             ) : (
-                                <div className="flex items-center gap-4">
-                                    <Image
-                                        src="/logo.png"
-                                        alt="Logo"
-                                        width={64}
-                                        height={64}
-                                        className="rounded-full"
-                                    />
+                                <div className="relative group">
+                                    {/* 相框样式 */}
+                                    <div className="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-2 rounded-xl shadow-lg border border-gray-100 dark:border-gray-600 dark:shadow-gray-900/50 group-hover:shadow-xl group-hover:shadow-gray-200/50 dark:group-hover:shadow-xl dark:group-hover:shadow-gray-800/50 transition-all duration-300 group-hover:scale-105">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <Image
+                                                src="/logo.png"
+                                                alt="Logo"
+                                                width={48}
+                                                height={48}
+                                                className="rounded-full"
+                                            />
+                                        </div>
+                                        {/* Logo标题 */}
+                                        <div className="text-center text-xs text-gray-700 dark:text-gray-300 font-medium">
+                                            码上拾光
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -195,24 +213,42 @@ export default function AboutPage() {
                         </div>
                         <div className="flex flex-col items-center">
                             {aboutData.intro.logo ? (
-                                <div className="w-48 h-48 rounded-2xl flex items-center justify-center shadow-xl overflow-hidden">
-                                    <Image
-                                        src={aboutData.intro.logo}
-                                        alt="Logo"
-                                        width={192}
-                                        height={192}
-                                        className="w-full h-full object-contain p-4"
-                                    />
+                                <div className="relative group">
+                                    {/* 相框样式 */}
+                                    <div className="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-3 rounded-xl shadow-lg border border-gray-100 dark:border-gray-600 dark:shadow-gray-900/50 group-hover:shadow-xl group-hover:shadow-gray-200/50 dark:group-hover:shadow-xl dark:group-hover:shadow-gray-800/50 transition-all duration-300 group-hover:scale-105">
+                                        <div className="w-48 h-48 rounded-lg flex items-center justify-center overflow-hidden mb-3">
+                                            <Image
+                                                src={aboutData.intro.logo}
+                                                alt="Logo"
+                                                width={192}
+                                                height={192}
+                                                className="w-full h-full object-contain"
+                                            />
+                                        </div>
+                                        {/* Logo标题 */}
+                                        <div className="text-center text-sm text-gray-700 dark:text-gray-300 font-medium">
+                                            码上拾光
+                                        </div>
+                                    </div>
                                 </div>
                             ) : (
-                                <div className="flex items-center gap-3">
-                                    <Image
-                                        src="/logo.png"
-                                        alt="Logo"
-                                        width={48}
-                                        height={48}
-                                        className="rounded-full"
-                                    />
+                                <div className="relative group">
+                                    {/* 相框样式 */}
+                                    <div className="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-2 rounded-xl shadow-lg border border-gray-100 dark:border-gray-600 dark:shadow-gray-900/50 group-hover:shadow-xl group-hover:shadow-gray-200/50 dark:group-hover:shadow-xl dark:group-hover:shadow-gray-800/50 transition-all duration-300 group-hover:scale-105">
+                                        <div className="flex items-center gap-3 mb-2">
+                                            <Image
+                                                src="/logo.png"
+                                                alt="Logo"
+                                                width={48}
+                                                height={48}
+                                                className="rounded-full"
+                                            />
+                                        </div>
+                                        {/* Logo标题 */}
+                                        <div className="text-center text-xs text-gray-700 dark:text-gray-300 font-medium">
+                                            码上拾光
+                                        </div>
+                                    </div>
                                 </div>
                             )}
                         </div>
@@ -246,18 +282,28 @@ export default function AboutPage() {
 
                             {/* 右侧图片 */}
                             <div className="space-y-6">
-                                {section.images?.map((image) => (
-                                    <div key={image.id} className="relative group">
-                                        <Image
-                                            src={image.src || "/placeholder.svg"}
-                                            alt={image.alt}
-                                            width={300}
-                                            height={200}
-                                            className="w-full rounded-lg shadow-lg group-hover:shadow-xl transition-shadow duration-300"
-                                        />
-                                        <div className="text-center mt-2 text-sm text-gray-600 dark:text-gray-400">{image.caption}</div>
+                                {section.images && section.images.length > 0 && (
+                                    <div className="grid grid-cols-2 gap-4">
+                                        {section.images.map((image) => (
+                                            <div key={image.id} className="relative group">
+                                                {/* 相框样式 */}
+                                                <div className="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-3 rounded-xl shadow-lg border border-gray-100 dark:border-gray-600 dark:shadow-gray-900/50 group-hover:shadow-xl group-hover:shadow-gray-200/50 dark:group-hover:shadow-xl dark:group-hover:shadow-gray-800/50 transition-all duration-300 group-hover:scale-105">
+                                                    <Image
+                                                        src={image.src || "/placeholder.svg"}
+                                                        alt={image.alt}
+                                                        width={200}
+                                                        height={150}
+                                                        className="w-full h-32 object-cover rounded-lg mb-3"
+                                                    />
+                                                    {/* 图片标题 */}
+                                                    <div className="text-center text-sm text-gray-700 dark:text-gray-300 font-medium">
+                                                        {image.caption}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
+                                )}
                             </div>
                         </div>
 
@@ -274,17 +320,23 @@ export default function AboutPage() {
 
                             {/* 图片 */}
                             {section.images && section.images.length > 0 && (
-                                <div className="grid grid-cols-1 gap-4">
+                                <div className="grid grid-cols-2 gap-3">
                                     {section.images.map((image) => (
-                                        <div key={image.id} className="relative max-w-sm mx-auto">
-                                            <Image
-                                                src={image.src || "/placeholder.svg"}
-                                                alt={image.alt}
-                                                width={300}
-                                                height={180}
-                                                className="w-full rounded-lg shadow-lg"
-                                            />
-                                            <div className="text-center mt-2 text-xs text-gray-600 dark:text-gray-400">{image.caption}</div>
+                                        <div key={image.id} className="relative group">
+                                            {/* 相框样式 */}
+                                            <div className="relative bg-gradient-to-br from-gray-50 to-white dark:from-gray-800 dark:to-gray-900 p-2 rounded-xl shadow-lg border border-gray-100 dark:border-gray-600 dark:shadow-gray-900/50 group-hover:shadow-xl group-hover:shadow-gray-200/50 dark:group-hover:shadow-xl dark:group-hover:shadow-gray-800/50 transition-all duration-300 group-hover:scale-105">
+                                                <Image
+                                                    src={image.src || "/placeholder.svg"}
+                                                    alt={image.alt}
+                                                    width={150}
+                                                    height={100}
+                                                    className="w-full h-24 object-cover rounded-lg mb-2"
+                                                />
+                                                {/* 图片标题 */}
+                                                <div className="text-center text-xs text-gray-700 dark:text-gray-300 font-medium">
+                                                    {image.caption}
+                                                </div>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>

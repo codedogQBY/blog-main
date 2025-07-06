@@ -379,7 +379,7 @@ export default function Footer() {
             <h3 className="text-lg font-medium text-foreground">联系我</h3>
             <div className="flex items-center gap-4">
               <a
-                href="https://github.com/tuntuntutu"
+                href="https://github.com/codedogQBY/blog-main"
                 target="_blank"
                 rel="noreferrer"
                 className="text-muted-foreground transition-colors hover:text-foreground"
@@ -388,13 +388,13 @@ export default function Footer() {
               </a>
               <HoverCard>
                 <HoverCardTrigger asChild>
-                  <button className="text-muted-foreground transition-colors hover:text-foreground">
+                  <button className="text-muted-foreground transition-colors hover:text-foreground cursor-pointer">
                     <QrCode size={20} />
                   </button>
                 </HoverCardTrigger>
                 <HoverCardContent className="w-64 p-0">
                   <Image
-                    src="/qrcode.jpg"
+                    src="/wechat.jpg"
                     alt="WeChat QR Code"
                     width={256}
                     height={256}
@@ -408,11 +408,6 @@ export default function Footer() {
               >
                 <Mail size={20} />
               </a>
-            </div>
-            <div className="space-y-1 text-sm text-muted-foreground">
-              <div>微信：yikeyjkech</div>
-              <div>QQ：133478536</div>
-              <div>邮箱：chenhuofire@163.com</div>
             </div>
           </div>
         </div>
