@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { api } from '@/lib/api'
-import { Github, Mail, QrCode, Link2 } from 'lucide-react'
+import { Github, Mail, QrCode, Link2, Server, Globe, Settings } from 'lucide-react'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogPortal } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
@@ -379,7 +379,7 @@ export default function Footer() {
             <h3 className="text-lg font-medium text-foreground">联系我</h3>
             <div className="flex items-center gap-4">
               <a
-                href="https://github.com/codedogQBY/blog-main"
+                href="https://github.com/codedogQBY"
                 target="_blank"
                 rel="noreferrer"
                 className="text-muted-foreground transition-colors hover:text-foreground"
@@ -408,6 +408,40 @@ export default function Footer() {
               >
                 <Mail size={20} />
               </a>
+            </div>
+            
+            {/* 项目链接 */}
+            <div className="mt-4">
+              <h4 className="mb-3 text-lg font-medium text-foreground">项目源码</h4>
+              <div className="space-y-2">
+                <a
+                  href="https://github.com/codedogQBY/blog-main-server"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Server size={16} />
+                  <span>后端服务</span>
+                </a>
+                <a
+                  href="https://github.com/codedogQBY/blog-main"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Globe size={16} />
+                  <span>前台页面</span>
+                </a>
+                <a
+                  href="https://github.com/codedogQBY/blog-main-admin"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Settings size={16} />
+                  <span>管理后台</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>
