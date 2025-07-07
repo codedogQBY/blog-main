@@ -9,6 +9,7 @@ import AnimatedBackground from "@/components/animated-background"
 import { Inter } from 'next/font/google';
 import { MonitoringInitializer } from '@/components/monitoring-initializer';
 import { ErrorBoundary } from '@/components/error-boundary';
+import { Toaster } from 'sonner';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -78,6 +79,12 @@ export default function RootLayout({
                         <Footer />
                         <ScrollToTop />
                         <MonitoringInitializer />
+                        <Toaster 
+                            position="top-right"
+                            richColors
+                            closeButton
+                            duration={2000}
+                        />
                     </ThemeProvider>
                 </ErrorBoundary>
             </body>

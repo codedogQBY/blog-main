@@ -112,6 +112,8 @@ export default function Footer() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoggingIn, setIsLoggingIn] = useState(false)
+  const [authCode, setAuthCode] = useState('')
+  const [loginStep, setLoginStep] = useState<'email' | 'twoFactor'>('email')
   const { login, logout, isLoggedIn } = useAuthStore()
 
   useEffect(() => {
@@ -199,15 +201,24 @@ export default function Footer() {
 
     try {
       setIsLoggingIn(true)
-      const success = await login(email, password)
+      const result = await login(email, password)
       
-      if (success) {
+      if (result.success) {
         setLoginDialogOpen(false)
         setEmail('')
         setPassword('')
+        setAuthCode('')
+        setLoginStep('email')
         toast.success('登录成功')
+      } else if (result.needTwoFactor) {
+        // 需要2FA验证
+        setLoginStep('twoFactor')
+        toast.info('请输入验证码')
+      } else if (result.notEnabled) {
+        // 用户未启用2FA
+        toast.error('请先在后台管理系统绑定双因素认证')
       } else {
-        toast.error('登录失败，只有超级管理员才能登录前台')
+        toast.error(result.message || '登录失败，只有超级管理员才能登录前台')
       }
     } catch (error) {
       console.error('登录失败:', error)
@@ -215,6 +226,39 @@ export default function Footer() {
     } finally {
       setIsLoggingIn(false)
     }
+  }
+
+  const handleTwoFactorLogin = async () => {
+    if (!authCode) {
+      toast.error('请输入验证码')
+      return
+    }
+
+    try {
+      setIsLoggingIn(true)
+      const result = await login(email, password, authCode)
+      
+      if (result.success) {
+        setLoginDialogOpen(false)
+        setEmail('')
+        setPassword('')
+        setAuthCode('')
+        setLoginStep('email')
+        toast.success('登录成功')
+      } else {
+        toast.error('验证码错误，请重新输入')
+      }
+    } catch (error) {
+      console.error('2FA验证失败:', error)
+      toast.error('验证失败，请稍后重试')
+    } finally {
+      setIsLoggingIn(false)
+    }
+  }
+
+  const handleBackToEmail = () => {
+    setLoginStep('email')
+    setAuthCode('')
   }
 
   return (
@@ -467,33 +511,70 @@ export default function Footer() {
       <Dialog open={loginDialogOpen} onOpenChange={setLoginDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>登录</DialogTitle>
+            <DialogTitle>
+              {loginStep === 'email' ? '登录' : '双因素认证'}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">邮箱</label>
-              <Input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="请输入邮箱"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">密码</label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="请输入密码"
-              />
-            </div>
-            <Button 
-              className="w-full" 
-              onClick={handleLogin}
-              disabled={isLoggingIn}
-            >
-              {isLoggingIn ? '登录中...' : '登录'}
-            </Button>
+            {loginStep === 'email' ? (
+              <>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">邮箱</label>
+                  <Input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="请输入邮箱"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">密码</label>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="请输入密码"
+                  />
+                </div>
+                <Button 
+                  className="w-full" 
+                  onClick={handleLogin}
+                  disabled={isLoggingIn}
+                >
+                  {isLoggingIn ? '登录中...' : '登录'}
+                </Button>
+              </>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">验证码</label>
+                  <Input
+                    value={authCode}
+                    onChange={(e) => setAuthCode(e.target.value)}
+                    placeholder="请输入6位验证码"
+                    maxLength={6}
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    请输入您的身份验证器应用中的6位验证码
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline"
+                    onClick={handleBackToEmail}
+                    className="flex-1"
+                  >
+                    返回
+                  </Button>
+                  <Button 
+                    className="flex-1" 
+                    onClick={handleTwoFactorLogin}
+                    disabled={isLoggingIn}
+                  >
+                    {isLoggingIn ? '验证中...' : '验证'}
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </DialogContent>
       </Dialog>
