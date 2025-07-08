@@ -163,7 +163,7 @@ export default function Home() {
               <div className="w-[70%] lg:w-auto">
                   {isDark ? (
                       <Image 
-                          src="https://huohuo90.com/images/dark.png" 
+                          src="/dark.png" 
                           alt="Dark background" 
                           width={800} 
                           height={900} 
@@ -172,7 +172,7 @@ export default function Home() {
                       />
                   ) : (
                       <Image 
-                          src="https://huohuo90.com/images/light.png" 
+                          src="/light.png" 
                           alt="Light background" 
                           width={800} 
                           height={900} 

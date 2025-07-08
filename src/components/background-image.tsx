@@ -24,7 +24,7 @@ export default function BackgroundImage() {
             <div className="w-[70%] md:w-auto">
                 {isDark ? (
                     <Image 
-                        src="https://huohuo90.com/images/dark.png" 
+                        src="/dark.png" 
                         alt="Dark background" 
                         width={800} 
                         height={900} 
@@ -33,7 +33,7 @@ export default function BackgroundImage() {
                     />
                 ) : (
                     <Image 
-                        src="https://huohuo90.com/images/light.png" 
+                        src="/light.png" 
                         alt="Light background" 
                         width={800} 
                         height={900} 
