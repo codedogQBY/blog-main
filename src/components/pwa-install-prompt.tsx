@@ -16,12 +16,21 @@ interface BeforeInstallPromptEvent extends Event {
 export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+  const [closeCount, setCloseCount] = useState(0);
 
   useEffect(() => {
+    // 初始化关闭次数
+    const count = Number(localStorage.getItem('pwaInstallPromptCloseCount') || '0');
+    setCloseCount(count);
+    if (count >= 2) return; // 超过2次不再提示
+
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
-      setShowInstallPrompt(true);
+      // 只要没超过2次才弹窗
+      if (Number(localStorage.getItem('pwaInstallPromptCloseCount') || '0') < 2) {
+        setShowInstallPrompt(true);
+      }
     };
 
     window.addEventListener('beforeinstallprompt', handler);
@@ -50,9 +59,13 @@ export function PWAInstallPrompt() {
   const handleDismiss = () => {
     setShowInstallPrompt(false);
     setDeferredPrompt(null);
+    // 增加关闭次数
+    const count = Number(localStorage.getItem('pwaInstallPromptCloseCount') || '0') + 1;
+    localStorage.setItem('pwaInstallPromptCloseCount', String(count));
+    setCloseCount(count);
   };
 
-  if (!showInstallPrompt) return null;
+  if (!showInstallPrompt || closeCount >= 2) return null;
 
   return (
     <div className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50">
