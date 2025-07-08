@@ -15,6 +15,7 @@ import type { GalleryItem } from "@/lib/gallery-api";
 import { getGalleryImages } from "@/lib/gallery-api";
 import { getStickyNotes, type StickyNoteData } from '@/lib/sticky-note-api';
 import { useRouter } from "next/navigation";
+import { getSiteConfig, type SiteConfig } from '@/lib/site-config';
 
 export default function Home() {
   const { theme } = useTheme();
@@ -31,10 +32,13 @@ export default function Home() {
   const carouselRef = useRef<{ handlePrevious: () => void; handleNext: () => void }>(null);
   const [stickyNotes, setStickyNotes] = useState<StickyNoteData[]>([]);
   const [stickyNotesLoading, setStickyNotesLoading] = useState(true);
+  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
+    // 加载站点配置
+    getSiteConfig().then(setSiteConfig).catch(console.error);
   }, []);
   
   const scrollToSecondScreen = () => {
@@ -187,14 +191,22 @@ export default function Home() {
               <div className="flex flex-col items-start w-full lg:w-3/5 lg:ml-[8%]">
                   {/* 大标题 */}
                   <h1 className="text-6xl sm:text-7xl lg:text-9xl font-bold mb-8 tracking-tighter whitespace-nowrap">
-                      <span className="text-black dark:text-white">CODE</span>
-                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 dark:from-blue-300 dark:to-purple-300"> SHINE</span>
+                      <span className="text-black dark:text-white">
+                          {siteConfig?.heroTitle?.first || 'CODE'}
+                      </span>
+                      <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 dark:from-blue-300 dark:to-purple-300">
+                          {' '}{siteConfig?.heroTitle?.second || 'SHINE'}
+                      </span>
                   </h1>
                   
                   {/* 副标题 */}
                   <div className="space-y-6 mb-12 text-left">
-                      <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-gray-100">码上拾光​</h2>
-                      <p className="text-3xl lg:text-4xl font-medium text-gray-700 dark:text-gray-200">在代码间打捞落日余辉</p>
+                      <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-gray-100">
+                          {siteConfig?.title || '码上拾光'}
+                      </h2>
+                      <p className="text-3xl lg:text-4xl font-medium text-gray-700 dark:text-gray-200">
+                          {siteConfig?.subtitle || '在代码间打捞落日余辉'}
+                      </p>
                   </div>
                   
                   {/* 按钮 */}
@@ -209,14 +221,9 @@ export default function Home() {
           </div>
           
           {/* 滚动指示器 */}
-          <div 
-              className="absolute bottom-10 left-8 lg:left-1/2 lg:-translate-x-1/2 cursor-pointer hover:scale-105 transition-transform"
-              onClick={scrollToSecondScreen}
-          >
-              <div className="w-14 h-28 rounded-full bg-blue-500 dark:bg-blue-600 flex items-center justify-center hover:bg-blue-600 dark:hover:bg-blue-700 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-white animate-arrow-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                  </svg>
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer animate-bounce" onClick={scrollToSecondScreen}>
+              <div className="w-8 h-12 border-2 border-gray-700 dark:border-gray-300 rounded-full flex items-start justify-center">
+                  <div className="w-2 h-3 bg-gray-700 dark:bg-gray-300 rounded-full mt-2 animate-scroll"></div>
               </div>
           </div>
       </div>

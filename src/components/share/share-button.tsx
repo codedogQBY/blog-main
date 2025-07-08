@@ -7,6 +7,7 @@ import { snapdom } from '@zumer/snapdom'
 import QRCode from 'qrcode'
 import { useRef, useState, useEffect } from 'react'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
+import { getSiteConfig, type SiteConfig } from '@/lib/site-config'
 
 interface ShareButtonProps {
     title: string
@@ -20,6 +21,7 @@ interface ShareCardContentProps {
     coverImage?: string
     coverImageBase64: string
     qrCodeUrl: string
+    siteConfig: SiteConfig | null
 }
 
 // 分享卡片内容组件
@@ -28,7 +30,8 @@ const ShareCardContent = ({
     title,
     coverImage,
     coverImageBase64,
-    qrCodeUrl
+    qrCodeUrl,
+    siteConfig
 }: ShareCardContentProps) => {
     return (
         <div 
@@ -43,7 +46,7 @@ const ShareCardContent = ({
                         alt="Logo"
                         className="w-5 h-5 rounded-full"
                     />
-                    <h1 className="text-lg md:text-xl font-bold text-gray-800">Code Shine</h1>
+                    <h1 className="text-lg md:text-xl font-bold text-gray-800">{siteConfig?.englishTitle || 'Code Shine'}</h1>
                 </div>
             </div>
 
@@ -64,14 +67,15 @@ const ShareCardContent = ({
                 
                 {/* Text Content */}
                 <div className="text-center mb-3 md:mb-4">
-                    <p className="text-gray-600 text-xs mb-1">码上拾光 博客文章</p>
+                    <p className="text-gray-600 text-xs mb-1">{siteConfig?.title || '码上拾光'} 博客文章</p>
                     <h2 
                         className="text-base md:text-base font-bold text-gray-800"
                         style={{
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             whiteSpace: 'nowrap',
-                            maxWidth: '100%'
+                            maxWidth: '80%',
+                            margin: '0 auto'
                         }}
                     >
                         {title}
@@ -95,7 +99,7 @@ const ShareCardContent = ({
 
             {/* Footer */}
             <div className="text-center space-y-0.5">
-                <p className="text-gray-500 text-xs">码上拾光 个人博客网站提供</p>
+                <p className="text-gray-500 text-xs">{siteConfig?.title || '码上拾光'} {' 个人博客网站'}提供</p>
                 <p className="text-gray-400 text-[10px]">生成时间：{new Date().toLocaleString('zh-CN')}</p>
             </div>
         </div>
@@ -107,7 +111,13 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
     const [isGenerating, setIsGenerating] = useState(false)
     const [coverImageLoaded, setCoverImageLoaded] = useState(false)
     const [coverImageBase64, setCoverImageBase64] = useState<string>('')
+    const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null)
     const cardRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        // 加载站点配置
+        getSiteConfig().then(setSiteConfig).catch(console.error)
+    }, [])
 
     useEffect(() => {
         const generateQRCode = async () => {
@@ -350,6 +360,7 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
                         coverImage={coverImage}
                         coverImageBase64={coverImageBase64}
                         qrCodeUrl={qrCodeUrl}
+                        siteConfig={siteConfig}
                     />
                 </div>
 

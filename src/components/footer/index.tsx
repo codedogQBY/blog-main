@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { toast } from 'sonner'
 import { useAuthStore } from '@/lib/auth'
+import { getSiteConfig, type SiteConfig } from '@/lib/site-config'
 import {
   Tooltip,
   TooltipContent,
@@ -98,6 +99,7 @@ export default function Footer() {
   const [runningTime, setRunningTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
   const [mounted, setMounted] = useState(false)
   const [currentYear, setCurrentYear] = useState(2025)
+  const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null)
   const [formData, setFormData] = useState<FriendLinkFormData>({
     name: '',
     url: '',
@@ -117,32 +119,48 @@ export default function Footer() {
   const { login, logout, isLoggedIn } = useAuthStore()
 
   useEffect(() => {
-    const fetchFriendLinks = async () => {
+    const fetchData = async () => {
       try {
-        const response = await api.get<FriendLink[]>('/friend-links')
-        setFriendLinks(response)
+        const [friendLinksRes, configRes] = await Promise.all([
+          api.get<FriendLink[]>('/friend-links'),
+          getSiteConfig()
+        ])
+        setFriendLinks(friendLinksRes)
+        setSiteConfig(configRes)
       } catch (error) {
-        console.error('获取友链失败:', error)
-        setFriendLinks([]) // 出错时设置为空数组
+        console.error('获取数据失败:', error)
+        setFriendLinks([])
       }
     }
 
-    fetchFriendLinks()
+    fetchData()
     setMounted(true)
     setCurrentYear(new Date().getFullYear())
 
+    // 计算运行时间
+    const startTime = siteConfig?.startTime ? new Date(siteConfig.startTime) : new Date(2025, 5, 6, 10, 0, 0)
+    const calculateRunningTime = () => {
+      const now = new Date()
+      const diff = now.getTime() - startTime.getTime()
+      
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+      
+      setRunningTime({ days, hours, minutes, seconds })
+    }
+
     // 立即设置一次运行时间
-    setRunningTime(getRunningTime())
+    calculateRunningTime()
 
     // 每秒更新运行时间
-    const timer = setInterval(() => {
-      setRunningTime(getRunningTime())
-    }, 1000)
+    const timer = setInterval(calculateRunningTime, 1000)
 
     return () => {
       clearInterval(timer)
     }
-  }, [])
+  }, [siteConfig?.startTime])
 
   const handleSubmit = async () => {
     if (!formData.name || !formData.url || !formData.email) {
@@ -422,36 +440,42 @@ export default function Footer() {
           <div className="flex flex-col items-start gap-4">
             <h3 className="text-lg font-medium text-foreground">联系我</h3>
             <div className="flex items-center gap-4">
-              <a
-                href="https://github.com/codedogQBY"
-                target="_blank"
-                rel="noreferrer"
-                className="text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <Github size={20} />
-              </a>
-              <HoverCard>
-                <HoverCardTrigger asChild>
-                  <button className="text-muted-foreground transition-colors hover:text-foreground cursor-pointer">
-                    <QrCode size={20} />
-                  </button>
-                </HoverCardTrigger>
-                <HoverCardContent className="w-64 p-0">
-                  <Image
-                    src="/wechat.jpg"
-                    alt="WeChat QR Code"
-                    width={256}
-                    height={256}
-                    className="rounded-lg"
-                  />
-                </HoverCardContent>
-              </HoverCard>
-              <a
-                href="mailto:chenhuofire@163.com"
-                className="text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <Mail size={20} />
-              </a>
+              {siteConfig?.socialLinks.github && (
+                <a
+                  href={siteConfig.socialLinks.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Github size={20} />
+                </a>
+              )}
+              {siteConfig?.wechatQrcode && (
+                <HoverCard>
+                  <HoverCardTrigger asChild>
+                    <button className="text-muted-foreground transition-colors hover:text-foreground cursor-pointer">
+                      <QrCode size={20} />
+                    </button>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-64 p-0">
+                    <Image
+                      src={siteConfig.wechatQrcode}
+                      alt="WeChat QR Code"
+                      width={256}
+                      height={256}
+                      className="rounded-lg"
+                    />
+                  </HoverCardContent>
+                </HoverCard>
+              )}
+              {siteConfig?.socialLinks.email && (
+                <a
+                  href={`mailto:${siteConfig.socialLinks.email}`}
+                  className="text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Mail size={20} />
+                </a>
+              )}
             </div>
             
             {/* 项目链接 */}
@@ -492,18 +516,20 @@ export default function Footer() {
 
         {/* 备案信息 */}
         <div className="flex flex-col items-center gap-3 border-t border-border pt-6 text-center text-sm text-muted-foreground">
-          <p>© {currentYear} <span onClick={handleLogoClick}>Code Shine</span>. All rights reserved.</p>
+          <p>© {currentYear} <span onClick={handleLogoClick}>{siteConfig?.englishTitle || 'Code Shine'}</span>. All rights reserved.</p>
           <p suppressHydrationWarning>
             本站已运行：{mounted ? `${runningTime.days}天${runningTime.hours}时${runningTime.minutes}分${runningTime.seconds}秒` : '加载中...'}
           </p>
-          <a
-            href="https://beian.miit.gov.cn"
-            target="_blank"
-            rel="noreferrer"
-            className="transition-colors hover:text-foreground"
-          >
-            粤ICP备19012866号
-          </a>
+          {siteConfig?.icpNumber && (
+            <a
+              href="https://beian.miit.gov.cn"
+              target="_blank"
+              rel="noreferrer"
+              className="transition-colors hover:text-foreground"
+            >
+              {siteConfig.icpNumber}
+            </a>
+          )}
         </div>
       </div>
 

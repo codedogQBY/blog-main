@@ -2,38 +2,71 @@ import type React from "react"
 import type { Metadata, Viewport } from "next"
 import "./globals.css"
 import { ThemeProvider } from "next-themes"
-import Header from "@/components/header";
+import Header from "@/components/header"
 import Footer from "@/components/footer"
 import ScrollToTop from "@/components/scroll-to-top"
 import AnimatedBackground from "@/components/animated-background"
-import { MonitoringInitializer } from '@/components/monitoring-initializer';
-import { ErrorBoundary } from '@/components/error-boundary';
-import { Toaster } from 'sonner';
-import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
+import { MonitoringInitializer } from '@/components/monitoring-initializer'
+import { ErrorBoundary } from '@/components/error-boundary'
+import { Toaster } from 'sonner'
+import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
+import { getSiteConfig, DEFAULT_SITE_CONFIG } from '@/lib/site-config'
 
-export const metadata: Metadata = {
-    title: "码上拾光 - 在代码间打捞落日余辉",
-    description: "一个记录个人成长和思考的博客",
-    icons: {
-        icon: '/favicon.ico',
-        apple: '/apple-touch-icon.png',
-    },
-    manifest: '/manifest.json',
-    appleWebApp: {
-        capable: true,
-        statusBarStyle: 'default',
-        title: '个人博客',
-    },
-    other: {
-        'mobile-web-app-capable': 'yes',
-        'apple-mobile-web-app-capable': 'yes',
-        'apple-mobile-web-app-status-bar-style': 'default',
-        'apple-mobile-web-app-title': '个人博客',
-        'application-name': '个人博客',
-        'msapplication-TileColor': '#000000',
-        'msapplication-config': '/browserconfig.xml',
-    },
+async function generateMetadata(): Promise<Metadata> {
+    try {
+        const config = await getSiteConfig()
+        return {
+            title: config.title,
+            description: config.description,
+            icons: {
+                icon: '/favicon.ico',
+                apple: '/apple-touch-icon.png',
+            },
+            manifest: '/manifest.json',
+            appleWebApp: {
+                capable: true,
+                statusBarStyle: 'default',
+                title: config.title,
+            },
+            other: {
+                'mobile-web-app-capable': 'yes',
+                'apple-mobile-web-app-capable': 'yes',
+                'apple-mobile-web-app-status-bar-style': 'default',
+                'apple-mobile-web-app-title': config.title,
+                'application-name': config.title,
+                'msapplication-TileColor': '#000000',
+                'msapplication-config': '/browserconfig.xml',
+            },
+        }
+    } catch (error) {
+        console.error('Failed to fetch site config:', error)
+        return {
+            title: DEFAULT_SITE_CONFIG.title,
+            description: DEFAULT_SITE_CONFIG.description,
+            icons: {
+                icon: '/favicon.ico',
+                apple: '/apple-touch-icon.png',
+            },
+            manifest: '/manifest.json',
+            appleWebApp: {
+                capable: true,
+                statusBarStyle: 'default',
+                title: DEFAULT_SITE_CONFIG.title,
+            },
+            other: {
+                'mobile-web-app-capable': 'yes',
+                'apple-mobile-web-app-capable': 'yes',
+                'apple-mobile-web-app-status-bar-style': 'default',
+                'apple-mobile-web-app-title': DEFAULT_SITE_CONFIG.title,
+                'application-name': DEFAULT_SITE_CONFIG.title,
+                'msapplication-TileColor': '#000000',
+                'msapplication-config': '/browserconfig.xml',
+            },
+        }
+    }
 }
+
+export const metadata = generateMetadata()
 
 export const viewport: Viewport = {
     width: 'device-width',
@@ -79,11 +112,13 @@ function ThemeScript() {
     )
 }
 
-export default function RootLayout({
-                                       children,
-                                   }: {
+export default async function RootLayout({
+    children,
+}: {
     children: React.ReactNode
 }) {
+    const config = await getSiteConfig().catch(() => DEFAULT_SITE_CONFIG)
+    
     return (
         <html lang="zh-CN" suppressHydrationWarning className="theme-transition">
             <head>
@@ -93,9 +128,9 @@ export default function RootLayout({
                 <meta name="theme-color" content="#000000" />
                 <meta name="apple-mobile-web-app-capable" content="yes" />
                 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-                <meta name="apple-mobile-web-app-title" content="个人博客" />
+                <meta name="apple-mobile-web-app-title" content={config.title} />
                 <meta name="mobile-web-app-capable" content="yes" />
-                <meta name="application-name" content="个人博客" />
+                <meta name="application-name" content={config.title} />
             </head>
             <body className="font-sans bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen theme-transition theme-mask flex flex-col" suppressHydrationWarning>
                 <ErrorBoundary>
