@@ -220,8 +220,8 @@ export default function Home() {
               </div>
           </div>
           
-          {/* 滚动指示器 */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 cursor-pointer animate-bounce" onClick={scrollToSecondScreen}>
+          {/* 滚动指示器：PC端居中，中小屏靠左 */}
+          <div className="absolute bottom-8 left-8 lg:left-1/2 lg:transform lg:-translate-x-1/2 cursor-pointer animate-bounce" onClick={scrollToSecondScreen}>
               <div className="w-8 h-12 border-2 border-gray-700 dark:border-gray-300 rounded-full flex items-start justify-center">
                   <div className="w-2 h-3 bg-gray-700 dark:bg-gray-300 rounded-full mt-2 animate-scroll"></div>
               </div>
