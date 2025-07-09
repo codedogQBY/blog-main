@@ -19,10 +19,12 @@ if (typeof window !== 'undefined') {
 // 全局变量存储 webSee 实例
 let webseeInstance: any = null;
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+
 // web-see 配置
 export const webseeConfig = {
   // 基础配置
-  dsn: 'http://localhost:3001/logs/report',
+  dsn: API_BASE_URL + '/logs/report',
   apikey: 'blog-frontend',
   userId: 'anonymous',
   
