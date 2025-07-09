@@ -1,3 +1,5 @@
+"use client"
+
 import { Share2, Copy, Download } from 'lucide-react'
 import { Button } from '../ui/button'
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '../ui/hover-card'
@@ -8,6 +10,7 @@ import QRCode from 'qrcode'
 import { useRef, useState, useEffect } from 'react'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { getSiteConfig, type SiteConfig } from '@/lib/site-config'
+import dynamic from 'next/dynamic'
 
 interface ShareButtonProps {
     title: string
@@ -22,6 +25,7 @@ interface ShareCardContentProps {
     coverImageBase64: string
     qrCodeUrl: string
     siteConfig: SiteConfig | null
+    currentTime: string
 }
 
 // 分享卡片内容组件
@@ -31,7 +35,8 @@ const ShareCardContent = ({
     coverImage,
     coverImageBase64,
     qrCodeUrl,
-    siteConfig
+    siteConfig,
+    currentTime
 }: ShareCardContentProps) => {
     return (
         <div 
@@ -100,23 +105,27 @@ const ShareCardContent = ({
             {/* Footer */}
             <div className="text-center space-y-0.5">
                 <p className="text-gray-500 text-xs">{siteConfig?.title || '码上拾光'} {' 个人博客网站'}提供</p>
-                <p className="text-gray-400 text-[10px]">生成时间：{new Date().toLocaleString('zh-CN')}</p>
+                <p className="text-gray-400 text-[10px]">生成时间：{currentTime}</p>
             </div>
         </div>
     )
 }
 
-export default function ShareButton({ title, url, coverImage }: ShareButtonProps) {
+function ShareButtonComponent({ title, url, coverImage }: ShareButtonProps) {
     const [qrCodeUrl, setQrCodeUrl] = useState<string>('')
     const [isGenerating, setIsGenerating] = useState(false)
     const [coverImageLoaded, setCoverImageLoaded] = useState(false)
     const [coverImageBase64, setCoverImageBase64] = useState<string>('')
     const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null)
+    const [currentTime, setCurrentTime] = useState<string>('')
     const cardRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         // 加载站点配置
         getSiteConfig().then(setSiteConfig).catch(console.error)
+        
+        // 设置客户端时间
+        setCurrentTime(new Date().toLocaleString('zh-CN'))
     }, [])
 
     useEffect(() => {
@@ -361,6 +370,7 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
                         coverImageBase64={coverImageBase64}
                         qrCodeUrl={qrCodeUrl}
                         siteConfig={siteConfig}
+                        currentTime={currentTime}
                     />
                 </div>
 
@@ -438,3 +448,21 @@ export default function ShareButton({ title, url, coverImage }: ShareButtonProps
         </div>
     )
 }
+
+// 使用动态导入，禁用 SSR
+const ShareButton = dynamic(() => Promise.resolve(ShareButtonComponent), {
+    ssr: false,
+    loading: () => (
+        <div className="group relative">
+            <Button
+                className="w-14 h-14 rounded-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-lg transition-all duration-300 hover:scale-110 cursor-pointer dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+            >
+                <div className="flex flex-col items-center">
+                    <Share2 className="w-5 h-5 transition-transform group-hover:scale-110" />
+                </div>
+            </Button>
+        </div>
+    )
+})
+
+export default ShareButton

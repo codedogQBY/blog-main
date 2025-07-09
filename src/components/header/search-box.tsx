@@ -261,7 +261,7 @@ export default function SearchBox({ className = "", onSelect }: SearchBoxProps) 
                                     {searchResults.articles.map((item) => (
                                         <button
                                             key={item.id}
-                                            className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                                            className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group cursor-pointer"
                                             onClick={() => handleSelectResult(item)}
                                         >
                                             <div className="flex items-start space-x-3">
@@ -297,7 +297,7 @@ export default function SearchBox({ className = "", onSelect }: SearchBoxProps) 
                                     {searchResults.diaries.map((item) => (
                                         <button
                                             key={item.id}
-                                            className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                                            className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group cursor-pointer"
                                             onClick={() => handleSelectResult(item)}
                                         >
                                             <div className="flex items-start space-x-3">
@@ -333,7 +333,7 @@ export default function SearchBox({ className = "", onSelect }: SearchBoxProps) 
                                     {searchResults.galleries.map((item) => (
                                         <button
                                             key={item.id}
-                                            className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+                                            className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group cursor-pointer"
                                             onClick={() => handleSelectResult(item)}
                                         >
                                             <div className="flex items-start space-x-3">

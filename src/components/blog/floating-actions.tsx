@@ -33,7 +33,7 @@ export default function FloatingActions({
   const [displayComments, setDisplayComments] = useState(0)
   const [displayIsLiked, setDisplayIsLiked] = useState(false)
   const [showScrollTop, setShowScrollTop] = useState(false)
-  const [mounted, setMounted] = useState(true)
+  const [mounted, setMounted] = useState(false)
 
   // 组件挂载和卸载
   useEffect(() => {
@@ -187,7 +187,7 @@ export default function FloatingActions({
       </div>
 
       {/* 分享按钮 */}
-      {shareUrl && (
+      {mounted && shareUrl && (
         <ShareButton 
           title={shareTitle} 
           url={shareUrl}
@@ -196,7 +196,7 @@ export default function FloatingActions({
       )}
 
       {/* 回到顶部按钮 */}
-      {showScrollTop && (
+      {mounted && showScrollTop && (
         <div className="group relative">
           <Button
             onClick={scrollToTop}
