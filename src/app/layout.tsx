@@ -11,6 +11,7 @@ import { ErrorBoundary } from '@/components/error-boundary'
 import { Toaster } from 'sonner'
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
 import { getSiteConfig, DEFAULT_SITE_CONFIG } from '@/lib/site-config'
+import { UserTracker } from '@/components/user-tracker'
 
 async function generateMetadata(): Promise<Metadata> {
     try {
@@ -143,6 +144,7 @@ export default async function RootLayout({
                         <Footer />
                         <ScrollToTop />
                         <MonitoringInitializer />
+                        <UserTracker />
                         <Toaster 
                             position="top-right"
                             richColors
