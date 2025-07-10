@@ -5,10 +5,10 @@ import NotePaper from "./note-paper"
 import { diaryApi } from "@/lib/diary-api"
 import type { Note } from "@/types/note"
 
-const DiaryCarousel = forwardRef<{ handlePrevious: () => void; handleNext: () => void }, {}>(function DiaryCarousel(_, ref) {
+const DiaryCarousel = forwardRef<{ handlePrevious: () => void; handleNext: () => void }, Record<string, unknown>>(function DiaryCarousel(_, ref) {
   const [notes, setNotes] = useState<Note[]>([])
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [loading, setLoading] = useState(true)
+  // const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const loadNotes = async () => {
@@ -18,7 +18,7 @@ const DiaryCarousel = forwardRef<{ handlePrevious: () => void; handleNext: () =>
       } catch (error) {
         console.error('加载随记失败:', error)
       } finally {
-        setLoading(false)
+        // setLoading(false)
       }
     }
 

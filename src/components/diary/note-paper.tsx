@@ -11,7 +11,7 @@ interface NotePaperProps {
     variant?: 'home' | 'diary' // 添加variant属性，默认为diary
 }
 
-export default function NotePaper({ note, variant = 'diary' }: NotePaperProps) {
+export default function NotePaper({ note }: NotePaperProps) {
     const [signature, setSignature] = useState<DiarySignature | null>(null)
 
     // 加载签名配置

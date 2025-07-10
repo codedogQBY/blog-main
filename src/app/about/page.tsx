@@ -6,8 +6,8 @@ import AboutClient from './about-client'
 async function getAboutData(): Promise<AboutConfig | null> {
   try {
     return await getAboutConfig()
-  } catch (error) {
-    console.error("Failed to load about data:", error)
+            } catch (error) {
+                console.error("Failed to load about data:", error)
     return null
   }
 }

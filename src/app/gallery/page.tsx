@@ -104,15 +104,6 @@ export default function GalleryPage() {
         return options
     }, [items, categories])
 
-    // 收集所有标签
-    const allTags = useMemo(() => {
-        const tagSet = new Set<string>()
-        items.forEach(item => {
-            item.tags?.forEach(tag => tagSet.add(tag))
-        })
-        return Array.from(tagSet).sort()
-    }, [items])
-
     // 处理加载更多
     const handleLoadMore = async (): Promise<GalleryItem[]> => {
         await loadMore()

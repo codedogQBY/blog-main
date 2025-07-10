@@ -5,14 +5,14 @@ import type { Article } from "@/lib/api"
 import ArticleDetailClient from "./article-detail-client"
 
 interface PageProps {
-  params: { slug: string }
+  params: Promise<{ slug: string }>
 }
 
 async function getArticle(slug: string): Promise<Article | null> {
   try {
     const article = await api.getArticleBySlug(slug)
-    
-    // 增加浏览量
+                
+                // 增加浏览量
     if (article.id) {
       await api.incrementArticleViews(article.id)
     }
@@ -35,7 +35,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
 
-  const categoryName = typeof article.category === 'object' ? article.category.name : article.category
   const authorName = typeof article.author === 'object' ? article.author.name : article.author
 
   return {

@@ -40,8 +40,8 @@ export default function BlogListClient({
 }: BlogListClientProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("全部")
   const [searchQuery, setSearchQuery] = useState("")
-  const [categoryStats, setCategoryStats] = useState(initialCategoryStats)
-  const [displayCategories, setDisplayCategories] = useState(initialDisplayCategories)
+  const [categoryStats] = useState(initialCategoryStats)
+  const [displayCategories] = useState(initialDisplayCategories)
 
   // 加载文章数据
   const loadArticles = useCallback(

@@ -1,10 +1,8 @@
 "use client"
 
 import { useEffect, useRef } from "react"
-import { Calendar, Eye, MessageCircle, ArrowLeft } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Calendar, Eye, MessageCircle } from "lucide-react"
 import type { Article } from "@/lib/api"
-import Link from "next/link"
 import Image from "next/image"
 import FloatingActions from '@/components/blog/floating-actions'
 import CommentSection from '@/components/blog/comment-section'
@@ -13,13 +11,20 @@ interface ArticleDetailClientProps {
   article: Article
 }
 
+interface WindowWithRefresh extends Window {
+  refreshFloatingStats?: () => void
+}
+
 export default function ArticleDetailClient({ article }: ArticleDetailClientProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
   const handleCommentAdded = () => {
     // 评论添加后，刷新悬浮按钮的统计数据
-    if (typeof window !== 'undefined' && (window as any).refreshFloatingStats) {
-      (window as any).refreshFloatingStats()
+    if (typeof window !== 'undefined') {
+      const win = window as WindowWithRefresh
+      if (win.refreshFloatingStats) {
+        win.refreshFloatingStats()
+      }
     }
   }
 

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { api } from '@/lib/api';
 
 interface ArticleLayoutProps {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
   children: React.ReactNode;
 }
 

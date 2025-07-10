@@ -2,7 +2,6 @@
 
 import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
-import { usePathname } from "next/navigation"
 
 export default function AnimatedBackground() {
     const { theme } = useTheme()
@@ -19,8 +18,6 @@ export default function AnimatedBackground() {
         startX?: number
         startY?: number
     }>>([])
-    const pathname = usePathname()
-    const isHomePage = pathname === "/"
 
     useEffect(() => {
         setMounted(true)

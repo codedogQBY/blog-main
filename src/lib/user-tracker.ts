@@ -1,6 +1,32 @@
 import { api } from './api';
 import { getOrGenerateFingerprint, collectUserInfo } from './fingerprint';
 
+interface ExtendedUserInfo {
+  userAgent: string;
+  deviceType: string;
+  country?: string;
+  region?: string;
+  city?: string;
+  latitude?: number;
+  longitude?: number;
+  timezone?: string;
+  deviceModel?: string;
+  osName?: string;
+  osVersion?: string;
+  browserName?: string;
+  browserVersion?: string;
+  screenWidth?: number;
+  screenHeight?: number;
+  language?: string;
+  languages?: string;
+}
+
+interface BackendUserInfo extends ExtendedUserInfo {
+  ipAddress?: string;
+  nickname?: string;
+  email?: string;
+}
+
 // 检查是否需要追踪（避免频繁请求）
 function shouldTrack(): boolean {
   const lastTrackTime = localStorage.getItem('lastTrackTime');
@@ -24,29 +50,29 @@ export async function trackUser() {
     }
 
     const fingerprint = getOrGenerateFingerprint();
-    const userInfo = await collectUserInfo();
+    const userInfo = await collectUserInfo() as ExtendedUserInfo;
 
     // 转换为后端期望的格式
-    const backendUserInfo = {
+    const backendUserInfo: BackendUserInfo = {
       userAgent: userInfo.userAgent,
       deviceType: userInfo.deviceType,
       // 不传递IP，让后端自动获取
       ipAddress: undefined,
-      country: (userInfo as any).country,
-      region: (userInfo as any).region,
-      city: (userInfo as any).city,
-      latitude: (userInfo as any).latitude,
-      longitude: (userInfo as any).longitude,
-      timezone: (userInfo as any).timezone,
-      deviceModel: (userInfo as any).deviceModel,
-      osName: (userInfo as any).osName,
-      osVersion: (userInfo as any).osVersion,
-      browserName: (userInfo as any).browserName,
-      browserVersion: (userInfo as any).browserVersion,
-      screenWidth: (userInfo as any).screenWidth,
-      screenHeight: (userInfo as any).screenHeight,
-      language: (userInfo as any).language,
-      languages: (userInfo as any).language,
+      country: userInfo.country,
+      region: userInfo.region,
+      city: userInfo.city,
+      latitude: userInfo.latitude,
+      longitude: userInfo.longitude,
+      timezone: userInfo.timezone,
+      deviceModel: userInfo.deviceModel,
+      osName: userInfo.osName,
+      osVersion: userInfo.osVersion,
+      browserName: userInfo.browserName,
+      browserVersion: userInfo.browserVersion,
+      screenWidth: userInfo.screenWidth,
+      screenHeight: userInfo.screenHeight,
+      language: userInfo.language,
+      languages: userInfo.language,
       nickname: undefined,
       email: undefined,
     };
@@ -55,7 +81,8 @@ export async function trackUser() {
       fingerprint,
       userInfo: backendUserInfo,
     });
-  } catch (error) {
+  } catch {
+    // 忽略错误
   }
 }
 

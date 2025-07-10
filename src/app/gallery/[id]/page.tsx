@@ -8,9 +8,10 @@ import CommentSection from "@/components/blog/comment-section"
 import FloatingActions from "@/components/blog/floating-actions"
 import { getGalleryItem } from "@/lib/gallery-api"
 import type { GalleryItem } from "@/types/gallery"
-import Link from "next/link"
-import { ArrowLeft } from "lucide-react"
-import ShareButton from '@/components/share/share-button'
+
+interface WindowWithRefresh extends Window {
+  refreshFloatingStats?: () => void
+}
 
 export default function GalleryDetailPage() {
     const params = useParams()
@@ -24,8 +25,11 @@ export default function GalleryDetailPage() {
 
     const handleCommentAdded = () => {
         // 评论添加后，刷新悬浮按钮的统计数据
-        if (typeof window !== 'undefined' && (window as any).refreshFloatingStats) {
-            (window as any).refreshFloatingStats()
+        if (typeof window !== 'undefined') {
+            const win = window as WindowWithRefresh
+            if (win.refreshFloatingStats) {
+                win.refreshFloatingStats()
+            }
         }
     }
 

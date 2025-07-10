@@ -7,7 +7,13 @@ interface LoginResponse {
   requires2FA?: boolean
   userId?: string
   message?: string
-  user?: any
+  user?: {
+    id: string
+    name: string
+    email: string
+    isSuperAdmin: boolean
+    permissions: string[]
+  }
   needsSetup2FA?: boolean
 }
 
@@ -15,10 +21,6 @@ interface TwoFactorVerifyResponse {
   success: boolean
   message?: string
   accessToken?: string
-}
-
-interface TwoFactorCompleteResponse {
-  accessToken: string
 }
 
 interface LoginResult {
@@ -37,9 +39,18 @@ interface AuthState {
   logout: () => void
 }
 
+interface ApiError extends Error {
+  response?: {
+    status: number
+    data?: {
+      message?: string
+    }
+  }
+}
+
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       isLoggedIn: false,
       username: null,
       accessToken: null,
@@ -134,14 +145,15 @@ export const useAuthStore = create<AuthState>()(
             }
           }
           return { success: false, message: '登录失败' }
-        } catch (error: any) {
+        } catch (error) {
           console.error('登录失败:', error)
           
+          const apiError = error as ApiError
           // 根据错误类型返回不同的结果
-          if (error.response?.status === 401) {
-            if (error.response?.data?.message?.includes('2FA')) {
+          if (apiError.response?.status === 401) {
+            if (apiError.response?.data?.message?.includes('2FA')) {
               return { success: false, needTwoFactor: true }
-            } else if (error.response?.data?.message?.includes('not enabled')) {
+            } else if (apiError.response?.data?.message?.includes('not enabled')) {
               return { success: false, notEnabled: true }
             }
           }

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, Suspense } from "react"
 import { Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import StickyNote from "@/components/wall/sticky-note"
@@ -9,12 +9,12 @@ import MessageDetailModal from "@/components/wall/message-detail-modal"
 import FloatingWallActions from "@/components/wall/floating-wall-actions"
 import InfiniteScrollLoader from "@/components/loading/infinite-scroll-loader"
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
-import { getStickyNotes, getStickyNoteCategories, type StickyNoteData, type CreateStickyNoteData, createStickyNote } from "@/lib/sticky-note-api"
-import { toggleLike, addComment, getInteractionStats } from "@/lib/interaction-api"
+import { getStickyNotes, getStickyNoteCategories, type StickyNoteData, createStickyNote } from "@/lib/sticky-note-api"
+import { toggleLike, getInteractionStats } from "@/lib/interaction-api"
 import { getOrGenerateFingerprint, collectUserInfo } from "@/lib/fingerprint"
 import { useSearchParams } from 'next/navigation'
 
-export default function MessagesPage() {
+function MessagesPageContent() {
     const [selectedCategory, setSelectedCategory] = useState("全部")
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [isDetailModalOpen, setIsDetailModalOpen] = useState(false)
@@ -188,7 +188,11 @@ export default function MessagesPage() {
         if (!fingerprint) return
         
         try {
-            const userInfo = await collectUserInfo()
+            const baseUserInfo = await collectUserInfo()
+            const userInfo = {
+                ...baseUserInfo,
+                nickname: '匿名用户'
+            }
             const response = await toggleLike({
                 targetType: 'sticky_note',
                 targetId: id,
@@ -362,5 +366,13 @@ export default function MessagesPage() {
             {/* 浮动操作按钮 */}
             <FloatingWallActions onAddMessage={() => setIsModalOpen(true)} />
         </div>
+    )
+}
+
+export default function MessagesPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <MessagesPageContent />
+        </Suspense>
     )
 }

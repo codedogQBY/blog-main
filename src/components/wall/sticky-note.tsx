@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useRef } from "react"
+import { useState } from "react"
 import { Heart, MessageCircle, Calendar, Tag } from "lucide-react"
 
 export interface StickyNoteData {
@@ -81,7 +81,6 @@ const modernColorThemes = {
 export default function StickyNote({ note, onLike, onComment, onClick }: StickyNoteProps) {
     const [isHovered, setIsHovered] = useState(false)
     const [isPressed, setIsPressed] = useState(false)
-    const cardRef = useRef<HTMLDivElement>(null)
     const theme = modernColorThemes[note.color]
 
     const handleLike = (e: React.MouseEvent) => {
@@ -100,7 +99,6 @@ export default function StickyNote({ note, onLike, onComment, onClick }: StickyN
 
     return (
         <article
-            ref={cardRef}
             className={`
         group relative overflow-hidden rounded-3xl border backdrop-blur-xl cursor-pointer
         transition-all duration-500 ease-out transform-gpu

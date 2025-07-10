@@ -1,12 +1,8 @@
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import Image from "next/image";
 import { api } from "@/lib/api";
-import type { Article } from "@/types/article";
-import { getGalleryImages, type GalleryItem } from "@/lib/gallery-api";
-import { getStickyNotes, type StickyNoteData } from '@/lib/sticky-note-api';
-import { getSiteConfig, type SiteConfig } from '@/lib/site-config';
-import HomeClient from './home-client';
+import { getGalleryImages } from "@/lib/gallery-api";
+import { getStickyNotes } from '@/lib/sticky-note-api';
+import { getSiteConfig } from '@/lib/site-config';
+import HomeClient from '@/app/home-client';
 
 async function getHomeData() {
   try {
@@ -28,16 +24,16 @@ async function getHomeData() {
 
     // 格式化文章数据
     const formattedArticles = articlesResponse.data.map(article => ({
-      ...article,
-      publishDate: article.publishedAt || article.createdAt,
-      category: typeof article.category === 'object' ? article.category.name : article.category,
-      tags: Array.isArray(article.tags) 
-        ? article.tags.map(t => typeof t === 'string' ? t : t.tag.name)
-        : [],
-      comments: article._count?.comments || 0,
-      author: typeof article.author === 'object' ? article.author.name : article.author,
-      coverImage: article.coverImage || "/placeholder.svg?height=128&width=128",
-    }));
+          ...article,
+          publishDate: article.publishedAt || article.createdAt,
+          category: typeof article.category === 'object' ? article.category.name : article.category,
+          tags: Array.isArray(article.tags) 
+            ? article.tags.map(t => typeof t === 'string' ? t : t.tag.name)
+            : [],
+          comments: article._count?.comments || 0,
+          author: typeof article.author === 'object' ? article.author.name : article.author,
+          coverImage: article.coverImage || "/placeholder.svg?height=128&width=128",
+        }));
 
     return {
       articles: formattedArticles,
@@ -45,7 +41,7 @@ async function getHomeData() {
       stickyNotes: stickyNotesResponse.data,
       siteConfig
     };
-  } catch (error) {
+      } catch (error) {
     console.error('获取首页数据失败:', error);
     // 返回默认数据
     return {
@@ -56,7 +52,20 @@ async function getHomeData() {
         title: 'CODE SHINE',
         subtitle: '码上拾光',
         description: '在代码间打捞落日余辉',
-        heroTitle: { first: 'CODE', second: 'SHINE' }
+        icpNumber: '',
+        wechatQrcode: '',
+        startTime: '2024',
+        englishTitle: 'Code Shine',
+        heroTitle: { first: 'CODE', second: 'SHINE' },
+        socialLinks: {
+          github: '',
+          email: ''
+        },
+        seoDefaults: {
+          title: '代码闪耀 - 技术博客',
+          description: '分享技术，记录生活',
+          keywords: ['技术博客', '编程', '前端', '后端']
+        }
       }))
     };
   }

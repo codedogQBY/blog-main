@@ -58,16 +58,15 @@ export default function GalleryCard({ item, onClick }: GalleryCardProps) {
     }, [isHovered, isMobile, showDetails, item.images.length])
 
     // 处理移动端触摸事件
-    const handleTouchStart = (e: React.TouchEvent) => {
+    const handleTouchStart = () => {
         touchStartRef.current = Date.now()
     }
 
-    const handleTouchEnd = (e: React.TouchEvent) => {
+    const handleTouchEnd = () => {
         const touchDuration = Date.now() - touchStartRef.current
         
         // 短按切换详情显示，长按进入详情页
         if (touchDuration < 300) {
-            e.stopPropagation()
             if (item.images.length > 1) {
                 setShowDetails(!showDetails)
             } else {

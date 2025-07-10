@@ -58,7 +58,7 @@ export default function CommentSection({ targetType, targetId, onCommentAdded }:
         setNickname(savedNickname)
       }
     }
-  }, [isLoggedIn, username])
+  }, [isLoggedIn, username, isSuperAdmin, nickname])
 
   // 加载评论
   const loadComments = async (pageNum = 1, append = false) => {

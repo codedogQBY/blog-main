@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { api } from '@/lib/api'
 import { Github, Mail, QrCode, Link2, Server, Globe, Settings } from 'lucide-react'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogPortal } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -33,22 +33,6 @@ interface FriendLinkFormData {
   logo: string
   description: string
   email: string
-}
-
-// 网站开始运行时间
-const START_TIME = new Date(2025, 5, 6, 10, 0, 0) // 2025-06-06 10:00:00
-
-// 计算运行时间
-function getRunningTime() {
-  const now = new Date()
-  const diff = now.getTime() - START_TIME.getTime()
-  
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000)
-  
-  return { days, hours, minutes, seconds }
 }
 
 const TECH_STACK = [
@@ -110,13 +94,12 @@ export default function Footer() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [loginDialogOpen, setLoginDialogOpen] = useState(false)
-  const [clickCount, setClickCount] = useState(0)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [authCode, setAuthCode] = useState('')
   const [loginStep, setLoginStep] = useState<'email' | 'twoFactor'>('email')
-  const { login, logout, isLoggedIn } = useAuthStore()
+  const { login } = useAuthStore()
 
   useEffect(() => {
     const fetchData = async () => {
@@ -175,7 +158,7 @@ export default function Footer() {
 
     try {
       setIsSubmitting(true)
-      await api.post('/friend-links/apply', formData)
+      await api.post('/friend-links/apply', formData as unknown as Record<string, unknown>)
       toast.success('友链申请已提交，请等待站长审核')
       setDialogOpen(false)
       setFormData({
@@ -198,17 +181,6 @@ export default function Footer() {
       ...prev,
       [field]: value
     }))
-  }
-
-  const handleLogoClick = () => {
-    setClickCount(prev => {
-      const newCount = prev + 1
-      if (newCount >= 5) {
-        setLoginDialogOpen(true)
-        return 0
-      }
-      return newCount
-    })
   }
 
   const handleLogin = async () => {
@@ -388,7 +360,9 @@ export default function Footer() {
                 className="group flex items-center gap-3 rounded-lg bg-gray-200/80 p-3 backdrop-blur-md transition-all hover:bg-gray-200/80 dark:bg-white/10 dark:backdrop-blur-md dark:hover:bg-white/20"
               >
                 {link.logo ? (
-                  <img
+                  <Image
+                    width={36}
+                    height={36}
                     src={link.logo}
                     alt={link.name}
                     className="aspect-square h-9 w-9 rounded-full object-cover ring-1 ring-border/50"
@@ -415,7 +389,7 @@ export default function Footer() {
           <div className="md:col-span-3">
             <h3 className="mb-6 text-lg font-medium text-foreground">建站技术</h3>
             <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
-              {TECH_STACK.map((tech) => (
+            {TECH_STACK.map((tech) => (
                 <a
                   key={tech.name}
                   href={tech.url}
@@ -516,7 +490,7 @@ export default function Footer() {
 
         {/* 备案信息 */}
         <div className="flex flex-col items-center gap-3 border-t border-border pt-6 text-center text-sm text-muted-foreground">
-          <p>© {currentYear} <span onClick={handleLogoClick}>{siteConfig?.englishTitle || 'Code Shine'}</span>. All rights reserved.</p>
+          <p>© {currentYear} <span>{siteConfig?.englishTitle || 'Code Shine'}</span>. All rights reserved.</p>
           <p suppressHydrationWarning>
             本站已运行：{mounted ? `${runningTime.days}天${runningTime.hours}时${runningTime.minutes}分${runningTime.seconds}秒` : '加载中...'}
           </p>

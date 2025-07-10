@@ -1,24 +1,7 @@
 import { Metadata } from "next"
 import { api } from "@/lib/api"
-import type { Article } from '@/lib/api'
 import BlogListClient from './blog-list-client'
 
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  _count?: {
-    articles: number;
-  };
-}
-
-interface ArticleForDisplay extends Omit<Article, 'category' | 'tags' | 'author'> {
-  category?: string
-  tags?: string[]
-  author?: string
-  publishDate?: string
-  comments?: number
-}
 
 async function getBlogData() {
   try {

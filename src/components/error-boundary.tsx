@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { initWebSee } from '@/lib/websee-config';
 
 interface ErrorBoundaryState {
   hasError: boolean;

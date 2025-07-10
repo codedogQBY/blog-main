@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Heart, MessageCircle, ArrowUp } from 'lucide-react'
 import { Button } from '../ui/button'
 import { getOrGenerateFingerprint, collectUserInfo } from '@/lib/fingerprint'
@@ -16,6 +16,10 @@ interface FloatingActionsProps {
   shareUrl?: string
   coverImage?: string
   onStatsUpdate?: (stats: { likes: number; comments: number; isLiked: boolean }) => void
+}
+
+interface WindowWithRefresh extends Window {
+  refreshFloatingStats?: () => void;
 }
 
 export default function FloatingActions({
@@ -35,6 +39,27 @@ export default function FloatingActions({
   const [showScrollTop, setShowScrollTop] = useState(false)
   const [mounted, setMounted] = useState(false)
 
+  const loadInteractionStats = useCallback(async () => {
+    if (!targetType || !targetId) return
+    try {
+      const fingerprint = await getOrGenerateFingerprint()
+      const stats = await interactionAPI.getInteractionStats(targetType, targetId, fingerprint)
+      if (!mounted) return
+      setDisplayLikes(stats.likes)
+      setDisplayComments(stats.comments)
+      setDisplayIsLiked(stats.isLiked)
+      onStatsUpdate?.(stats)
+    } catch (error) {
+      console.error('Failed to load interaction stats:', error)
+    }
+  }, [targetType, targetId, mounted, onStatsUpdate])
+
+  const refreshStats = useCallback(() => {
+    if (mounted) {
+      loadInteractionStats()
+    }
+  }, [mounted, loadInteractionStats])
+
   // 组件挂载和卸载
   useEffect(() => {
     setMounted(true)
@@ -50,7 +75,6 @@ export default function FloatingActions({
         setShowScrollTop(window.scrollY > 300)
       }
     }
-
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [mounted])
@@ -60,48 +84,21 @@ export default function FloatingActions({
     if (autoLoad && targetType && targetId && mounted) {
       loadInteractionStats()
     }
-  }, [autoLoad, targetType, targetId, mounted])
-
-  const loadInteractionStats = async () => {
-    if (!targetType || !targetId) return
-
-    try {
-      const fingerprint = await getOrGenerateFingerprint()
-      const stats = await interactionAPI.getInteractionStats(targetType, targetId, fingerprint)
-      
-      // 检查组件是否仍然挂载
-      if (!mounted) return
-      
-      setDisplayLikes(stats.likes)
-      setDisplayComments(stats.comments)
-      setDisplayIsLiked(stats.isLiked)
-      
-      // 通知父组件统计数据已更新
-      onStatsUpdate?.(stats)
-    } catch (error) {
-      console.error('Failed to load interaction stats:', error)
-    }
-  }
-
-  // 暴露刷新方法给父组件
-  const refreshStats = () => {
-    if (mounted) {
-      loadInteractionStats()
-    }
-  }
+  }, [autoLoad, targetType, targetId, mounted, loadInteractionStats])
 
   // 将refreshStats方法暴露到window对象，供父组件调用
   useEffect(() => {
     if (typeof window !== 'undefined' && mounted) {
-      (window as any).refreshFloatingStats = refreshStats
+      const win = window as WindowWithRefresh
+      win.refreshFloatingStats = refreshStats
     }
-    
     return () => {
       if (typeof window !== 'undefined') {
-        delete (window as any).refreshFloatingStats
+        const win = window as WindowWithRefresh
+        delete win.refreshFloatingStats
       }
     }
-  }, [targetType, targetId, mounted])
+  }, [targetType, targetId, mounted, refreshStats])
 
   const handleLike = async () => {
     if (!targetType || !targetId || loading) return

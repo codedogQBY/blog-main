@@ -1,12 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { X, Heart, MessageCircle, Flag, Trash2, Eye, Calendar, Tag } from "lucide-react"
+import { useState, useEffect, useCallback } from "react"
+import { X, Heart, MessageCircle, Eye, Calendar, Tag } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Input } from "@/components/ui/input"
 import type { StickyNoteData } from "./sticky-note"
-import { toggleLike, addComment, getComments, type Comment as APIComment } from "@/lib/interaction-api"
+import { toggleLike, addComment, getComments } from "@/lib/interaction-api"
 import { getOrGenerateFingerprint, collectUserInfo } from "@/lib/fingerprint"
 
 // 本地评论接口，用于UI显示
@@ -80,27 +80,7 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
   }, [])
 
   // 加载评论数据
-  useEffect(() => {
-    if (isOpen && note) {
-      loadComments()
-    }
-  }, [isOpen, note])
-
-  // 锁定背景滚动
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden"
-    } else {
-      document.body.style.overflow = "unset"
-    }
-
-    return () => {
-      document.body.style.overflow = "unset"
-    }
-  }, [isOpen])
-
-  // 加载评论
-  const loadComments = async () => {
+  const loadComments = useCallback(async () => {
     if (!note) return
     
     setIsLoadingComments(true)
@@ -119,7 +99,26 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
     } finally {
       setIsLoadingComments(false)
     }
-  }
+  }, [note])
+
+  useEffect(() => {
+    if (isOpen && note) {
+      loadComments()
+    }
+  }, [isOpen, note, loadComments])
+
+  // 锁定背景滚动
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = "unset"
+    }
+
+    return () => {
+      document.body.style.overflow = "unset"
+    }
+  }, [isOpen])
 
   // 格式化日期
   const formatDate = (dateString: string): string => {
@@ -139,14 +138,17 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
     if (!fingerprint) return
     
     try {
-      const userInfo = await collectUserInfo()
-      const response = await toggleLike({
+      const baseUserInfo = await collectUserInfo()
+      const userInfo = {
+        ...baseUserInfo,
+        nickname: commentAuthor.trim() || '匿名',
+      }
+      await toggleLike({
         targetType: 'sticky_note',
         targetId: note.id,
         fingerprint,
         userInfo
       })
-      
       // 更新父组件的点赞状态
       onLike?.(note.id)
     } catch (error) {
@@ -165,21 +167,17 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
         ...baseUserInfo,
         nickname: commentAuthor.trim() || '匿名'
       }
-      
-      const response = await addComment({
+      await addComment({
         targetType: 'sticky_note',
         targetId: note.id,
         fingerprint,
         userInfo,
         content: commentText.trim()
       })
-
       // 重新加载评论
       await loadComments()
-      
       // 通知父组件更新评论数量
       onCommentAdded?.(note.id, comments.length + 1)
-
       // 重置表单
       setCommentText("")
       setCommentAuthor("")
@@ -188,16 +186,6 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
     } finally {
       setIsSubmittingComment(false)
     }
-  }
-
-  const handleRemoveRequest = () => {
-    // 处理撕下便签请求
-    console.log("请求撕下便签:", note.id)
-  }
-
-  const handleReport = () => {
-    // 处理举报
-    console.log("举报便签:", note.id)
   }
 
   return (
