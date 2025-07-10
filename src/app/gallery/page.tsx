@@ -132,7 +132,7 @@ export default function GalleryPage() {
                     categories={categoryOptions}
                     activeCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
-                    totalCount={categoryOptions[0]?.count}
+                    totalCount={items.length}
                 />
 
                 {/* 图库网格 */}
