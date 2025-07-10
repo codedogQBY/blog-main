@@ -49,7 +49,7 @@ export default function GalleryFilter({
 
             {/* 统计信息 */}
             <div className="text-center mt-3">
-                <p className="text-xs text-gray-500 dark:text-gray-400">{totalCount} 个图库 · 滚动加载更多</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">共 {totalCount} 个图库</p>
             </div>
         </div>
     )

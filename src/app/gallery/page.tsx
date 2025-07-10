@@ -68,23 +68,18 @@ export default function GalleryPage() {
 
     // 计算分类选项
     const categoryOptions = useMemo(() => {
-        const totalCount = items.length
+        let totalCount = 0
         const categoryMap = new Map<string, number>()
-        
-        // 统计每个分类的图片数量
-        items.forEach(item => {
-            const category = item.category || '未分类'
-            categoryMap.set(category, (categoryMap.get(category) || 0) + 1)
-        })
 
         const options = [
-            { category: '全部', count: totalCount }
+            
         ]
 
         // 添加分类选项
         categories.forEach(category => {
-            const count = categoryMap.get(category.name) || 0
+            const count = category.imageCount || 0
             if (count > 0) {
+                totalCount += count
                 options.push({
                     category: category.name,
                     count: count
@@ -101,8 +96,13 @@ export default function GalleryPage() {
             })
         }
 
+        options.unshift(
+            { category: '全部', count: totalCount }
+        )
+
+
         return options
-    }, [items, categories])
+    }, [categories])
 
     // 处理加载更多
     const handleLoadMore = async (): Promise<GalleryItem[]> => {
@@ -132,7 +132,7 @@ export default function GalleryPage() {
                     categories={categoryOptions}
                     activeCategory={selectedCategory}
                     onCategoryChange={setSelectedCategory}
-                    totalCount={items.length}
+                    totalCount={categoryOptions[0]?.count}
                 />
 
                 {/* 图库网格 */}
