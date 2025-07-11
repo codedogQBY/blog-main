@@ -174,24 +174,6 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
-      serialize: (state) => {
-        try {
-          // 使用 JSON.stringify 并确保中文字符正确编码
-          return JSON.stringify(state)
-        } catch (error) {
-          console.error('序列化状态失败:', error)
-          return '{}'
-        }
-      },
-      deserialize: (str) => {
-        try {
-          // 解析 JSON 字符串
-          return JSON.parse(str)
-        } catch (error) {
-          console.error('反序列化状态失败:', error)
-          return {}
-        }
-      },
     }
   )
 ) 
