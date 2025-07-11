@@ -7,6 +7,7 @@ import Footer from "@/components/footer"
 import ScrollToTop from "@/components/scroll-to-top"
 import AnimatedBackground from "@/components/animated-background"
 import { MonitoringInitializer } from '@/components/monitoring-initializer'
+import { PerformanceMonitor } from '@/components/performance-monitor'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { Toaster } from 'sonner'
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
@@ -96,6 +97,10 @@ function ThemeScript() {
                         const root = document.documentElement
                         root.classList.add(theme)
                         
+                        // 源头预加载主要背景图片
+                        const bgImage = new Image()
+                        bgImage.src = theme === 'dark' ? '/dark.png' : '/light.png'
+                        
                         // 添加 no-transition 类以防止初始加载时的过渡效果
                         root.classList.add('no-transition')
                         
@@ -124,6 +129,28 @@ export default async function RootLayout({
         <html lang="zh-CN" suppressHydrationWarning className="theme-transition">
             <head>
                 <ThemeScript />
+                
+                {/* 字体预加载 */}
+                <link rel="preconnect" href="https://fonts.googleapis.com" />
+                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+                
+                {/* 关键资源预加载（最高优先级） */}
+                <link rel="preload" href="/dark.png" as="image" type="image/png" />
+                <link rel="preload" href="/light.png" as="image" type="image/png" />
+                <link rel="preload" href="/logo.png" as="image" type="image/png" />
+                
+                {/* 关键CSS预加载 */}
+                <link rel="preload" href="/_next/static/css/app/layout.css" as="style" />
+                <link rel="preload" href="/_next/static/css/app/page.css" as="style" />
+                
+                {/* CDN 预连接（高优先级） */}
+                <link rel="preconnect" href="https://beal-blog-main.test.upcdn.net" />
+                <link rel="preconnect" href="https://code-shine.test.upcdn.net" />
+                
+                {/* DNS 预解析 */}
+                <link rel="dns-prefetch" href="https://beal-blog-main.test.upcdn.net" />
+                <link rel="dns-prefetch" href="https://code-shine.test.upcdn.net" />
+                
                 <link rel="manifest" href="/manifest.json" />
                 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
                 <meta name="theme-color" content="#000000" />
@@ -144,6 +171,7 @@ export default async function RootLayout({
                         <Footer />
                         <ScrollToTop />
                         <MonitoringInitializer />
+                        <PerformanceMonitor />
                         <UserTracker />
                         <Toaster 
                             position="top-right"

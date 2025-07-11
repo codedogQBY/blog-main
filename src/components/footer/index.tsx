@@ -99,6 +99,7 @@ export default function Footer() {
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [authCode, setAuthCode] = useState('')
   const [loginStep, setLoginStep] = useState<'email' | 'twoFactor'>('email')
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [clickCount, setClickCount] = useState(0)
   const { login } = useAuthStore()
 

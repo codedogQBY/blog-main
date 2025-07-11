@@ -1,20 +1,38 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 declare global {
   interface Window {
     webVitals?: {
-      getCLS: (callback: (metric: any) => void) => void
-      getFID: (callback: (metric: any) => void) => void
-      getFCP: (callback: (metric: any) => void) => void
-      getLCP: (callback: (metric: any) => void) => void
-      getTTFB: (callback: (metric: any) => void) => void
+      getCLS: (callback: (metric: WebVitalMetric) => void) => void
+      getFID: (callback: (metric: WebVitalMetric) => void) => void
+      getFCP: (callback: (metric: WebVitalMetric) => void) => void
+      getLCP: (callback: (metric: WebVitalMetric) => void) => void
+      getTTFB: (callback: (metric: WebVitalMetric) => void) => void
     }
   }
 }
 
-function sendToAnalytics(metric: any) {
+interface WebVitalMetric {
+  id: string
+  name: string
+  value: number
+  delta: number
+  entries: PerformanceEntry[]
+  rating: 'good' | 'needs-improvement' | 'poor'
+}
+
+interface PerformanceMetrics {
+  lcp: number | null
+  cls: number | null
+  fid: number | null
+  fcp: number | null
+  ttfb: number | null
+  loadTime: number | null
+}
+
+function sendToAnalytics(metric: WebVitalMetric) {
   // 发送性能数据到分析平台
   if (process.env.NODE_ENV === 'production') {
     fetch('/api/analytics/web-vitals', {
@@ -32,14 +50,38 @@ function sendToAnalytics(metric: any) {
 }
 
 export function PerformanceMonitor() {
+  const [metrics, setMetrics] = useState<PerformanceMetrics>({
+    lcp: null,
+    cls: null,
+    fid: null,
+    fcp: null,
+    ttfb: null,
+    loadTime: null
+  })
+
   useEffect(() => {
     // 动态导入 web-vitals
     import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS(sendToAnalytics)
-      getFID(sendToAnalytics)
-      getFCP(sendToAnalytics)
-      getLCP(sendToAnalytics)
-      getTTFB(sendToAnalytics)
+      getCLS((metric) => {
+        sendToAnalytics(metric)
+        setMetrics(prev => ({ ...prev, cls: metric.value }))
+      })
+      getFID((metric) => {
+        sendToAnalytics(metric)
+        setMetrics(prev => ({ ...prev, fid: metric.value }))
+      })
+      getFCP((metric) => {
+        sendToAnalytics(metric)
+        setMetrics(prev => ({ ...prev, fcp: metric.value }))
+      })
+      getLCP((metric) => {
+        sendToAnalytics(metric)
+        setMetrics(prev => ({ ...prev, lcp: metric.value }))
+      })
+      getTTFB((metric) => {
+        sendToAnalytics(metric)
+        setMetrics(prev => ({ ...prev, ttfb: metric.value }))
+      })
     })
   }, [])
 
@@ -51,12 +93,16 @@ export function PerformanceMonitor() {
         list.getEntries().forEach((entry) => {
           if (entry.entryType === 'navigation') {
             const navEntry = entry as PerformanceNavigationTiming
+            const loadTime = navEntry.loadEventEnd - navEntry.navigationStart
+            setMetrics(prev => ({ ...prev, loadTime }))
+            
             console.log('Navigation timing:', {
               dns: navEntry.domainLookupEnd - navEntry.domainLookupStart,
               tcp: navEntry.connectEnd - navEntry.connectStart,
               request: navEntry.responseStart - navEntry.requestStart,
               response: navEntry.responseEnd - navEntry.responseStart,
               domComplete: navEntry.domComplete - navEntry.navigationStart,
+              loadTime
             })
           }
         })
@@ -71,7 +117,7 @@ export function PerformanceMonitor() {
             console.warn('Slow resource:', {
               name: entry.name,
               duration: entry.duration,
-              type: (entry as any).initiatorType,
+              type: (entry as PerformanceResourceTiming).initiatorType,
             })
           }
         })
@@ -86,5 +132,74 @@ export function PerformanceMonitor() {
     }
   }, [])
 
-  return null
+  // 只在开发环境显示性能指标
+  if (process.env.NODE_ENV !== 'development') return null
+
+  const formatMetric = (value: number | null, unit = 'ms') => {
+    if (value === null) return '--'
+    return `${Math.round(value)}${unit}`
+  }
+
+  const getScoreColor = (metric: string, value: number | null) => {
+    if (value === null) return 'text-gray-400'
+    
+    switch (metric) {
+      case 'lcp':
+        return value <= 2500 ? 'text-green-500' : value <= 4000 ? 'text-yellow-500' : 'text-red-500'
+      case 'cls':
+        return value <= 0.1 ? 'text-green-500' : value <= 0.25 ? 'text-yellow-500' : 'text-red-500'
+      case 'fid':
+        return value <= 100 ? 'text-green-500' : value <= 300 ? 'text-yellow-500' : 'text-red-500'
+      case 'fcp':
+        return value <= 1800 ? 'text-green-500' : value <= 3000 ? 'text-yellow-500' : 'text-red-500'
+      case 'ttfb':
+        return value <= 800 ? 'text-green-500' : value <= 1800 ? 'text-yellow-500' : 'text-red-500'
+      default:
+        return 'text-gray-400'
+    }
+  }
+
+  return (
+    <div className="fixed bottom-4 right-4 bg-black/90 text-white p-4 rounded-lg font-mono text-xs z-50 backdrop-blur-sm">
+      <div className="font-bold mb-2">Core Web Vitals</div>
+      <div className="space-y-1">
+        <div className="flex justify-between">
+          <span>LCP:</span>
+          <span className={getScoreColor('lcp', metrics.lcp)}>
+            {formatMetric(metrics.lcp)}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span>CLS:</span>
+          <span className={getScoreColor('cls', metrics.cls)}>
+            {formatMetric(metrics.cls, '')}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span>FID:</span>
+          <span className={getScoreColor('fid', metrics.fid)}>
+            {formatMetric(metrics.fid)}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span>FCP:</span>
+          <span className={getScoreColor('fcp', metrics.fcp)}>
+            {formatMetric(metrics.fcp)}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span>TTFB:</span>
+          <span className={getScoreColor('ttfb', metrics.ttfb)}>
+            {formatMetric(metrics.ttfb)}
+          </span>
+        </div>
+        <div className="flex justify-between">
+          <span>Load:</span>
+          <span className="text-blue-400">
+            {formatMetric(metrics.loadTime)}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
 }

@@ -324,7 +324,7 @@ export default function SearchBox({ className = "", onSelect }: SearchBoxProps) 
                             <div className="mb-4 last:mb-0">
                                 <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                                     <div className="flex items-center space-x-2">
-                                        <Image className={`h-4 w-4 ${categoryConfig.gallery.color}`} />
+                                        <Image className={`h-4 w-4 ${categoryConfig.gallery.color}`} alt="图库图标" />
                                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{categoryConfig.gallery.label}</span>
                                         <span className="text-xs text-gray-400 dark:text-gray-500">({searchResults.galleries.length})</span>
                                     </div>

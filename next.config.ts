@@ -30,8 +30,12 @@ const nextConfig: NextConfig = {
       },
     ],
     // 优化图片加载
-    formats: ['image/webp', 'image/avif'],
+    formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60 * 60 * 24 * 30, // 30 days
+    deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+    imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
+    // 启用图片优化
+    unoptimized: false,
   },
 
   // 编译器优化
@@ -106,6 +110,23 @@ const nextConfig: NextConfig = {
           {
             key: 'Cache-Control',
             value: 'public, max-age=300, stale-while-revalidate=60',
+          },
+        ],
+      },
+      {
+        // 静态资源缓存优化
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+        has: [
+          {
+            type: 'header',
+            key: 'accept',
+            value: 'image/(.*)',
           },
         ],
       },
