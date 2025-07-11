@@ -75,7 +75,12 @@ export const useAuthStore = create<AuthState>()(
               
               // verify接口直接返回完整的登录信息
               if (verifyResponse.accessToken) {
-                const tokenPayload = JSON.parse(atob(verifyResponse.accessToken.split('.')[1]))
+                // 正确解码包含中文的JWT payload
+                const base64Payload = verifyResponse.accessToken.split('.')[1]
+                const jsonPayload = decodeURIComponent(atob(base64Payload).split('').map(function(c) {
+                  return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+                }).join(''))
+                const tokenPayload = JSON.parse(jsonPayload)
                 
                 if (tokenPayload.isSuperAdmin) {
                   const newState = {
@@ -115,8 +120,12 @@ export const useAuthStore = create<AuthState>()(
           }
           
           if (response.accessToken) {
-            // 解码 JWT token 来获取用户信息
-            const tokenPayload = JSON.parse(atob(response.accessToken.split('.')[1]))
+            // 解码 JWT token 来获取用户信息 - 正确处理UTF-8编码
+            const base64Payload = response.accessToken.split('.')[1]
+            const jsonPayload = decodeURIComponent(atob(base64Payload).split('').map(function(c) {
+              return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+            }).join(''))
+            const tokenPayload = JSON.parse(jsonPayload)
             
             // 打印 JWT 解密信息
             console.log('JWT Token 解密信息:', {
@@ -165,6 +174,24 @@ export const useAuthStore = create<AuthState>()(
     }),
     {
       name: 'auth-storage',
+      serialize: (state) => {
+        try {
+          // 使用 JSON.stringify 并确保中文字符正确编码
+          return JSON.stringify(state)
+        } catch (error) {
+          console.error('序列化状态失败:', error)
+          return '{}'
+        }
+      },
+      deserialize: (str) => {
+        try {
+          // 解析 JSON 字符串
+          return JSON.parse(str)
+        } catch (error) {
+          console.error('反序列化状态失败:', error)
+          return {}
+        }
+      },
     }
   )
 ) 
