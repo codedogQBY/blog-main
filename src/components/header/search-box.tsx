@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
-import { Search, X, Command, FileText, Image, Calendar } from "lucide-react"
+import { Search, X, Command, FileText, ImageIcon, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { search, type SearchResult } from "@/lib/search-api"
 import { useRouter } from "next/navigation"
@@ -36,7 +36,7 @@ export default function SearchBox({ className = "", onSelect }: SearchBoxProps) 
     const categoryConfig: Record<string, CategoryConfig> = {
         article: { label: "文章", icon: FileText, color: "text-blue-600 dark:text-blue-400" },
         diary: { label: "日记", icon: Calendar, color: "text-purple-600 dark:text-purple-400" },
-        gallery: { label: "图库", icon: Image, color: "text-green-600 dark:text-green-400" },
+        gallery: { label: "图库", icon: ImageIcon, color: "text-green-600 dark:text-green-400" },
     }
 
     const [searchResults, setSearchResults] = useState<{
@@ -324,7 +324,7 @@ export default function SearchBox({ className = "", onSelect }: SearchBoxProps) 
                             <div className="mb-4 last:mb-0">
                                 <div className="px-4 py-2 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50">
                                     <div className="flex items-center space-x-2">
-                                        <Image className={`h-4 w-4 ${categoryConfig.gallery.color}`} alt="图库图标" />
+                                        <ImageIcon className={`h-4 w-4 ${categoryConfig.gallery.color}`} />
                                         <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{categoryConfig.gallery.label}</span>
                                         <span className="text-xs text-gray-400 dark:text-gray-500">({searchResults.galleries.length})</span>
                                     </div>

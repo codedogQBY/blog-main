@@ -5,11 +5,11 @@ import { useEffect, useState } from 'react'
 declare global {
   interface Window {
     webVitals?: {
-      getCLS: (callback: (metric: WebVitalMetric) => void) => void
-      getFID: (callback: (metric: WebVitalMetric) => void) => void
-      getFCP: (callback: (metric: WebVitalMetric) => void) => void
-      getLCP: (callback: (metric: WebVitalMetric) => void) => void
-      getTTFB: (callback: (metric: WebVitalMetric) => void) => void
+      onCLS: (callback: (metric: WebVitalMetric) => void) => void
+      onFID: (callback: (metric: WebVitalMetric) => void) => void
+      onFCP: (callback: (metric: WebVitalMetric) => void) => void
+      onLCP: (callback: (metric: WebVitalMetric) => void) => void
+      onTTFB: (callback: (metric: WebVitalMetric) => void) => void
     }
   }
 }
@@ -61,24 +61,24 @@ export function PerformanceMonitor() {
 
   useEffect(() => {
     // 动态导入 web-vitals
-    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS((metric) => {
+    import('web-vitals').then(({ onCLS, onINP, onFCP, onLCP, onTTFB }) => {
+      onCLS((metric) => {
         sendToAnalytics(metric)
         setMetrics(prev => ({ ...prev, cls: metric.value }))
       })
-      getFID((metric) => {
+      onINP((metric) => {
         sendToAnalytics(metric)
-        setMetrics(prev => ({ ...prev, fid: metric.value }))
+        setMetrics(prev => ({ ...prev, fid: metric.value })) // INP 替代 FID
       })
-      getFCP((metric) => {
+      onFCP((metric) => {
         sendToAnalytics(metric)
         setMetrics(prev => ({ ...prev, fcp: metric.value }))
       })
-      getLCP((metric) => {
+      onLCP((metric) => {
         sendToAnalytics(metric)
         setMetrics(prev => ({ ...prev, lcp: metric.value }))
       })
-      getTTFB((metric) => {
+      onTTFB((metric) => {
         sendToAnalytics(metric)
         setMetrics(prev => ({ ...prev, ttfb: metric.value }))
       })
@@ -93,7 +93,7 @@ export function PerformanceMonitor() {
         list.getEntries().forEach((entry) => {
           if (entry.entryType === 'navigation') {
             const navEntry = entry as PerformanceNavigationTiming
-            const loadTime = navEntry.loadEventEnd - navEntry.navigationStart
+            const loadTime = navEntry.loadEventEnd - navEntry.startTime
             setMetrics(prev => ({ ...prev, loadTime }))
             
             console.log('Navigation timing:', {
@@ -101,7 +101,7 @@ export function PerformanceMonitor() {
               tcp: navEntry.connectEnd - navEntry.connectStart,
               request: navEntry.responseStart - navEntry.requestStart,
               response: navEntry.responseEnd - navEntry.responseStart,
-              domComplete: navEntry.domComplete - navEntry.navigationStart,
+              domComplete: navEntry.domComplete - navEntry.startTime,
               loadTime
             })
           }
@@ -176,7 +176,7 @@ export function PerformanceMonitor() {
           </span>
         </div>
         <div className="flex justify-between">
-          <span>FID:</span>
+          <span>INP:</span>
           <span className={getScoreColor('fid', metrics.fid)}>
             {formatMetric(metrics.fid)}
           </span>
