@@ -16,12 +16,11 @@ interface BeforeInstallPromptEvent extends Event {
 export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
-  const [closeCount, setCloseCount] = useState(0);
 
   useEffect(() => {
     // 检查是否已经是PWA环境
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-    const isInWebAppiOS = (window.navigator as any).standalone === true;
+    const isInWebAppiOS = (window.navigator as { standalone?: boolean }).standalone === true;
     
     if (isStandalone || isInWebAppiOS) {
       console.log('PWA Install Prompt - Already running as PWA');
@@ -30,7 +29,6 @@ export function PWAInstallPrompt() {
 
     // 初始化关闭次数
     const count = Number(localStorage.getItem('pwaInstallPromptCloseCount') || '0');
-    setCloseCount(count);
     
     console.log('PWA Install Prompt - Close count:', count);
     
@@ -111,7 +109,7 @@ export function PWAInstallPrompt() {
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);
     };
-  }, []);
+  }, [deferredPrompt, showInstallPrompt]);
 
   const handleInstallClick = async () => {
     if (deferredPrompt) {
@@ -144,7 +142,6 @@ export function PWAInstallPrompt() {
     
     const count = Number(localStorage.getItem('pwaInstallPromptCloseCount') || '0') + 1;
     localStorage.setItem('pwaInstallPromptCloseCount', String(count));
-    setCloseCount(count);
     
     console.log('PWA Install Prompt - Dismissed, new count:', count);
   };
