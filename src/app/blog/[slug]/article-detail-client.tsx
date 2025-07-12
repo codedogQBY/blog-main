@@ -123,7 +123,7 @@ export default function ArticleDetailClient({ article }: ArticleDetailClientProp
 
               {/* 摘要 */}
               {article.excerpt && (
-                <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-400">
+                <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-r-lg border-l-4 border-blue-400">
                   <p className="text-gray-700 dark:text-gray-300 italic">
                     {article.excerpt}
                   </p>
