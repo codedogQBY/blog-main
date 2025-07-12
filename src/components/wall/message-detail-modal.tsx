@@ -200,11 +200,11 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
       />
 
       {/* 弹窗内容 */}
-      <div className="relative w-full max-w-lg bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden max-h-[90vh] flex flex-col">
-        {/* 头部 - 对齐创建留言样式 */}
-        <div className="relative overflow-hidden">
+      <div className="relative w-full max-w-lg bg-white/95 dark:bg-gray-900/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white/20 dark:border-gray-700/50 overflow-hidden max-h-[90vh] flex flex-col transform transition-all duration-500 ease-out">
+        {/* 头部 - 完全对齐创建留言样式，固定高度 */}
+        <div className="relative overflow-hidden flex-shrink-0">
           <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 animate-pulse" />
-          <header className="relative flex items-center justify-between p-6">
+          <header className="relative flex items-center justify-between p-6 h-[88px]">
             <div className="flex items-center space-x-3">
               <div className="p-2 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl shadow-lg flex items-center justify-center">
                 <Eye className="w-5 h-5 text-white" />
