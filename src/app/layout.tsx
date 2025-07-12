@@ -7,7 +7,6 @@ import Footer from "@/components/footer"
 import ScrollToTop from "@/components/scroll-to-top"
 import AnimatedBackground from "@/components/animated-background"
 import { MonitoringInitializer } from '@/components/monitoring-initializer'
-import { PerformanceMonitor } from '@/components/performance-monitor'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { Toaster } from 'sonner'
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
@@ -171,7 +170,6 @@ export default async function RootLayout({
                         <Footer />
                         <ScrollToTop />
                         <MonitoringInitializer />
-                        <PerformanceMonitor />
                         <UserTracker />
                         <Toaster 
                             position="top-right"
