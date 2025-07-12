@@ -109,8 +109,6 @@ export default function BlogListClient({
   }
 
   const handleArticleClick = async (article: ArticleForDisplay) => {
-    console.log("点击文章:", article.title)
-    
     // 增加浏览量
     if (article.id) {
       try {

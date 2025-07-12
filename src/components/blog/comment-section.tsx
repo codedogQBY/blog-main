@@ -38,22 +38,12 @@ export default function CommentSection({ targetType, targetId, onCommentAdded }:
   }, [])
 
   useEffect(() => {
-    // 添加调试信息
-    console.log('评论组件状态变化:', {
-      isLoggedIn,
-      username,
-      isSuperAdmin,
-      currentNickname: nickname
-    })
-    
     // 如果已登录，使用登录用户名
     if (isLoggedIn && username) {
-      console.log('设置登录用户名:', username)
       setNickname(username)
     } else {
       // 否则使用本地存储的昵称
       const savedNickname = localStorage.getItem('comment-nickname')
-      console.log('使用本地存储昵称:', savedNickname)
       if (savedNickname) {
         setNickname(savedNickname)
       }

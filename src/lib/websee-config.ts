@@ -135,8 +135,6 @@ export function initWebSee(userId?: string) {
           }
         }
         
-        console.log('WebSee monitoring initialized successfully');
-        
         // 手动上报页面加载完成事件
         if (typeof window !== 'undefined') {
           window.addEventListener('load', () => {

@@ -127,15 +127,6 @@ export const useAuthStore = create<AuthState>()(
             }).join(''))
             const tokenPayload = JSON.parse(jsonPayload)
             
-            // 打印 JWT 解密信息
-            console.log('JWT Token 解密信息:', {
-              fullToken: response.accessToken,
-              payload: tokenPayload,
-              name: tokenPayload.name,
-              isSuperAdmin: tokenPayload.isSuperAdmin,
-              permissions: tokenPayload.permissions
-            })
-            
             // 检查是否为超级管理员
             if (tokenPayload.isSuperAdmin) {
               const newState = {
@@ -145,7 +136,6 @@ export const useAuthStore = create<AuthState>()(
                 isSuperAdmin: true
               }
               
-              console.log('设置登录状态:', newState)
               set(newState)
               return { success: true }
             } else {

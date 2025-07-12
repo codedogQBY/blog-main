@@ -23,18 +23,14 @@ export function PWAInstallPrompt() {
     const isInWebAppiOS = (window.navigator as { standalone?: boolean }).standalone === true;
     
     if (isStandalone || isInWebAppiOS) {
-      console.log('PWA Install Prompt - Already running as PWA');
       return;
     }
 
     // 初始化关闭次数
     const count = Number(localStorage.getItem('pwaInstallPromptCloseCount') || '0');
     
-    console.log('PWA Install Prompt - Close count:', count);
-    
     // 检查是否达到最大次数
     if (count >= 2) {
-      console.log('PWA Install Prompt - Max attempts reached');
       return;
     }
 
@@ -42,8 +38,6 @@ export function PWAInstallPrompt() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
         .then((registration) => {
-          console.log('PWA Install Prompt - Service Worker registered');
-          
           // 强制更新Service Worker
           if (registration.waiting) {
             registration.waiting.postMessage({ type: 'SKIP_WAITING' });
@@ -56,7 +50,6 @@ export function PWAInstallPrompt() {
 
     const handler = (e: Event) => {
       e.preventDefault();
-      console.log('PWA Install Prompt - beforeinstallprompt event fired');
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       
       const currentCount = Number(localStorage.getItem('pwaInstallPromptCloseCount') || '0');
@@ -64,7 +57,6 @@ export function PWAInstallPrompt() {
         // 延迟显示，让页面先加载完成
         setTimeout(() => {
           setShowInstallPrompt(true);
-          console.log('PWA Install Prompt - Showing prompt');
         }, 2000);
       }
     };
@@ -74,7 +66,6 @@ export function PWAInstallPrompt() {
     // 对于iOS设备，手动触发安装提示（因为iOS不支持beforeinstallprompt）
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
     if (isIOS && !isInWebAppiOS && count < 2) {
-      console.log('PWA Install Prompt - iOS device detected, showing manual prompt');
       setTimeout(() => {
         setShowInstallPrompt(true);
       }, 3000);
@@ -85,19 +76,11 @@ export function PWAInstallPrompt() {
       const hasServiceWorker = 'serviceWorker' in navigator;
       const hasManifest = document.querySelector('link[rel="manifest"]');
       const isSecure = location.protocol === 'https:' || location.hostname === 'localhost';
-      
-      console.log('PWA Install Prompt - Conditions check:', {
-        hasServiceWorker,
-        hasManifest: !!hasManifest,
-        isSecure,
-        userAgent: navigator.userAgent
-      });
 
       // 如果条件满足但没有触发beforeinstallprompt，手动显示
       if (hasServiceWorker && hasManifest && isSecure && !isIOS && count < 2) {
         setTimeout(() => {
           if (!deferredPrompt && !showInstallPrompt) {
-            console.log('PWA Install Prompt - Manual trigger due to conditions met');
             setShowInstallPrompt(true);
           }
         }, 5000);
@@ -115,12 +98,6 @@ export function PWAInstallPrompt() {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
-      
-      if (outcome === 'accepted') {
-        console.log('PWA Install Prompt - User accepted installation');
-      } else {
-        console.log('PWA Install Prompt - User declined installation');
-      }
       
       setDeferredPrompt(null);
     } else {
@@ -142,8 +119,6 @@ export function PWAInstallPrompt() {
     
     const count = Number(localStorage.getItem('pwaInstallPromptCloseCount') || '0') + 1;
     localStorage.setItem('pwaInstallPromptCloseCount', String(count));
-    
-    console.log('PWA Install Prompt - Dismissed, new count:', count);
   };
 
   if (!showInstallPrompt) return null;

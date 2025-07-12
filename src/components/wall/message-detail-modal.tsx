@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input"
 import type { StickyNoteData } from "./sticky-note"
 import { toggleLike, addComment, getComments } from "@/lib/interaction-api"
 import { getOrGenerateFingerprint, collectUserInfo } from "@/lib/fingerprint"
+import { useAuthStore } from '@/lib/auth'
 
 // 本地评论接口，用于UI显示
 interface Comment {
@@ -15,6 +16,7 @@ interface Comment {
   author: string
   content: string
   date: string
+  isAdmin?: boolean
 }
 
 interface MessageDetailModalProps {
@@ -65,6 +67,20 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
   const [fingerprint, setFingerprint] = useState<string>("")
   const [isLoadingComments, setIsLoadingComments] = useState(false)
   const [isSubmittingComment, setIsSubmittingComment] = useState(false)
+  const { isLoggedIn, username, isSuperAdmin } = useAuthStore()
+
+  // 如果已登录，使用登录用户名
+  useEffect(() => {
+    if (isLoggedIn && username) {
+      setCommentAuthor(username)
+    } else {
+      // 恢复保存的用户名
+      const savedAuthor = localStorage.getItem('wall-comment-author')
+      if (savedAuthor) {
+        setCommentAuthor(savedAuthor)
+      }
+    }
+  }, [isLoggedIn, username])
 
   // 获取用户指纹
   useEffect(() => {
@@ -81,31 +97,53 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
 
   // 加载评论数据
   const loadComments = useCallback(async () => {
-    if (!note) return
+    if (!note) return 0
     
     setIsLoadingComments(true)
     try {
       const response = await getComments('sticky_note', note.id)
-      const formattedComments: Comment[] = response.comments.map(comment => ({
+      
+      // 递归格式化评论，包括回复
+      const formatComment = (comment: any): Comment => ({
         id: comment.id,
         author: comment.userInfo.nickname || '匿名',
         content: comment.content,
         date: formatDate(comment.createdAt),
-        avatar: `/placeholder.svg?height=32&width=32`,
-      }))
+        isAdmin: comment.userInfo.isAdmin || false,
+      })
+      
+      // 扁平化所有评论（包括回复）
+      const flattenComments = (comments: any[]): Comment[] => {
+        const result: Comment[] = []
+        comments.forEach(comment => {
+          result.push(formatComment(comment))
+          if (comment.replies && comment.replies.length > 0) {
+            result.push(...flattenComments(comment.replies))
+          }
+        })
+        return result
+      }
+      
+      const formattedComments = flattenComments(response.comments)
       setComments(formattedComments)
+      return formattedComments.length
     } catch (error) {
       console.error('加载评论失败:', error)
+      return 0
     } finally {
       setIsLoadingComments(false)
     }
-  }, [note])
+  }, [note?.id])
 
   useEffect(() => {
     if (isOpen && note) {
       loadComments()
+      // 如果已登录，设置默认用户名
+      if (isLoggedIn && username) {
+        setCommentAuthor(username)
+      }
     }
-  }, [isOpen, note, loadComments])
+  }, [isOpen, note?.id, isLoggedIn, username])
 
   // 锁定背景滚动
   useEffect(() => {
@@ -161,11 +199,17 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
 
     setIsSubmittingComment(true)
     try {
+      // 保存用户输入的昵称（仅未登录时）
+      if (!isLoggedIn && commentAuthor.trim()) {
+        localStorage.setItem('wall-comment-author', commentAuthor.trim())
+      }
+
       const baseUserInfo = await collectUserInfo()
       // 设置用户昵称
       const userInfo = {
         ...baseUserInfo,
-        nickname: commentAuthor.trim() || '匿名'
+        nickname: commentAuthor.trim() || '匿名',
+        isAdmin: isSuperAdmin,
       }
       await addComment({
         targetType: 'sticky_note',
@@ -174,10 +218,10 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
         userInfo,
         content: commentText.trim()
       })
-      // 重新加载评论
-      await loadComments()
+      // 重新加载评论并获取最新数量
+      const newCommentCount = await loadComments()
       // 通知父组件更新评论数量
-      onCommentAdded?.(note.id, comments.length + 1)
+      onCommentAdded?.(note.id, newCommentCount)
       // 重置表单
       setCommentText("")
       setCommentAuthor("")
@@ -427,6 +471,11 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
                        <div className="flex-1">
                          <div className="flex items-center space-x-2 mb-2">
                            <span className="font-semibold text-gray-900 dark:text-white text-sm">{comment.author}</span>
+                           {comment.isAdmin && (
+                             <span className="px-1.5 py-0.5 text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300 rounded">
+                               站长
+                             </span>
+                           )}
                            <time className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
                              {comment.date}
                            </time>
