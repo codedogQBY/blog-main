@@ -262,7 +262,7 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="w-10 h-10 p-0 rounded-full hover:bg-white/20 dark:hover:bg-gray-800/50 transition-all duration-300 hover:scale-110 flex items-center justify-center"
+              className="w-10 h-10 p-0 rounded-full hover:bg-white/20 dark:hover:bg-gray-800/50 transition-all duration-300 hover:scale-110 flex items-center justify-center cursor-pointer"
             >
               <X className="w-4 h-4" />
             </Button>
@@ -320,7 +320,7 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
                      onClick={handleLike}
                      className={`
              flex items-center space-x-1.5 px-3 py-2 rounded-xl transition-all duration-300
-             hover:scale-110 active:scale-95 transform-gpu
+             hover:scale-110 active:scale-95 transform-gpu cursor-pointer
              ${
                note.isLiked
                  ? "bg-red-500/20 text-red-500 shadow-red-500/20 shadow-lg"
@@ -424,11 +424,10 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
                  disabled={!commentText.trim() || isSubmittingComment}
                  className="
                    h-12 px-8 rounded-xl border-0 shadow-lg font-semibold
-                   bg-gradient-to-r from-blue-500 to-purple-600 
-                   hover:from-blue-600 hover:to-purple-700
+                   bg-blue-500 hover:bg-blue-600
                    text-white transition-all duration-300 transform 
                    hover:scale-105 hover:shadow-xl hover:shadow-blue-500/30
-                   active:scale-95 
+                   active:scale-95 cursor-pointer
                    disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
                    disabled:hover:shadow-lg
                  "

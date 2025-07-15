@@ -269,7 +269,7 @@ export default function AddMessageModal({ isOpen, onClose, onSubmit }: AddMessag
                             variant="outline"
                             onClick={handleClose}
                             disabled={isSubmitting}
-                            className="flex-1 rounded-2xl border-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300"
+                            className="flex-1 rounded-2xl border-2 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 cursor-pointer"
                         >
                             取消
                         </Button>
@@ -278,8 +278,8 @@ export default function AddMessageModal({ isOpen, onClose, onSubmit }: AddMessag
                             disabled={!content.trim() || isSubmitting}
                             className={`
                   flex-1 rounded-2xl border-0 shadow-lg transition-all duration-300 transform
-                  bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700
-                  text-white hover:shadow-xl hover:scale-105 active:scale-95
+                  bg-blue-500 hover:bg-blue-600
+                  text-white hover:shadow-xl hover:scale-105 active:scale-95 cursor-pointer
                   disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
                   ${isSubmitting ? "animate-pulse" : ""}
                 `}

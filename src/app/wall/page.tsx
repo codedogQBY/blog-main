@@ -297,10 +297,10 @@ function MessagesPageContent() {
                                         key={category}
                                         onClick={() => setSelectedCategory(category)}
                                         className={`
-                      px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 transform
+                      px-4 py-2 text-sm font-medium rounded-xl transition-all duration-200 transform cursor-pointer
                       ${
                                             selectedCategory === category
-                                                ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md scale-105"
+                                                ? "bg-blue-500 hover:bg-blue-600 text-white shadow-md scale-105"
                                                 : "bg-white/60 dark:bg-gray-800/60 text-gray-700 dark:text-gray-300 hover:bg-white/80 dark:hover:bg-gray-700/80 hover:scale-105"
                                         }
                     `}
@@ -340,7 +340,7 @@ function MessagesPageContent() {
                                 <p className="text-gray-500 dark:text-gray-400 mb-4">成为第一个留言的人吧！</p>
                                 <Button
                                     onClick={() => setIsModalOpen(true)}
-                                    className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white"
+                                    className="bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
                                 >
                                     <Plus className="w-4 h-4 mr-2" />
                                     写下第一条留言

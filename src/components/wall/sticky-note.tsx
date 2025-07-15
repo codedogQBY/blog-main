@@ -159,7 +159,7 @@ export default function StickyNote({ note, onLike, onComment, onClick }: StickyN
                             onClick={handleLike}
                             className={`
                 group/like flex items-center space-x-1.5 px-3 py-2 rounded-xl transition-all duration-300
-                hover:scale-110 active:scale-95 transform-gpu
+                hover:scale-110 active:scale-95 transform-gpu cursor-pointer
                 ${
                                 note.isLiked
                                     ? "bg-red-500/20 text-red-500 shadow-red-500/20 shadow-lg hover:bg-red-500/30"
@@ -177,7 +177,7 @@ export default function StickyNote({ note, onLike, onComment, onClick }: StickyN
                         </button>
                         <button
                             onClick={handleComment}
-                            className="group/comment flex items-center space-x-1.5 px-3 py-2 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 transform-gpu hover:bg-white/30 dark:hover:bg-gray-700/30 text-gray-500 dark:text-gray-400 hover:text-blue-500"
+                            className="group/comment flex items-center space-x-1.5 px-3 py-2 rounded-xl transition-all duration-300 hover:scale-110 active:scale-95 transform-gpu hover:bg-white/30 dark:hover:bg-gray-700/30 text-gray-500 dark:text-gray-400 hover:text-blue-500 cursor-pointer"
                         >
                             <MessageCircle
                                 className="w-4 h-4 transition-all duration-300 group-hover/comment:scale-125 group-hover/comment:fill-current"

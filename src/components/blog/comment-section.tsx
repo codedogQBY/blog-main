@@ -254,7 +254,7 @@ export default function CommentSection({ targetType, targetId, onCommentAdded }:
             variant="ghost"
             size="sm"
             onClick={() => setReplyTo(replyTo === comment.id ? null : comment.id)}
-            className="text-gray-500 hover:text-blue-600"
+            className="text-gray-500 hover:text-blue-600 cursor-pointer"
           >
             <Reply className="w-4 h-4 mr-1" />
             回复
@@ -286,6 +286,7 @@ export default function CommentSection({ targetType, targetId, onCommentAdded }:
                 setReplyTo(null)
                 setReplyContent('')
               }}
+              className="cursor-pointer"
             >
               取消
             </Button>
@@ -293,6 +294,7 @@ export default function CommentSection({ targetType, targetId, onCommentAdded }:
               size="sm"
               onClick={() => submitReply(comment.id)}
               disabled={!replyContent.trim() || submitting}
+              className="bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
             >
               <Send className="w-4 h-4 mr-1" />
               回复
@@ -384,7 +386,7 @@ export default function CommentSection({ targetType, targetId, onCommentAdded }:
           <Button
             onClick={submitComment}
             disabled={!content.trim() || (!isLoggedIn && !nickname) || submitting}
-            className="min-w-[100px]"
+            className="min-w-[100px] bg-blue-500 hover:bg-blue-600 text-white cursor-pointer"
           >
             {submitting ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
@@ -408,6 +410,7 @@ export default function CommentSection({ targetType, targetId, onCommentAdded }:
             variant="outline"
             onClick={() => loadComments(page + 1, true)}
             disabled={loading}
+            className="cursor-pointer"
           >
             {loading ? '加载中...' : '加载更多评论'}
           </Button>

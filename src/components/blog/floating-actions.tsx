@@ -169,7 +169,7 @@ export default function FloatingActions({
       <div className="group relative">
         <Button
           onClick={onComment}
-          className="w-14 h-14 rounded-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-lg transition-all duration-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+          className="w-14 h-14 rounded-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-lg transition-all duration-300 cursor-pointer dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
         >
           <div className="flex flex-col items-center">
             <MessageCircle className="w-5 h-5" />
@@ -197,7 +197,7 @@ export default function FloatingActions({
         <div className="group relative">
           <Button
             onClick={scrollToTop}
-            className="w-14 h-14 rounded-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-lg transition-all duration-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+            className="w-14 h-14 rounded-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-lg transition-all duration-300 cursor-pointer dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
           >
             <div className="flex flex-col items-center">
               <ArrowUp className="w-5 h-5" />

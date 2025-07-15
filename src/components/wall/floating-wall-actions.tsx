@@ -32,7 +32,7 @@ export default function FloatingWallActions({ onAddMessage }: FloatingWallAction
       <div className="group relative">
         <Button
           onClick={onAddMessage}
-          className="w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white border-0 shadow-lg transition-all duration-300 hover:scale-110"
+          className="w-14 h-14 rounded-full bg-blue-500 hover:bg-blue-600 text-white border-0 shadow-lg transition-all duration-300 hover:scale-110 cursor-pointer"
         >
           <Plus className="w-6 h-6" />
         </Button>
@@ -48,7 +48,7 @@ export default function FloatingWallActions({ onAddMessage }: FloatingWallAction
         <div className="group relative">
           <Button
             onClick={scrollToTop}
-            className="w-14 h-14 rounded-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-lg transition-all duration-300 hover:scale-110 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
+            className="w-14 h-14 rounded-full bg-white hover:bg-gray-50 text-gray-700 border border-gray-200 shadow-lg transition-all duration-300 hover:scale-110 cursor-pointer dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
           >
             <ArrowUp className="w-5 h-5" />
           </Button>
