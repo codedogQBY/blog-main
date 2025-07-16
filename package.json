@@ -18,6 +18,7 @@
     "@radix-ui/react-switch": "^1.2.5",
     "@radix-ui/react-tabs": "^1.1.12",
     "@radix-ui/react-tooltip": "^1.2.7",
+    "@radix-ui/react-visually-hidden": "^1.2.3",
     "@tailwindcss/typography": "^0.5.16",
     "@websee/core": "^4.0.2",
     "@websee/performance": "^4.0.2",
