@@ -19,6 +19,18 @@ interface Comment {
   isAdmin?: boolean
 }
 
+// API返回的评论数据接口
+interface ApiComment {
+  id: string
+  content: string
+  createdAt: string
+  userInfo: {
+    nickname: string
+    isAdmin?: boolean
+  }
+  replies?: ApiComment[]
+}
+
 interface MessageDetailModalProps {
   isOpen: boolean
   onClose: () => void
@@ -104,7 +116,7 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
       const response = await getComments('sticky_note', note.id)
       
       // 递归格式化评论，包括回复
-      const formatComment = (comment: any): Comment => ({
+      const formatComment = (comment: ApiComment): Comment => ({
         id: comment.id,
         author: comment.userInfo.nickname || '匿名',
         content: comment.content,
@@ -113,7 +125,7 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
       })
       
       // 扁平化所有评论（包括回复）
-      const flattenComments = (comments: any[]): Comment[] => {
+      const flattenComments = (comments: ApiComment[]): Comment[] => {
         const result: Comment[] = []
         comments.forEach(comment => {
           result.push(formatComment(comment))
@@ -133,7 +145,7 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
     } finally {
       setIsLoadingComments(false)
     }
-  }, [note?.id])
+  }, [note])
 
   useEffect(() => {
     if (isOpen && note) {
@@ -143,7 +155,7 @@ export default function MessageDetailModal({ isOpen, onClose, note, onLike, onCo
         setCommentAuthor(username)
       }
     }
-  }, [isOpen, note?.id, isLoggedIn, username])
+  }, [isOpen, note, loadComments, isLoggedIn, username])
 
   // 锁定背景滚动
   useEffect(() => {
