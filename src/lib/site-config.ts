@@ -30,9 +30,9 @@ interface ApiResponse<T> {
 
 // 默认的站点配置
 export const DEFAULT_SITE_CONFIG: SiteConfig = {
-  title: '代码闪耀',
-  subtitle: '记录编程生活',
-  description: '分享技术，记录生活',
+  title: '码上拾光',
+  subtitle: '在代码间打捞落日余辉',
+  description: '在代码间打捞落日余辉',
   icpNumber: '',
   wechatQrcode: '',
   startTime: '2024',
@@ -46,8 +46,8 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     email: ''
   },
   seoDefaults: {
-    title: '代码闪耀 - 技术博客',
-    description: '分享技术，记录生活',
+    title: '码上拾光',
+    description: '在代码间打捞落日余辉',
     keywords: ['技术博客', '编程', '前端', '后端']
   }
 };
