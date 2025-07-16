@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // 启用 standalone 模式 - 可以直接上传到服务器运行
+  output: 'standalone',
+  
   // 图片配置
   images: {
     remotePatterns: [
@@ -13,6 +16,12 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'beal-blog-main.test.upcdn.net',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'image.codeshine.cn',
         port: '',
         pathname: '/**',
       },
