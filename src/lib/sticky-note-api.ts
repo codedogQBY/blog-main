@@ -85,6 +85,11 @@ export async function getStickyNoteCategories(): Promise<CategoryData[]> {
 
 // 删除留言 (管理员功能)
 export async function deleteStickyNote(id: string, token: string): Promise<void> {
+  // 注意：这里需要添加认证头部，但api客户端目前不支持自定义头部
+  // 暂时保留原来的fetch实现
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+    (process.env.NODE_ENV === 'production' ? 'https://api.codeshine.cn' : 'http://localhost:3001');
+  
   const response = await fetch(`${API_BASE_URL}/sticky-notes/${id}`, {
     method: 'DELETE',
     headers: {
@@ -103,6 +108,11 @@ export async function updateStickyNote(
   data: Partial<CreateStickyNoteData>, 
   token: string
 ): Promise<StickyNoteData> {
+  // 注意：这里需要添加认证头部，但api客户端目前不支持自定义头部
+  // 暂时保留原来的fetch实现
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+    (process.env.NODE_ENV === 'production' ? 'https://api.codeshine.cn' : 'http://localhost:3001');
+  
   const response = await fetch(`${API_BASE_URL}/sticky-notes/${id}`, {
     method: 'PATCH',
     headers: {
@@ -122,6 +132,11 @@ export async function updateStickyNote(
 
 // 获取留言统计 (管理员功能)
 export async function getStickyNoteStats(token: string) {
+  // 注意：这里需要添加认证头部，但api客户端目前不支持自定义头部
+  // 暂时保留原来的fetch实现
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 
+    (process.env.NODE_ENV === 'production' ? 'https://api.codeshine.cn' : 'http://localhost:3001');
+  
   const response = await fetch(`${API_BASE_URL}/sticky-notes/stats`, {
     headers: {
       'Authorization': `Bearer ${token}`,
