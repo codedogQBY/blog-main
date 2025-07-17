@@ -1,7 +1,9 @@
-const CACHE_NAME = 'blog-cache-v5'
-const STATIC_CACHE = 'static-cache-v5'
-const IMAGE_CACHE = 'image-cache-v5'
-const API_CACHE = 'api-cache-v5'
+// 缓存版本 v6 - 已更新为网络优先策略 (2024-01-16)
+// 所有博客数据现在优先从网络获取，失败时才使用缓存
+const CACHE_NAME = 'blog-cache-v6'
+const STATIC_CACHE = 'static-cache-v6'
+const IMAGE_CACHE = 'image-cache-v6'
+const API_CACHE = 'api-cache-v6'
 
 // 需要缓存的静态资源
 const STATIC_ASSETS = [
@@ -66,31 +68,46 @@ self.addEventListener('fetch', (event) => {
                       url.pathname.includes('/system-config') ||
                       url.pathname.includes('/logs/')
 
-  // API 请求 - 网络优先但保存缓存，断网时使用缓存
+  // 优先级1：所有博客数据API请求 - 网络优先但保存缓存，断网时使用缓存
   if (isApiRequest) {
     event.respondWith(networkFirstWithCacheStrategy(request))
   }
-  // Next.js 数据请求 - 网络优先但保存缓存
+  // 优先级2：Next.js 数据请求 - 网络优先但保存缓存
   else if (url.search.includes('__nextDataReq') || 
            url.pathname.includes('/_next/data/')) {
     event.respondWith(networkFirstWithCacheStrategy(request))
   }
-  // 图片缓存策略 - Cache First
+  // 优先级3：所有其他数据获取请求 - 网络优先
+  else if (request.destination === 'fetch' || 
+           request.destination === 'xhr' ||
+           request.destination === '' && 
+           (request.headers.get('accept')?.includes('application/json') ||
+            request.headers.get('content-type')?.includes('application/json'))) {
+    event.respondWith(networkFirstWithCacheStrategy(request))
+  }
+  // 优先级4：页面导航请求 - 网络优先 
+  else if (request.mode === 'navigate') {
+    event.respondWith(pageStrategy(request))
+  }
+  // 优先级5：所有HTML页面 - 网络优先
+  else if (request.destination === 'document' || 
+           url.pathname.endsWith('.html') ||
+           url.pathname === '/' ||
+           !url.pathname.includes('.')) {
+    event.respondWith(networkFirstWithCacheStrategy(request))
+  }
+  // 优先级6：图片缓存策略 - Cache First (仅针对图片)
   else if (request.destination === 'image' || 
            url.pathname.match(/\.(jpg|jpeg|png|gif|webp|svg|ico)$/i)) {
     event.respondWith(imageStrategy(request))
   }
-  // 页面导航请求 - Network First (保持页面缓存)
-  else if (request.mode === 'navigate') {
-    event.respondWith(pageStrategy(request))
-  }
-  // CSS/JS 等静态资源 - Cache First (同源的静态资源)
+  // 优先级7：CSS/JS 等静态资源 - Cache First (同源的静态资源)
   else if (url.origin === self.location.origin && 
            url.pathname.match(/\.(css|js|woff|woff2|ttf|eot)$/i)) {
     event.respondWith(staticStrategy(request))
   }
-  // 其他 Next.js 动态资源 - 网络优先但保存缓存
-  else if (url.origin === self.location.origin && url.pathname.startsWith('/_next/')) {
+  // 优先级8：其他所有请求 - 网络优先但保存缓存  
+  else {
     event.respondWith(networkFirstWithCacheStrategy(request))
   }
 })
@@ -151,33 +168,7 @@ async function imageStrategy(request) {
   }
 }
 
-// API 缓存策略 - Network First with 5s timeout
-async function apiStrategy(request) {
-  const cache = await caches.open(API_CACHE)
-  
-  try {
-    const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 5000)
-    
-    const response = await fetch(request, { 
-      signal: controller.signal 
-    })
-    
-    clearTimeout(timeoutId)
-    
-    if (response.ok) {
-      cache.put(request, response.clone())
-    }
-    return response
-  } catch (error) {
-    console.warn('API request failed, trying cache:', error)
-    const cached = await cache.match(request)
-    if (cached) {
-      return cached
-    }
-    throw error
-  }
-}
+
 
 // 页面缓存策略 - Network First
 async function pageStrategy(request) {
@@ -190,6 +181,7 @@ async function pageStrategy(request) {
     }
     return response
   } catch (error) {
+    console.warn('Page request failed, trying cache:', error)
     const cached = await cache.match(request)
     if (cached) {
       return cached
