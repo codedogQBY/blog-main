@@ -234,7 +234,7 @@ export default function GalleryCard({ item, onClick }: GalleryCardProps) {
 
                         {/* 描述 */}
                         {item.description && (
-                            <p className="text-white/90 text-sm leading-relaxed line-clamp-2 bg-black/20 rounded-lg p-2 backdrop-blur-sm">
+                            <p className="text-white/90 text-sm leading-relaxed line-clamp-2 bg-black/20 rounded-lg p-2 backdrop-blur-sm max-h-14 overflow-hidden">
                                 {item.description}
                             </p>
                         )}
@@ -245,7 +245,7 @@ export default function GalleryCard({ item, onClick }: GalleryCardProps) {
                                 <div className="text-sm text-white/90">
                                     <span className="text-xs text-white/70">正在显示：</span>
                                     {item.images[currentImageIndex].title && (
-                                        <div className="font-medium truncate line-clamp-1">{item.images[currentImageIndex].title}</div>
+                                        <div className="font-medium truncate line-clamp-1 max-h-8 overflow-hidden">{item.images[currentImageIndex].title}</div>
                                     )}
                                     {item.images[currentImageIndex].description && (
                                         <div className="text-xs text-white/70 mt-0.5 line-clamp-1">{item.images[currentImageIndex].description}</div>
@@ -257,7 +257,7 @@ export default function GalleryCard({ item, onClick }: GalleryCardProps) {
                         {/* 标签 */}
                         {item.tags && item.tags.length > 0 && (
                             <div className="flex flex-wrap gap-1.5">
-                                {item.tags.slice(0, isMobile ? 2 : 3).map((tag, index) => (
+                                {item.tags.slice(0, 2).map((tag, index) => (
                                     <span 
                                         key={index}
                                         className="text-xs bg-white/20 text-white px-2 py-1 rounded-full backdrop-blur-sm border border-white/20"
@@ -265,9 +265,9 @@ export default function GalleryCard({ item, onClick }: GalleryCardProps) {
                                         #{tag}
                                     </span>
                                 ))}
-                                {item.tags.length > (isMobile ? 2 : 3) && (
+                                {item.tags.length > 2 && (
                                     <span className="text-xs text-white/70 px-2 py-1">
-                                        +{item.tags.length - (isMobile ? 2 : 3)} 更多
+                                        +{item.tags.length - 2} 更多
                                     </span>
                                 )}
                             </div>
