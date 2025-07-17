@@ -139,10 +139,6 @@ export default function AboutClient({ aboutData }: AboutClientProps) {
                         width={192}
                         height={192}
                         className="w-full h-full object-contain"
-                        onError={(e) => {
-                          console.error('Logo image failed to load:', aboutData.intro.logo);
-                          e.currentTarget.src = '/logo.png';
-                        }}
                       />
                     </div>
                     <div className="text-center text-sm text-gray-700 dark:text-gray-300 font-medium">
