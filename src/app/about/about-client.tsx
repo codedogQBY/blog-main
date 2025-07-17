@@ -139,6 +139,10 @@ export default function AboutClient({ aboutData }: AboutClientProps) {
                         width={192}
                         height={192}
                         className="w-full h-full object-contain"
+                        onError={(e) => {
+                          console.error('Logo image failed to load:', aboutData.intro.logo);
+                          e.currentTarget.src = '/logo.png';
+                        }}
                       />
                     </div>
                     <div className="text-center text-sm text-gray-700 dark:text-gray-300 font-medium">
@@ -205,6 +209,10 @@ export default function AboutClient({ aboutData }: AboutClientProps) {
                             width={200}
                             height={150}
                             className="w-full h-32 object-cover rounded-lg mb-3"
+                            onError={(e) => {
+                              console.error('Section image failed to load:', image.src);
+                              e.currentTarget.src = '/placeholder.svg';
+                            }}
                           />
                           <div className="text-center text-sm text-gray-700 dark:text-gray-300 font-medium">
                             {image.caption}
