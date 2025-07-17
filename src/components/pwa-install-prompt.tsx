@@ -34,19 +34,7 @@ export function PWAInstallPrompt() {
       return;
     }
 
-    // 注册Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
-          // 强制更新Service Worker
-          if (registration.waiting) {
-            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
-          }
-        })
-        .catch((error) => {
-          console.error('PWA Install Prompt - Service Worker registration failed:', error);
-        });
-    }
+    // Service Worker已移除，不再注册
 
     const handler = (e: Event) => {
       e.preventDefault();
@@ -71,14 +59,13 @@ export function PWAInstallPrompt() {
       }, 3000);
     }
 
-    // 手动检查PWA条件
+    // 手动检查PWA条件（已移除Service Worker要求）
     const checkPWAConditions = () => {
-      const hasServiceWorker = 'serviceWorker' in navigator;
       const hasManifest = document.querySelector('link[rel="manifest"]');
       const isSecure = location.protocol === 'https:' || location.hostname === 'localhost';
 
       // 如果条件满足但没有触发beforeinstallprompt，手动显示
-      if (hasServiceWorker && hasManifest && isSecure && !isIOS && count < 2) {
+      if (hasManifest && isSecure && !isIOS && count < 2) {
         setTimeout(() => {
           if (!deferredPrompt && !showInstallPrompt) {
             setShowInstallPrompt(true);

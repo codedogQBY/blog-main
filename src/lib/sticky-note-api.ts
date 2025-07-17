@@ -38,16 +38,7 @@ export interface CategoryData {
   count: number;
 }
 
-// 根据环境自动切换API地址
-const API_BASE_URL = (() => {
-  if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL;
-  }
-  if (process.env.NODE_ENV === 'production') {
-    return 'https://api.codeshine.cn';
-  }
-  return 'http://localhost:3001';
-})();
+import { api } from './api';
 
 // 获取所有留言
 export async function getStickyNotes({
@@ -73,53 +64,23 @@ export async function getStickyNotes({
     params.append('search', search);
   }
 
-  const response = await fetch(`${API_BASE_URL}/sticky-notes?${params.toString()}`);
-  
-  if (!response.ok) {
-    throw new Error('获取留言失败');
-  }
-  
-  return response.json();
+  const endpoint = `/sticky-notes?${params.toString()}`;
+  return api.get<StickyNotesResponse>(endpoint);
 }
 
 // 获取单个留言详情
 export async function getStickyNote(id: string): Promise<StickyNoteData> {
-  const response = await fetch(`${API_BASE_URL}/sticky-notes/${id}`);
-  
-  if (!response.ok) {
-    throw new Error('获取留言详情失败');
-  }
-  
-  return response.json();
+  return api.get<StickyNoteData>(`/sticky-notes/${id}`);
 }
 
 // 创建新留言
 export async function createStickyNote(data: CreateStickyNoteData): Promise<StickyNoteData> {
-  const response = await fetch(`${API_BASE_URL}/sticky-notes`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-  });
-  
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || '创建留言失败');
-  }
-  
-  return response.json();
+  return api.post<StickyNoteData>('/sticky-notes', data as unknown as Record<string, unknown>);
 }
 
 // 获取留言分类
 export async function getStickyNoteCategories(): Promise<CategoryData[]> {
-  const response = await fetch(`${API_BASE_URL}/sticky-notes/categories`);
-  
-  if (!response.ok) {
-    throw new Error('获取分类失败');
-  }
-  
-  return response.json();
+  return api.get<CategoryData[]>('/sticky-notes/categories');
 }
 
 // 删除留言 (管理员功能)
