@@ -82,7 +82,15 @@ export interface InteractionStats {
 }
 
 class InteractionAPI {
-  private baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+  private baseUrl = (() => {
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      return process.env.NEXT_PUBLIC_API_URL;
+    }
+    if (process.env.NODE_ENV === 'production') {
+      return 'https://api.codeshine.cn';
+    }
+    return 'http://localhost:3001';
+  })()
 
   async toggleLike(request: LikeRequest): Promise<LikeResponse> {
     const response = await fetch(`${this.baseUrl}/interactions/like`, {

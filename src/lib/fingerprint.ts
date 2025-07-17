@@ -59,7 +59,15 @@ export async function getUserLocation(): Promise<{
   timezone?: string;
 }> {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+    const baseUrl = (() => {
+    if (process.env.NEXT_PUBLIC_API_URL) {
+      return process.env.NEXT_PUBLIC_API_URL;
+    }
+    if (process.env.NODE_ENV === 'production') {
+      return 'https://api.codeshine.cn';
+    }
+    return 'http://localhost:3001';
+  })();
     const response = await fetch(`${baseUrl}/interactions/location`);
     const result = await response.json();
     

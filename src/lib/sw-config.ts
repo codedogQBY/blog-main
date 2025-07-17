@@ -34,7 +34,7 @@ export const SW_CONFIG = {
   // API域名配置 - 用于识别API请求
   API_DOMAINS: [
     'localhost:3001',
-    'your-api-domain.com', // 替换为你的实际API域名
+    'api.codeshine.cn', // 生产环境API域名
     // 添加更多API域名...
   ],
   

@@ -54,7 +54,7 @@ self.addEventListener('fetch', (event) => {
   // 获取API域名配置
   const apiDomains = [
     'localhost:3001',
-    'your-api-domain.com', // 替换为你的实际API域名
+    'api.codeshine.cn', // 生产环境API域名
   ]
   
   // 检查是否是API请求（基于域名和路径）

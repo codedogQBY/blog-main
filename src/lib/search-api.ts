@@ -1,4 +1,13 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+// 根据环境自动切换API地址
+const API_BASE_URL = (() => {
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (process.env.NODE_ENV === 'production') {
+    return 'https://api.codeshine.cn';
+  }
+  return 'http://localhost:3001';
+})()
 
 export interface SearchResult {
     id: string
