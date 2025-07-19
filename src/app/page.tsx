@@ -6,13 +6,17 @@ import { getGalleryImages } from "@/lib/gallery-api";
 import { getStickyNotes } from '@/lib/sticky-note-api';
 import { getSiteConfig } from '@/lib/site-config';
 import HomeClient from '@/app/home-client';
+import type { Article } from '@/types/article';
+import type { GalleryItem } from '@/types/gallery';
+import type { StickyNoteData } from '@/lib/sticky-note-api';
+import type { SiteConfig } from '@/lib/site-config';
 
 export default function Home() {
   const [data, setData] = useState<{
-    articles: any[];
-    galleries: any[];
-    stickyNotes: any[];
-    siteConfig: any;
+    articles: Article[];
+    galleries: GalleryItem[];
+    stickyNotes: StickyNoteData[];
+    siteConfig: SiteConfig | null;
   }>({
     articles: [],
     galleries: [],
@@ -20,7 +24,7 @@ export default function Home() {
     siteConfig: null
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -128,7 +132,7 @@ export default function Home() {
       initialArticles={data.articles}
       initialGalleries={data.galleries}
       initialStickyNotes={data.stickyNotes}
-      siteConfig={data.siteConfig}
+      siteConfig={data.siteConfig || undefined}
     />
   );
 }

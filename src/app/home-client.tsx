@@ -19,7 +19,7 @@ interface HomeClientProps {
   initialArticles: Article[];
   initialGalleries: GalleryItem[];
   initialStickyNotes: StickyNoteData[];
-  siteConfig: SiteConfig;
+  siteConfig?: SiteConfig;
 }
 
 export default function HomeClient({ 

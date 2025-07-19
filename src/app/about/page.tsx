@@ -8,7 +8,7 @@ import AboutClient from './about-client'
 export default function AboutPage() {
   const [aboutData, setAboutData] = useState<AboutConfig | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
     async function fetchData() {
