@@ -150,6 +150,8 @@ class ApiClient {
     page?: number;
     limit?: number;
     search?: string;
+    status?: string;
+    withPublishedArticles?: boolean;
   } = {}): Promise<ApiResponse<Category>> {
     const queryString = new URLSearchParams();
     

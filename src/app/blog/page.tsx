@@ -7,15 +7,24 @@ async function getBlogData() {
   try {
     // 并行获取分类和文章数据
     const [categoriesResponse, articlesResponse] = await Promise.all([
-      api.getCategories({ limit: 100 }),
+      api.getCategories({ 
+        limit: 100, 
+        status: 'enabled',
+        withPublishedArticles: true 
+      }),
       api.getArticles({ page: 1, limit: 9 })
     ]);
 
-    // 计算分类统计
+    // 计算分类统计 - 只显示有文章的分类
     const stats: Record<string, number> = { "全部": 0 }
     const categoryNames = ["全部"]
     
-    categoriesResponse.data.forEach((category) => {
+    // 过滤出有文章的分类（后端已经过滤了，这里作为双重保险）
+    const categoriesWithArticles = categoriesResponse.data.filter(category => 
+      (category._count?.articles || 0) > 0
+    )
+    
+    categoriesWithArticles.forEach((category) => {
       const articleCount = category._count?.articles || 0
       stats[category.name] = articleCount
       stats["全部"] += articleCount
@@ -37,7 +46,7 @@ async function getBlogData() {
 
     return {
       initialArticles: formattedArticles,
-      categories: categoriesResponse.data,
+      categories: categoriesWithArticles, // 只返回有文章的分类
       categoryStats: stats,
       displayCategories: categoryNames
     };
