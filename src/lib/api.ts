@@ -14,8 +14,6 @@ const API_BASE_URL = (() => {
   return 'http://localhost:3001';
 })();
 
-console.log('API Base URL:', API_BASE_URL, 'Environment:', process.env.NODE_ENV);
-
 export interface Article {
   id: string;
   title: string;
