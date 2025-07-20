@@ -58,11 +58,11 @@ export default function ArticlesPage() {
             status: 'enabled',
             withPublishedArticles: true 
           }),
-          api.getArticles({ page: 1, limit: 9 })
+          api.getArticles({ page: 1, limit: 9, published: true })
         ]);
 
         // 计算分类统计 - 只显示有文章的分类
-        const stats: Record<string, number> = { "全部": 0 }
+        const stats: Record<string, number> = {}
         const categoryNames = ["全部"]
         
         // 过滤出有文章的分类（后端已经过滤了，这里作为双重保险）
@@ -70,12 +70,16 @@ export default function ArticlesPage() {
           (category._count?.articles || 0) > 0
         )
         
+        // 先计算各个分类的文章数量
         categoriesWithArticles.forEach((category) => {
           const articleCount = category._count?.articles || 0
           stats[category.name] = articleCount
-          stats["全部"] += articleCount
           categoryNames.push(category.name)
         })
+        
+        // "全部"的数量应该是所有已发布文章的总数，而不是分类数量的简单相加
+        // 这里使用文章API返回的总数
+        stats["全部"] = articlesResponse.pagination.total
 
         // 转换API数据格式以兼容现有组件
         const formattedArticles = articlesResponse.data.map(article => ({

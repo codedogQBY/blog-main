@@ -59,6 +59,7 @@ export default function BlogListClient({
           limit: pageSize,
           search: searchQuery.trim() || undefined,
           category: categorySlug,
+          published: true,
         })
 
         // 转换API数据格式以兼容现有组件

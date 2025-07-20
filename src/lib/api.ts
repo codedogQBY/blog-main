@@ -120,6 +120,7 @@ class ApiClient {
     search?: string;
     category?: string;
     tag?: string;
+    published?: boolean;
   } = {}): Promise<ApiResponse<Article>> {
     const queryString = new URLSearchParams();
     
