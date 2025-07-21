@@ -134,23 +134,6 @@ const nextConfig: NextConfig = {
           },
         ],
       },
-      {
-        // 静态资源缓存优化
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-        has: [
-          {
-            type: 'header',
-            key: 'accept',
-            value: 'image/(.*)',
-          },
-        ],
-      },
     ]
   },
 };
