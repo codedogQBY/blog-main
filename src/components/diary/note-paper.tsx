@@ -180,6 +180,7 @@ export default function NotePaper({ note }: NotePaperProps) {
                                             width={150}
                                             height={100}
                                             className="w-full h-auto rounded object-cover"
+                                            style={{ width: 'auto', height: 'auto' }}
                                             crossOrigin="anonymous"
                                         />
                                     </div>

@@ -29,6 +29,7 @@ export default function BackgroundImage() {
                         width={800} 
                         height={900} 
                         className="w-full h-auto md:h-screen md:w-auto object-contain object-right-bottom md:object-contain"
+                        style={{ width: 'auto', height: 'auto' }}
                         priority
                     />
                 ) : (
@@ -38,6 +39,7 @@ export default function BackgroundImage() {
                         width={800} 
                         height={900} 
                         className="w-full h-auto md:h-screen md:w-auto object-contain object-right-bottom md:object-contain"
+                        style={{ width: 'auto', height: 'auto' }}
                         priority
                     />
                 )}

@@ -34,8 +34,6 @@ export function PWAInstallPrompt() {
       return;
     }
 
-    // Service Worker已移除，不再注册
-
     const handler = (e: Event) => {
       e.preventDefault();
       setDeferredPrompt(e as BeforeInstallPromptEvent);
@@ -59,7 +57,7 @@ export function PWAInstallPrompt() {
       }, 3000);
     }
 
-    // 手动检查PWA条件（已移除Service Worker要求）
+    // 手动检查PWA条件
     const checkPWAConditions = () => {
       const hasManifest = document.querySelector('link[rel="manifest"]');
       const isSecure = location.protocol === 'https:' || location.hostname === 'localhost';

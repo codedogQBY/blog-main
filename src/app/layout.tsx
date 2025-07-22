@@ -10,9 +10,9 @@ import { MonitoringInitializer } from '@/components/monitoring-initializer'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { Toaster } from 'sonner'
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
+import { ServiceWorkerManager } from '@/components/service-worker-manager'
 import { getSiteConfig, DEFAULT_SITE_CONFIG } from '@/lib/site-config'
 import { UserTracker } from '@/components/user-tracker'
-import { ServiceWorkerCleanup } from '@/components/sw-cleanup'
 
 async function generateMetadata(): Promise<Metadata> {
     try {
@@ -136,7 +136,7 @@ export default async function RootLayout({
                 {/* 关键资源预加载（最高优先级） */}
                 <link rel="preload" href="/dark.png" as="image" type="image/png" />
                 <link rel="preload" href="/light.png" as="image" type="image/png" />
-                <link rel="preload" href="/logo.png" as="image" type="image/png" />  d
+                <link rel="preload" href="/logo.png" as="image" type="image/png" />
                 
                 <link rel="manifest" href="/manifest.json" />
                 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -160,7 +160,7 @@ export default async function RootLayout({
                             duration={2000}
                         />
                         <PWAInstallPrompt />
-                        <ServiceWorkerCleanup />
+                        <ServiceWorkerManager />
                     </ThemeProvider>
                 </ErrorBoundary>
             </body>

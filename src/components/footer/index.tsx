@@ -265,7 +265,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="mt-auto text-muted-foreground">
+    <footer className="mt-auto text-muted-foreground" suppressHydrationWarning>
       <div className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* 友情链接区域 */}
         <div className="mb-8">
@@ -363,7 +363,7 @@ export default function Footer() {
               </DialogContent>
             </Dialog>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4" suppressHydrationWarning>
             {friendLinks.map((link) => (
               <a
                 key={link.id}
@@ -401,7 +401,7 @@ export default function Footer() {
           {/* 技术栈 */}
           <div className="md:col-span-3">
             <h3 className="mb-6 text-lg font-medium text-foreground">建站技术</h3>
-            <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground sm:gap-6 md:grid-cols-3 lg:grid-cols-4" suppressHydrationWarning>
             {TECH_STACK.map((tech) => (
                 <a
                   key={tech.name}
@@ -416,6 +416,7 @@ export default function Footer() {
                     width={24}
                     height={24}
                     className={tech.invert ? 'dark:invert' : ''}
+                    style={{ width: '24px', height: '24px' }}
                   />
                   <span>{tech.name}</span>
                 </a>
@@ -426,7 +427,7 @@ export default function Footer() {
           {/* 联系方式 */}
           <div className="flex flex-col items-start gap-4">
             <h3 className="text-lg font-medium text-foreground">联系我</h3>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4" suppressHydrationWarning>
               {siteConfig?.socialLinks.github && (
                 <a
                   href={siteConfig.socialLinks.github}
@@ -468,7 +469,7 @@ export default function Footer() {
             {/* 项目链接 */}
             <div className="mt-4">
               <h4 className="mb-3 text-lg font-medium text-foreground">项目源码</h4>
-              <div className="space-y-2">
+              <div className="space-y-2" suppressHydrationWarning>
                 <a
                   href="https://github.com/codedogQBY/blog-main-server"
                   target="_blank"
@@ -502,8 +503,8 @@ export default function Footer() {
         </div>
 
         {/* 备案信息 */}
-        <div className="flex flex-col items-center gap-3 border-t border-border pt-6 text-center text-sm text-muted-foreground">
-          <p>© {currentYear} <span onClick={handleLogoClick}>{siteConfig?.englishTitle || 'Code Shine'}</span>. All rights reserved.</p>
+        <div className="flex flex-col items-center gap-3 border-t border-border pt-6 text-center text-sm text-muted-foreground" suppressHydrationWarning>
+          <p suppressHydrationWarning>© {currentYear} <span onClick={handleLogoClick}>{siteConfig?.englishTitle || 'Code Shine'}</span>. All rights reserved.</p>
           <p suppressHydrationWarning>
             本站已运行：{mounted ? `${runningTime.days}天${runningTime.hours}时${runningTime.minutes}分${runningTime.seconds}秒` : '加载中...'}
           </p>

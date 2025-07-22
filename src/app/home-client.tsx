@@ -104,6 +104,7 @@ export default function HomeClient({
                           width={800} 
                           height={900} 
                           className="w-full h-auto lg:h-screen lg:w-auto object-contain object-right-bottom lg:object-contain"
+                          style={{ width: 'auto', height: 'auto' }}
                           priority
                       />
                   ) : (
@@ -113,6 +114,7 @@ export default function HomeClient({
                           width={800} 
                           height={900} 
                           className="w-full h-auto lg:h-screen lg:w-auto object-contain object-right-bottom lg:object-contain"
+                          style={{ width: 'auto', height: 'auto' }}
                           priority
                       />
                   )}
