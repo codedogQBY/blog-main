@@ -58,6 +58,12 @@ const nextConfig: NextConfig = {
     } : false,
   },
 
+  // 实验性功能
+  experimental: {
+    // 启用优化包大小
+    optimizePackageImports: ['lucide-react'],
+  },
+
   // 打包分析（开发时）
   ...(process.env.ANALYZE === 'true' && {
     webpack: (config: any) => {

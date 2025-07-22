@@ -13,6 +13,7 @@ import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
 import { ServiceWorkerManager } from '@/components/service-worker-manager'
 import { getSiteConfig, DEFAULT_SITE_CONFIG } from '@/lib/site-config'
 import { UserTracker } from '@/components/user-tracker'
+import { PerformanceMonitor } from '@/components/performance-monitor'
 
 async function generateMetadata(): Promise<Metadata> {
     try {
@@ -84,34 +85,34 @@ function ThemeScript() {
                 __html: `
                     (function() {
                         function getTheme() {
-                            const storageTheme = localStorage.getItem('xa-theme')
-                            if (storageTheme) return storageTheme
+                            const storageTheme = localStorage.getItem('xa-theme');
+                            if (storageTheme) return storageTheme;
                             
                             if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                                return 'dark'
+                                return 'dark';
                             }
-                            return 'light'
+                            return 'light';
                         }
                         
-                        const theme = getTheme()
-                        const root = document.documentElement
-                        root.classList.add(theme)
+                        const theme = getTheme();
+                        const root = document.documentElement;
+                        root.classList.add(theme);
                         
                         // 源头预加载主要背景图片
-                        const bgImage = new Image()
-                        bgImage.src = theme === 'dark' ? '/dark.png' : '/light.png'
+                        const bgImage = new Image();
+                        bgImage.src = theme === 'dark' ? '/dark.png' : '/light.png';
                         
                         // 添加 no-transition 类以防止初始加载时的过渡效果
-                        root.classList.add('no-transition')
+                        root.classList.add('no-transition');
                         
                         // 在页面加载完成后移除 no-transition 类
-                        window.addEventListener('load', () => {
-                            setTimeout(() => {
-                                root.classList.remove('no-transition')
-                                document.body.classList.add('theme-ready')
-                            }, 0)
-                        })
-                    })()
+                        window.addEventListener('load', function() {
+                            setTimeout(function() {
+                                root.classList.remove('no-transition');
+                                document.body.classList.add('theme-ready');
+                            }, 0);
+                        });
+                    })();
                 `,
             }}
         />
@@ -153,6 +154,7 @@ export default async function RootLayout({
                         <ScrollToTop />
                         <MonitoringInitializer />
                         <UserTracker />
+                        <PerformanceMonitor />
                         <Toaster 
                             position="top-right"
                             richColors

@@ -1,5 +1,6 @@
 "use client"
 
+import React from 'react'
 import { useState, useEffect, useRef } from "react"
 import Image from "next/image"
 import type { GalleryItem } from "@/types/gallery"
@@ -9,7 +10,7 @@ interface GalleryCardProps {
     onClick?: (item: GalleryItem) => void
 }
 
-export default function GalleryCard({ item, onClick }: GalleryCardProps) {
+const GalleryCard = React.memo(({ item, onClick }: GalleryCardProps) => {
     const [isHovered, setIsHovered] = useState(false)
     const [imageLoaded, setImageLoaded] = useState(false)
     const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -292,4 +293,8 @@ export default function GalleryCard({ item, onClick }: GalleryCardProps) {
             </div>
         </div>
     )
-}
+})
+
+GalleryCard.displayName = 'GalleryCard'
+
+export default GalleryCard

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import Image from "next/image";
 import { useTheme } from "next-themes";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import ArticleCard from "@/components/blog/article-card";
 import type { Article } from "@/types/article";
 import DiaryCarousel from "@/components/diary/diary-carousel";
@@ -42,50 +42,62 @@ export default function HomeClient({
     setMounted(true);
   }, []);
   
-  const scrollToSecondScreen = () => {
+  const scrollToSecondScreen = useCallback(() => {
     secondScreenRef.current?.scrollIntoView({ 
       behavior: 'smooth',
       block: 'start'
     });
-  };
+  }, []);
 
-  const handleArticleClick = (article: Article) => {
+  const handleArticleClick = useCallback((article: Article) => {
     if (article.slug) {
       window.location.href = `/blog/${article.slug}`;
     }
-  };
+  }, []);
 
-  const handlePrevGallery = () => {
+  const handlePrevGallery = useCallback(() => {
     setCurrentGalleryIndex((prev) => (prev > 0 ? prev - 1 : initialGalleries.length - 1));
-  };
+  }, [initialGalleries.length]);
 
-  const handleNextGallery = () => {
+  const handleNextGallery = useCallback(() => {
     setCurrentGalleryIndex((prev) => (prev < initialGalleries.length - 1 ? prev + 1 : 0));
-  };
+  }, [initialGalleries.length]);
 
-  const openLightbox = (imageUrl: string, galleryImages: GalleryItem['images'], index: number) => {
+  const openLightbox = useCallback((imageUrl: string, galleryImages: GalleryItem['images'], index: number) => {
     setSelectedImage(imageUrl);
     setSelectedGalleryImages(galleryImages);
     setSelectedImageIndex(index);
-  };
+  }, []);
 
-  const closeLightbox = () => {
+  const closeLightbox = useCallback(() => {
     setSelectedImage(null);
-  };
+  }, []);
 
-  const nextImage = () => {
+  const nextImage = useCallback(() => {
     setSelectedImageIndex((prev) => (prev + 1) % selectedGalleryImages.length);
     setSelectedImage(selectedGalleryImages[(selectedImageIndex + 1) % selectedGalleryImages.length].imageUrl);
-  };
+  }, [selectedGalleryImages, selectedImageIndex]);
 
-  const prevImage = () => {
-    setSelectedImageIndex((prev) => (prev - 1 + selectedGalleryImages.length) % selectedGalleryImages.length);
-    setSelectedImage(selectedGalleryImages[(selectedImageIndex - 1 + selectedGalleryImages.length) % selectedGalleryImages.length].imageUrl);
-  };
+  const prevImage = useCallback(() => {
+    setSelectedImageIndex((prev) => (prev > 0 ? prev - 1 : selectedGalleryImages.length - 1));
+    setSelectedImage(selectedGalleryImages[selectedImageIndex > 0 ? selectedImageIndex - 1 : selectedGalleryImages.length - 1].imageUrl);
+  }, [selectedGalleryImages, selectedImageIndex]);
 
-  const handleStickyNoteClick = (noteId: string) => {
+  // 使用 useMemo 优化计算属性（用于调试）
+  // const currentGallery = useMemo(() => 
+  //   initialGalleries[currentGalleryIndex] || null, 
+  //   [initialGalleries, currentGalleryIndex]
+  // );
+
+  // 使用计算属性（用于调试）
+  // const currentGalleryImages = useMemo(() => 
+  //   currentGallery?.images || [], 
+  //   [currentGallery]
+  // );
+
+  const handleStickyNoteClick = useCallback((noteId: string) => {
     router.push(`/wall?noteId=${noteId}`);
-  };
+  }, [router]);
 
   if (!mounted) return null;
   

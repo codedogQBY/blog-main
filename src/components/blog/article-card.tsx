@@ -1,5 +1,6 @@
 "use client"
 
+import React from 'react'
 import { Calendar, MessageCircle, Eye } from "lucide-react"
 import Image from "next/image"
 import type { Article } from "@/types/article"
@@ -28,7 +29,7 @@ const formatDate = (dateString: string | undefined) => {
     return `${year}-${month}-${day}`;
 }
 
-export default function ArticleCard({ article, onClick }: ArticleCardProps) {
+const ArticleCard = React.memo(({ article, onClick }: ArticleCardProps) => {
     const handleClick = () => {
         onClick?.(article)
     }
@@ -102,4 +103,8 @@ export default function ArticleCard({ article, onClick }: ArticleCardProps) {
             </div>
         </article>
     )
-}
+})
+
+ArticleCard.displayName = 'ArticleCard'
+
+export default ArticleCard
