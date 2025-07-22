@@ -136,28 +136,10 @@ export default async function RootLayout({
                 {/* 关键资源预加载（最高优先级） */}
                 <link rel="preload" href="/dark.png" as="image" type="image/png" />
                 <link rel="preload" href="/light.png" as="image" type="image/png" />
-                <link rel="preload" href="/logo.png" as="image" type="image/png" />
-                
-                {/* 关键CSS预加载 */}
-                <link rel="preload" href="/_next/static/css/app/layout.css" as="style" />
-                <link rel="preload" href="/_next/static/css/app/page.css" as="style" />
-                
-                {/* CDN 预连接（高优先级） */}
-                <link rel="preconnect" href="https://beal-blog-main.test.upcdn.net" />
-                <link rel="preconnect" href="https://code-shine.test.upcdn.net" />
-                
-                {/* DNS 预解析 */}
-                <link rel="dns-prefetch" href="https://beal-blog-main.test.upcdn.net" />
-                <link rel="dns-prefetch" href="https://code-shine.test.upcdn.net" />
+                <link rel="preload" href="/logo.png" as="image" type="image/png" />  d
                 
                 <link rel="manifest" href="/manifest.json" />
                 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-                <meta name="theme-color" content="#000000" />
-                <meta name="apple-mobile-web-app-capable" content="yes" />
-                <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-                <meta name="apple-mobile-web-app-title" content={config.title} />
-                <meta name="mobile-web-app-capable" content="yes" />
-                <meta name="application-name" content={config.title} />
             </head>
             <body className="font-sans bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen theme-transition theme-mask flex flex-col" suppressHydrationWarning>
                 <ErrorBoundary>
