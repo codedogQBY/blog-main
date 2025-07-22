@@ -12,6 +12,7 @@ import { Toaster } from 'sonner'
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
 import { getSiteConfig, DEFAULT_SITE_CONFIG } from '@/lib/site-config'
 import { UserTracker } from '@/components/user-tracker'
+import { ServiceWorkerCleanup } from '@/components/sw-cleanup'
 
 async function generateMetadata(): Promise<Metadata> {
     try {
@@ -160,6 +161,7 @@ export default async function RootLayout({
                             duration={2000}
                         />
                         <PWAInstallPrompt />
+                        <ServiceWorkerCleanup />
                     </ThemeProvider>
                 </ErrorBoundary>
             </body>
