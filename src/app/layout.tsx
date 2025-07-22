@@ -123,7 +123,6 @@ export default async function RootLayout({
 }: {
     children: React.ReactNode
 }) {
-    const config = await getSiteConfig().catch(() => DEFAULT_SITE_CONFIG)
     
     return (
         <html lang="zh-CN" suppressHydrationWarning className="theme-transition">
