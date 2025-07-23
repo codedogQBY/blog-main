@@ -1,8 +1,7 @@
-"use client"
-
-import { useEffect, useState } from "react"
+import { Metadata } from 'next'
 import { api } from "@/lib/api"
 import BlogListClient from './blog-list-client'
+import type { Article } from '@/lib/api'
 
 interface Category {
   id: string;
@@ -13,130 +12,157 @@ interface Category {
   };
 }
 
-interface ArticleForDisplay {
-  id: string;
-  title: string;
-  content: string;
-  excerpt: string;
-  coverImage?: string;
-  slug: string;
-  published: boolean;
-  views: number;
-  readTime?: number;
-  publishedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-  category?: string;
-  tags?: string[];
-  author?: string;
-  publishDate?: string;
-  comments?: number;
+interface CategoryStats {
+  [key: string]: number;
 }
 
-export default function ArticlesPage() {
-  const [data, setData] = useState<{
-    initialArticles: ArticleForDisplay[];
-    categories: Category[];
-    categoryStats: Record<string, number>;
-    displayCategories: string[];
-  }>({
-    initialArticles: [],
-    categories: [],
-    categoryStats: { "全部": 0 },
-    displayCategories: ["全部"]
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface BlogPageProps {
+  searchParams: Promise<{
+    search?: string;
+    category?: string;
+    page?: string;
+  }>
+}
 
-  useEffect(() => {
-    async function getBlogData() {
-      try {
-        // 并行获取分类和文章数据
-        const [categoriesResponse, articlesResponse] = await Promise.all([
-          api.getCategories({ 
-            limit: 100, 
-            status: 'enabled',
-            withPublishedArticles: true 
-          }),
-          api.getArticles({ page: 1, limit: 9, published: true })
-        ]);
+// 生成页面元数据
+export async function generateMetadata({ searchParams }: BlogPageProps): Promise<Metadata> {
+  const params = await searchParams
+  const { search, category } = params
+  
+  let title = '文章 | 码上拾光'
+  let description = '记录生活，分享思考，探索世界'
+  
+  if (search) {
+    title = `搜索"${search}" | 文章 | 码上拾光`
+    description = `在博客中搜索"${search}"的相关文章`
+  }
+  
+  if (category && category !== '全部') {
+    title = `${category} | 文章 | 码上拾光`
+    description = `浏览${category}分类下的文章`
+  }
+  
+  return {
+    title,
+    description,
+    keywords: ['技术博客', '编程', '前端', '后端', search, category].filter((k): k is string => Boolean(k)),
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      locale: 'zh_CN',
+    },
+    twitter: {
+      card: 'summary',
+      title,
+      description,
+    },
+    alternates: {
+      canonical: '/blog',
+    },
+  }
+}
 
-        // 计算分类统计 - 只显示有文章的分类
-        const stats: Record<string, number> = {}
-        const categoryNames = ["全部"]
-        
-        // 过滤出有文章的分类（后端已经过滤了，这里作为双重保险）
-        const categoriesWithArticles = categoriesResponse.data.filter(category => 
-          (category._count?.articles || 0) > 0
-        )
-        
-        // 先计算各个分类的文章数量
-        categoriesWithArticles.forEach((category) => {
-          const articleCount = category._count?.articles || 0
-          stats[category.name] = articleCount
-          categoryNames.push(category.name)
-        })
-        
-        // "全部"的数量应该是所有已发布文章的总数，而不是分类数量的简单相加
-        // 这里使用文章API返回的总数
-        stats["全部"] = articlesResponse.pagination.total
+// 服务端获取数据
+async function getBlogData(searchParams: { search?: string; category?: string; page?: string }) {
+  try {
+    console.log('🚀 服务端获取博客列表数据...', searchParams)
+    
+    const { search, category, page = '1' } = searchParams
+    const currentPage = parseInt(page) || 1
+    const limit = 9
+    
+    // 并行获取文章和分类数据
+    const [articlesResult, categoriesResult] = await Promise.allSettled([
+      api.getArticles({
+        page: currentPage,
+        limit,
+        search: search || undefined,
+        category: category && category !== '全部' ? category : undefined,
+        published: true
+      }),
+      api.getCategories({ 
+        withPublishedArticles: true,
+        limit: 100 // 获取所有分类
+      })
+    ])
 
-        // 转换API数据格式以兼容现有组件
-        const formattedArticles = articlesResponse.data.map(article => ({
-          ...article,
-          publishDate: article.publishedAt || article.createdAt,
-          category: typeof article.category === 'object' ? article.category.name : article.category,
-          tags: Array.isArray(article.tags) 
-            ? article.tags.map(t => typeof t === 'string' ? t : t.tag.name)
-            : [],
-          comments: article._count?.comments || 0,
-          author: typeof article.author === 'object' ? article.author.name : article.author,
-          coverImage: article.coverImage || "/placeholder.svg?height=128&width=128",
-        }));
-
-        setData({
-          initialArticles: formattedArticles,
-          categories: categoriesWithArticles,
-          categoryStats: stats,
-          displayCategories: categoryNames
-        });
-      } catch (error) {
-        console.error('获取博客数据失败:', error);
-        setError('获取数据失败，请稍后重试');
-      } finally {
-        setLoading(false);
-      }
+    // 处理文章数据
+    const articlesData: Article[] = articlesResult.status === 'fulfilled' ? articlesResult.value.data : []
+    
+    // 转换为BlogListClient期望的格式
+    const articles = articlesData.map(article => ({
+      ...article,
+      category: typeof article.category === 'object' ? article.category.name : article.category,
+      tags: Array.isArray(article.tags) 
+        ? article.tags.map(t => typeof t === 'string' ? t : t.tag.name)
+        : [],
+      author: typeof article.author === 'object' ? article.author.name : article.author,
+      publishDate: article.publishedAt || article.createdAt,
+      comments: article._count?.comments || 0,
+    }))
+    
+    const pagination = articlesResult.status === 'fulfilled' ? articlesResult.value.pagination : {
+      page: currentPage,
+      limit,
+      total: 0,
+      totalPages: 0
     }
 
-    getBlogData();
-  }, []);
+    // 处理分类数据
+    const categories: Category[] = categoriesResult.status === 'fulfilled' ? categoriesResult.value.data : []
+    
+    // 计算分类统计
+    const categoryStats: CategoryStats = {}
+    categories.forEach(cat => {
+      if (cat._count?.articles) {
+        categoryStats[cat.name] = cat._count.articles
+      }
+    })
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-400">加载中...</p>
-        </div>
-      </div>
-    );
-  }
+    // 添加"全部"选项的文章总数
+    const totalArticles = Object.values(categoryStats).reduce((sum, count) => sum + count, 0)
+    categoryStats['全部'] = totalArticles
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-red-600 mb-4">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-          >
-            重新加载
-          </button>
-        </div>
-      </div>
-    );
+    // 为显示创建分类列表（包含"全部"选项）
+    const displayCategories = [
+      '全部',
+      ...categories.map(cat => cat.name)
+    ]
+
+    console.log(`✅ 博客数据获取完成: 文章${articles.length}篇, 分类${categories.length}个`)
+
+    return {
+      initialArticles: articles,
+      categories,
+      categoryStats,
+      displayCategories,
+      pagination,
+      currentSearchParams: { search, category, page }
+    }
+  } catch (error) {
+    console.error('❌ 博客数据获取失败:', error)
+    
+    // 返回默认数据
+    return {
+      initialArticles: [],
+      categories: [],
+      categoryStats: { '全部': 0 },
+      displayCategories: ['全部'],
+      pagination: {
+        page: 1,
+        limit: 9,
+        total: 0,
+        totalPages: 0
+      },
+      currentSearchParams: { search: undefined, category: undefined, page: '1' }
+    }
   }
+}
+
+export default async function BlogPage({ searchParams }: BlogPageProps) {
+  const params = await searchParams
+  const data = await getBlogData(params)
 
   return (
     <BlogListClient 
@@ -145,5 +171,5 @@ export default function ArticlesPage() {
       categoryStats={data.categoryStats}
       displayCategories={data.displayCategories}
     />
-  );
+  )
 }

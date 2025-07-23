@@ -1,203 +1,122 @@
-"use client"
-
-import { useState, useEffect, useMemo, useCallback } from "react"
-import { useRouter } from "next/navigation"
-import InfiniteScrollLoader from "@/components/loading/infinite-scroll-loader"
-import GalleryCard from "@/components/gallery/gallery-card"
-import GalleryFilter from "@/components/gallery/gallery-filter"
-import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
+import { Metadata } from 'next'
 import { galleryAPI, getGalleryCategories } from "@/lib/gallery-api"
 import type { GalleryItem } from "@/types/gallery"
 import type { GalleryCategory } from "@/lib/gallery-api"
+import GalleryClient from './gallery-client'
 
-export default function GalleryPage() {
-    const router = useRouter()
-    const [categories, setCategories] = useState<GalleryCategory[]>([])
-    const [selectedCategory, setSelectedCategory] = useState<string>("全部")
+interface GalleryPageProps {
+  searchParams: Promise<{
+    category?: string;
+    page?: string;
+  }>
+}
 
-    // 加载图库数据的函数
-    const loadGalleryData = useCallback(async (page: number, pageSize: number): Promise<GalleryItem[]> => {
-        const response = await galleryAPI.getGalleryImages({
-            page,
-            limit: pageSize,
-            category: selectedCategory === "全部" ? undefined : selectedCategory,
-            sortBy: 'createdAt',
-            sortOrder: 'desc'
-        })
-        return response.items
-    }, [selectedCategory])
+// 生成页面元数据
+export async function generateMetadata({ searchParams }: GalleryPageProps): Promise<Metadata> {
+  const params = await searchParams
+  const { category } = params
+  
+  let title = '摄影图库 | 码上拾光'
+  let description = '记录生活中的美好瞬间，分享摄影作品和创作心得'
+  
+  if (category && category !== '全部') {
+    title = `${category} | 摄影图库 | 码上拾光`
+    description = `浏览${category}分类下的摄影作品`
+  }
+  
+  return {
+    title,
+    description,
+    keywords: ['摄影', '图片', '艺术', '创作', category].filter((k): k is string => Boolean(k)),
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      locale: 'zh_CN',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+    },
+    alternates: {
+      canonical: '/gallery',
+    },
+  }
+}
 
-    // 使用无限滚动hook
-    const { items, isLoading, hasMore, loadMore, refresh } = useInfiniteScroll({
-        pageSize: 12,
-        loadData: loadGalleryData,
-    })
+// 服务端获取数据
+async function getGalleryData(searchParams: { category?: string; page?: string }) {
+  try {
+    console.log('🚀 服务端获取图库数据...', searchParams)
+    
+    const { category, page = '1' } = searchParams
+    const currentPage = parseInt(page) || 1
+    const pageSize = 12
+    
+    // 并行获取图库和分类数据
+    const [galleryResult, categoriesResult] = await Promise.allSettled([
+      galleryAPI.getGalleryImages({
+        page: currentPage,
+        limit: pageSize,
+        category: category && category !== '全部' ? category : undefined,
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      }),
+      getGalleryCategories({
+        includeStats: true,
+        enabledOnly: true
+      })
+    ])
 
-    // 加载分类数据
-    const loadCategories = async () => {
-        try {
-            const categoryData = await getGalleryCategories({
-                includeStats: true,
-                enabledOnly: true
-            })
-            setCategories(categoryData)
-        } catch (err) {
-            console.error('获取分类数据失败:', err)
-        }
+    // 处理图库数据
+    const galleryData = galleryResult.status === 'fulfilled' ? galleryResult.value : { 
+      items: [], 
+      total: 0, 
+      page: currentPage, 
+      limit: pageSize, 
+      hasMore: false 
     }
+    const items: GalleryItem[] = galleryData.items || []
+    
+    // 处理分类数据
+    const categories: GalleryCategory[] = categoriesResult.status === 'fulfilled' ? categoriesResult.value : []
 
-    // 重置筛选
-    const resetFilters = () => {
-        setSelectedCategory("全部")
+    console.log(`✅ 图库数据获取完成: 图片${items.length}张, 分类${categories.length}个`)
+
+    return {
+      initialItems: items,
+      categories,
+      pagination: {
+        page: galleryData.page,
+        limit: galleryData.limit,
+        total: galleryData.total,
+        hasMore: galleryData.hasMore
+      },
+      currentSearchParams: { category, page }
     }
-
-    // 处理图库项点击
-    const handleItemClick = (item: GalleryItem) => {
-        router.push(`/gallery/${item.id}`)
+  } catch (error) {
+    console.error('❌ 图库数据获取失败:', error)
+    
+    // 返回默认数据
+    return {
+      initialItems: [],
+      categories: [],
+      pagination: null,
+      currentSearchParams: { category: undefined, page: '1' }
     }
+  }
+}
 
-    // 初始化加载分类数据
-    useEffect(() => {
-        loadCategories()
-    }, [])
+export default async function GalleryPage({ searchParams }: GalleryPageProps) {
+  const params = await searchParams
+  const data = await getGalleryData(params)
 
-    // 当筛选条件改变时刷新数据
-    useEffect(() => {
-        refresh()
-    }, [selectedCategory, refresh])
-
-    // 计算分类选项
-    const categoryOptions = useMemo(() => {
-        let totalCount = 0
-        const categoryMap = new Map<string, number>()
-
-        const options = [
-            
-        ]
-
-        // 添加分类选项
-        categories.forEach(category => {
-            const count = category.imageCount || 0
-            if (count > 0) {
-                totalCount += count
-                options.push({
-                    category: category.name,
-                    count: count
-                })
-            }
-        })
-
-        // 添加未分类选项（如果有未分类的图片）
-        const uncategorizedCount = categoryMap.get('未分类') || 0
-        if (uncategorizedCount > 0) {
-            options.push({
-                category: '未分类',
-                count: uncategorizedCount
-            })
-        }
-
-        options.unshift(
-            { category: '全部', count: totalCount }
-        )
-
-
-        return options
-    }, [categories])
-
-    // 处理加载更多
-    const handleLoadMore = async (): Promise<GalleryItem[]> => {
-        await loadMore()
-        return []
-    }
-
-    return (
-        <div className="min-h-screen pt-20">
-            <div className="container mx-auto px-4 py-8 max-w-7xl">
-                {/* 页面标题 */}
-                <div className="text-center mb-10">
-                    <div className="relative">
-                        <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-pink-600 via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6 relative">
-                            图库展示
-                            <div className="absolute -top-2 -right-2 text-xl animate-bounce">📸</div>
-                        </h1>
-                        <div className="w-16 h-1 bg-gradient-to-r from-pink-600 to-purple-600 mx-auto rounded-full mb-4"></div>
-                    </div>
-                    <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
-                        每一张照片都承载着独特的故事与美好的回忆
-                    </p>
-                </div>
-
-                {/* 筛选器 */}
-                <GalleryFilter
-                    categories={categoryOptions}
-                    activeCategory={selectedCategory}
-                    onCategoryChange={setSelectedCategory}
-                    totalCount={items.length}
-                />
-
-                {/* 图库网格 */}
-                <div className="mt-8">
-                    <InfiniteScrollLoader
-                        items={items}
-                        onLoadMore={handleLoadMore}
-                        hasMore={hasMore}
-                        isLoading={isLoading}
-                        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6 auto-rows-max"
-                        renderItem={(item) => (
-                            <GalleryCard
-                                key={item.id}
-                                item={item}
-                                onClick={handleItemClick}
-                            />
-                        )}
-                        emptyComponent={
-                            <div className="col-span-full text-center py-20">
-                                <div className="relative mx-auto w-32 h-32 mb-8">
-                                    <div className="absolute inset-0 bg-gradient-to-br from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-full animate-pulse"></div>
-                                    <div className="absolute inset-4 bg-white dark:bg-gray-900 rounded-full flex items-center justify-center">
-                                        <div className="text-4xl opacity-50">🖼️</div>
-                                    </div>
-                                </div>
-                                <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-                                    暂无图片
-                                </h3>
-                                <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-                                    还没有上传任何图片，或者没有找到符合当前筛选条件的图片
-                                </p>
-                                <button
-                                    onClick={resetFilters}
-                                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all duration-200 transform hover:scale-105 shadow-lg"
-                                >
-                                    清除筛选条件
-                                </button>
-                            </div>
-                        }
-                        loadingComponent={
-                            <div className="col-span-full text-center py-12">
-                                <div className="inline-flex items-center space-x-2">
-                                    <div className="w-6 h-6 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                                    <span className="text-gray-600 dark:text-gray-400">加载更多图片中...</span>
-                                </div>
-                            </div>
-                        }
-                    />
-                </div>
-
-                {/* 快速返回顶部按钮 */}
-                {items.length > 8 && (
-                    <div className="fixed bottom-8 right-8 z-50">
-                        <button
-                            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-                            className="w-12 h-12 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all duration-200 transform hover:scale-110 flex items-center justify-center"
-                            aria-label="返回顶部"
-                        >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-                            </svg>
-                        </button>
-                    </div>
-                )}
-            </div>
-        </div>
-    )
+  return (
+    <GalleryClient 
+      initialItems={data.initialItems}
+      categories={data.categories}
+      initialCategory={params.category || '全部'}
+    />
+  )
 }

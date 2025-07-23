@@ -106,28 +106,38 @@ export default function HomeClient({
   return (
     <>
       {/* 第一屏：主页欢迎部分 */}
-      <div className="min-h-screen flex flex-col justify-start pt-32 lg:justify-start lg:pt-24 relative">
+      <div className="h-screen flex flex-col justify-start pt-20 lg:justify-start lg:pt-16 relative overflow-hidden">
           <div className="absolute right-0 bottom-0 lg:top-0 lg:bottom-auto w-full flex justify-end z-0 pointer-events-none">
-              <div className="w-[70%] lg:w-auto">
+              <div className="w-[70%] lg:w-auto lg:h-screen lg:min-h-screen">
                   {isDark ? (
                       <Image 
                           src="/dark.png" 
                           alt="Dark background" 
-                          width={800} 
-                          height={900} 
-                          className="w-full h-auto lg:h-screen lg:w-auto object-contain object-right-bottom lg:object-contain"
-                          style={{ width: 'auto', height: 'auto' }}
+                          width={1920} 
+                          height={1080} 
+                          className="w-full h-auto lg:h-screen lg:w-auto object-contain object-right-bottom lg:object-cover lg:object-right"
+                          style={{ 
+                            width: 'auto', 
+                            height: 'auto',
+                            minHeight: '100vh'
+                          }}
                           priority
+                          fill={false}
                       />
                   ) : (
                       <Image 
                           src="/light.png" 
                           alt="Light background" 
-                          width={800} 
-                          height={900} 
-                          className="w-full h-auto lg:h-screen lg:w-auto object-contain object-right-bottom lg:object-contain"
-                          style={{ width: 'auto', height: 'auto' }}
+                          width={1920} 
+                          height={1080} 
+                          className="w-full h-auto lg:h-screen lg:w-auto object-contain object-right-bottom lg:object-cover lg:object-right"
+                          style={{ 
+                            width: 'auto', 
+                            height: 'auto',
+                            minHeight: '100vh'
+                          }}
                           priority
+                          fill={false}
                       />
                   )}
               </div>
