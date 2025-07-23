@@ -4,11 +4,17 @@
   "private": true,
   "scripts": {
     "dev": "PORT=5888 next dev",
+    "prebuild": "node scripts/generate-version.js",
     "build": "next build",
+    "postbuild": "node scripts/deploy-cache-clear.js",
     "start": "next start",
     "lint": "next lint",
-    "build:pwa": "next build && next export",
-    "analyze": "ANALYZE=true next build"
+    "build:pwa": "npm run prebuild && next build && next export",
+    "analyze": "ANALYZE=true next build",
+    "version:generate": "node scripts/generate-version.js",
+    "cache:clear": "node scripts/deploy-cache-clear.js",
+    "deploy:prepare": "npm run version:generate",
+    "deploy:build": "npm run build"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.14",

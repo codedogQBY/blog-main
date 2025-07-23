@@ -1,8 +1,8 @@
 // Service Worker for Blog Performance Optimization
-const CACHE_NAME = 'blog-cache-v1.0.0';
-const STATIC_CACHE = 'blog-static-v1.0.0';
-const DYNAMIC_CACHE = 'blog-dynamic-v1.0.0';
-const API_CACHE = 'blog-api-v1.0.0';
+const CACHE_NAME = 'blog-cache-v0.1.0-0d63f00';
+const STATIC_CACHE = 'blog-static-v0.1.0-0d63f00';
+const DYNAMIC_CACHE = 'blog-dynamic-v0.1.0-0d63f00';
+const API_CACHE = 'blog-api-v0.1.0-0d63f00';
 
 // 需要缓存的静态资源
 const STATIC_ASSETS = [
@@ -324,3 +324,25 @@ async function doBackgroundSync() {
 }
 
 console.log('[SW] Service Worker loaded successfully'); 
+// 部署时缓存清理标记
+const DEPLOY_TIMESTAMP = 1753242390680;
+
+// 监听来自主线程的强制清理消息
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'FORCE_CACHE_CLEAR') {
+    event.waitUntil(
+      caches.keys().then((cacheNames) => {
+        console.log('[SW] 强制清理所有缓存...');
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            console.log('[SW] 删除缓存:', cacheName);
+            return caches.delete(cacheName);
+          })
+        );
+      }).then(() => {
+        console.log('[SW] 缓存清理完成，重新激活...');
+        return self.skipWaiting();
+      })
+    );
+  }
+});

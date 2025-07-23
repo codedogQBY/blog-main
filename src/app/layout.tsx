@@ -14,6 +14,7 @@ import { ServiceWorkerManager } from '@/components/service-worker-manager'
 import { getSiteConfig, DEFAULT_SITE_CONFIG } from '@/lib/site-config'
 import { UserTracker } from '@/components/user-tracker'
 import { PerformanceMonitor } from '@/components/performance-monitor'
+import UpdateNotification from '@/components/update-notification'
 
 async function generateMetadata(): Promise<Metadata> {
     try {
@@ -163,6 +164,7 @@ export default async function RootLayout({
                         />
                         <PWAInstallPrompt />
                         <ServiceWorkerManager />
+                        <UpdateNotification />
                     </ThemeProvider>
                 </ErrorBoundary>
             </body>

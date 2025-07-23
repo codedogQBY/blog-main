@@ -39,3 +39,14 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Cache management and version control generated files
+/public/version.json
+/public/version.*.json
+/public/sw.*.js
+/public/manifest.*.json
+cache-clear-report.json
+**/cache-clear-report.json
+
+# Build-time generated files
+/public/*.timestamp.*
