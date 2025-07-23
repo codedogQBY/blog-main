@@ -37,7 +37,8 @@ function WallClientContent({ initialNotes, categories }: WallClientProps) {
   // 初始化分类列表
   useEffect(() => {
     if (categories.length > 0) {
-      const names = ["全部", ...categories.map(cat => cat.name)]
+      // 后端已经包含了"全部"选项，直接使用后端返回的分类列表
+      const names = categories.map(cat => cat.name)
       setCategoryNames(names)
     }
   }, [categories])
@@ -120,8 +121,9 @@ function WallClientContent({ initialNotes, categories }: WallClientProps) {
   const loadCategories = useCallback(async () => {
     try {
       const data = await getStickyNoteCategories()
+      // 后端已经包含了"全部"选项，直接使用后端返回的分类列表
       const names = data.map(cat => cat.name)
-      setCategoryNames(["全部", ...names])
+      setCategoryNames(names)
     } catch (error) {
       console.error('加载分类失败:', error)
     }
