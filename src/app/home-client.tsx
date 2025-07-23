@@ -113,8 +113,8 @@ export default function HomeClient({
                       <Image 
                           src="/dark.png" 
                           alt="Dark background" 
-                          width={1920} 
-                          height={1080} 
+                          width={800}
+                          height={900}
                           className="w-full h-auto lg:h-screen lg:w-auto object-contain object-right-bottom lg:object-cover lg:object-right"
                           style={{ 
                             width: 'auto', 
@@ -128,8 +128,8 @@ export default function HomeClient({
                       <Image 
                           src="/light.png" 
                           alt="Light background" 
-                          width={1920} 
-                          height={1080} 
+                          width={800}
+                          height={900}
                           className="w-full h-auto lg:h-screen lg:w-auto object-contain object-right-bottom lg:object-cover lg:object-right"
                           style={{ 
                             width: 'auto', 
