@@ -8,7 +8,7 @@ import ShareButton from '../share/share-button'
 import { interactionAPI } from '@/lib/interaction-api'
 
 interface FloatingActionsProps {
-  targetType?: 'article' | 'sticky_note' | 'gallery_image'
+  targetType?: 'article' | 'sticky_note' | 'gallery_image' | 'gallery'
   targetId?: string
   autoLoad?: boolean
   onComment?: () => void

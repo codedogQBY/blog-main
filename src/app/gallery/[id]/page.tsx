@@ -197,7 +197,7 @@ export default function GalleryDetailPage() {
                     {/* 评论区域 */}
                     <div id="comment-section" className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
                         <CommentSection 
-                            targetType="gallery_image"
+                            targetType="gallery"
                             targetId={galleryItem.id}
                             onCommentAdded={handleCommentAdded}
                         />
@@ -206,7 +206,7 @@ export default function GalleryDetailPage() {
 
                 {/* 浮动操作按钮 */}
                 <FloatingActions
-                    targetType="gallery_image"
+                    targetType="gallery"
                     targetId={galleryItem.id}
                     autoLoad={true}
                     onComment={handleComment}

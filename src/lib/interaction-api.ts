@@ -29,7 +29,7 @@ export interface UserInfo {
 }
 
 export interface LikeRequest {
-  targetType: 'article' | 'sticky_note' | 'gallery_image'
+  targetType: 'article' | 'sticky_note' | 'gallery_image' | 'gallery'
   targetId: string
   fingerprint: string
   userInfo: UserInfo
@@ -41,7 +41,7 @@ export interface LikeResponse {
 }
 
 export interface CommentRequest {
-  targetType: 'article' | 'sticky_note' | 'gallery_image'
+  targetType: 'article' | 'sticky_note' | 'gallery_image' | 'gallery'
   targetId: string
   fingerprint: string
   userInfo: UserInfo

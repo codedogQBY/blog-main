@@ -10,7 +10,7 @@ import { getOrGenerateFingerprint, collectUserInfo } from '@/lib/fingerprint'
 import { useAuthStore } from '@/lib/auth'
 
 interface CommentSectionProps {
-  targetType: 'article' | 'sticky_note' | 'gallery_image'
+  targetType: 'article' | 'sticky_note' | 'gallery_image' | 'gallery'
   targetId: string
   onCommentAdded?: () => void
 }

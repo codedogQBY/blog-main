@@ -281,7 +281,7 @@ export default function Footer() {
                       <Button 
                         variant="ghost" 
                         size="icon"
-                        className="h-8 w-8 rounded-full hover:bg-accent"
+                        className="h-8 w-8 rounded-full bg-blue-500 hover:bg-blue-600 text-white"
                       >
                         <Link2 className="h-4 w-4" />
                         <span className="sr-only">申请友链</span>
@@ -353,7 +353,7 @@ export default function Footer() {
                     </p>
                   </div>
                   <Button 
-                    className="w-full" 
+                    className="w-full bg-blue-500 hover:bg-blue-600 text-white cursor-pointer" 
                     onClick={handleSubmit}
                     disabled={isSubmitting}
                   >
@@ -550,7 +550,7 @@ export default function Footer() {
                   />
                 </div>
                 <Button 
-                  className="w-full" 
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white cursor-pointer" 
                   onClick={handleLogin}
                   disabled={isLoggingIn}
                 >
@@ -580,7 +580,7 @@ export default function Footer() {
                     返回
                   </Button>
                   <Button 
-                    className="flex-1" 
+                    className="flex-1 bg-blue-500 hover:bg-blue-600 text-white cursor-pointer" 
                     onClick={handleTwoFactorLogin}
                     disabled={isLoggingIn}
                   >
