@@ -44,6 +44,8 @@ next-env.d.ts
 /public/version.json
 /public/version.*.json
 /public/sw.*.js
+/public/sw-config.js
+/public/sw-config.*.js
 /public/manifest.*.json
 cache-clear-report.json
 **/cache-clear-report.json

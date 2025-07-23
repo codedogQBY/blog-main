@@ -1,8 +1,34 @@
 // Service Worker for Blog Performance Optimization
-const CACHE_NAME = 'blog-cache-v0.1.0-0d63f00';
-const STATIC_CACHE = 'blog-static-v0.1.0-0d63f00';
-const DYNAMIC_CACHE = 'blog-dynamic-v0.1.0-0d63f00';
-const API_CACHE = 'blog-api-v0.1.0-0d63f00';
+// Cache names will be loaded from sw-config.js
+let CACHE_NAME = 'blog-cache-v1.0.0';
+let STATIC_CACHE = 'blog-static-v1.0.0';
+let DYNAMIC_CACHE = 'blog-dynamic-v1.0.0';
+let API_CACHE = 'blog-api-v1.0.0';
+
+// Load cache configuration
+async function loadCacheConfig() {
+  try {
+    // Import sw-config.js to get current cache names
+    const response = await fetch('/sw-config.js');
+    if (response.ok) {
+      const configText = await response.text();
+      // Execute the config script to get SW_CONFIG
+      eval(configText);
+      if (typeof SW_CONFIG !== 'undefined') {
+        CACHE_NAME = SW_CONFIG.CACHE_NAME;
+        STATIC_CACHE = SW_CONFIG.STATIC_CACHE;
+        DYNAMIC_CACHE = SW_CONFIG.DYNAMIC_CACHE;
+        API_CACHE = SW_CONFIG.API_CACHE;
+        console.log('[SW] Cache config loaded:', SW_CONFIG.VERSION);
+      }
+    }
+  } catch (error) {
+    console.warn('[SW] Failed to load cache config, using defaults:', error);
+  }
+}
+
+// Load config when SW starts
+loadCacheConfig();
 
 // 需要缓存的静态资源
 const STATIC_ASSETS = [
@@ -45,19 +71,24 @@ self.addEventListener('install', (event) => {
   
   event.waitUntil(
     Promise.all([
-      // 缓存静态资源
-      caches.open(STATIC_CACHE).then((cache) => {
-        console.log('[SW] Caching static assets');
-        return cache.addAll(STATIC_ASSETS);
-      }).catch(error => {
-        console.warn('[SW] Failed to cache some static assets:', error);
-      }),
-      // 缓存外部资源
-      caches.open(STATIC_CACHE).then((cache) => {
-        console.log('[SW] Caching external assets');
-        return cache.addAll(EXTERNAL_ASSETS);
-      }).catch(error => {
-        console.warn('[SW] Failed to cache some external assets:', error);
+      // 先加载配置，再缓存静态资源
+      loadCacheConfig().then(() => {
+        return Promise.all([
+          // 缓存静态资源
+          caches.open(STATIC_CACHE).then((cache) => {
+            console.log('[SW] Caching static assets');
+            return cache.addAll(STATIC_ASSETS);
+          }).catch(error => {
+            console.warn('[SW] Failed to cache some static assets:', error);
+          }),
+          // 缓存外部资源
+          caches.open(STATIC_CACHE).then((cache) => {
+            console.log('[SW] Caching external assets');
+            return cache.addAll(EXTERNAL_ASSETS);
+          }).catch(error => {
+            console.warn('[SW] Failed to cache some external assets:', error);
+          })
+        ]);
       }),
       // 立即激活
       self.skipWaiting()

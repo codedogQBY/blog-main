@@ -45,7 +45,7 @@ const CACHE_CONFIG = {
     // 需要缓存破坏的文件
     bustFiles: [
       'version.json',
-      'sw.js',
+      'sw-config.js',
       'manifest.json'
     ]
   }
@@ -171,6 +171,7 @@ function cleanOldCacheBustedFiles() {
     const patterns = [
       /^version\.\d+\.json$/,    // version.123456789.json
       /^sw\.\d+\.js$/,           // sw.123456789.js  
+      /^sw-config\.\d+\.js$/,    // sw-config.123456789.js
       /^manifest\.\d+\.json$/    // manifest.123456789.json
     ];
     
@@ -236,59 +237,10 @@ function generateCacheBustedFiles() {
   }
 }
 
-// 更新Service Worker缓存清理指令
+// Service Worker配置文件已经在构建时生成，不需要额外更新
 function updateServiceWorkerCacheClear() {
-  try {
-    console.log('🔄 更新Service Worker缓存清理指令...');
-    
-    const swPath = path.join(__dirname, '../public/sw.js');
-    
-    if (!fs.existsSync(swPath)) {
-      console.warn('⚠️  Service Worker文件不存在，跳过更新');
-      return { success: false, reason: 'file_not_found' };
-    }
-    
-    let swContent = fs.readFileSync(swPath, 'utf-8');
-    
-    // 在Service Worker中添加强制清理缓存的逻辑
-    const clearCacheCode = `
-// 部署时缓存清理标记
-const DEPLOY_TIMESTAMP = ${Date.now()};
-
-// 监听来自主线程的强制清理消息
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'FORCE_CACHE_CLEAR') {
-    event.waitUntil(
-      caches.keys().then((cacheNames) => {
-        console.log('[SW] 强制清理所有缓存...');
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            console.log('[SW] 删除缓存:', cacheName);
-            return caches.delete(cacheName);
-          })
-        );
-      }).then(() => {
-        console.log('[SW] 缓存清理完成，重新激活...');
-        return self.skipWaiting();
-      })
-    );
-  }
-});
-`;
-    
-    // 如果还没有添加过这段代码，就添加
-    if (!swContent.includes('DEPLOY_TIMESTAMP')) {
-      swContent += clearCacheCode;
-      fs.writeFileSync(swPath, swContent);
-      console.log('✅ Service Worker缓存清理指令已更新');
-    }
-    
-    return { success: true };
-    
-  } catch (error) {
-    console.error('❌ Service Worker更新失败:', error.message);
-    return { success: false, error: error.message };
-  }
+  console.log('✅ Service Worker配置已通过sw-config.js文件处理');
+  return { success: true, reason: 'handled_by_config_file' };
 }
 
 // 主函数：执行所有缓存清理策略

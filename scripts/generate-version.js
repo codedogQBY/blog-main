@@ -24,7 +24,8 @@ function cleanOldVersionFiles() {
     const patterns = [
       /^version\.\d+\.json$/, // version.123456789.json
       /^sw\.\d+\.js$/,        // sw.123456789.js
-      /^manifest\.\d+\.json$/ // manifest.123456789.json
+      /^manifest\.\d+\.json$/, // manifest.123456789.json
+      /^sw-config\.\d+\.js$/  // sw-config.123456789.js
     ];
     
     files.forEach(file => {
@@ -89,40 +90,50 @@ function generateVersionInfo() {
   const versionFilePath = path.join(__dirname, '../public/version.json');
   fs.writeFileSync(versionFilePath, JSON.stringify(versionInfo, null, 2));
 
-  // 更新Service Worker中的缓存版本
-  updateServiceWorkerVersion(versionInfo.cacheVersion);
+  // 生成Service Worker配置文件
+  generateSWConfig(versionInfo.cacheVersion);
 
   console.log('✅ 版本信息生成成功:', versionInfo);
   return versionInfo;
 }
 
-// 更新Service Worker中的缓存版本
-function updateServiceWorkerVersion(cacheVersion) {
-  const swPath = path.join(__dirname, '../public/sw.js');
-  
-  if (fs.existsSync(swPath)) {
-    let swContent = fs.readFileSync(swPath, 'utf-8');
+// 生成Service Worker配置文件
+function generateSWConfig(cacheVersion) {
+  try {
+    console.log('🔧 生成Service Worker配置文件...');
     
-    // 替换缓存版本号
-    swContent = swContent.replace(
-      /const CACHE_NAME = ['"]blog-cache-v[\d\w\.-]+['"];/,
-      `const CACHE_NAME = 'blog-cache-${cacheVersion}';`
-    );
-    swContent = swContent.replace(
-      /const STATIC_CACHE = ['"]blog-static-v[\d\w\.-]+['"];/,
-      `const STATIC_CACHE = 'blog-static-${cacheVersion}';`
-    );
-    swContent = swContent.replace(
-      /const DYNAMIC_CACHE = ['"]blog-dynamic-v[\d\w\.-]+['"];/,
-      `const DYNAMIC_CACHE = 'blog-dynamic-${cacheVersion}';`
-    );
-    swContent = swContent.replace(
-      /const API_CACHE = ['"]blog-api-v[\d\w\.-]+['"];/,
-      `const API_CACHE = 'blog-api-${cacheVersion}';`
-    );
+    const swConfigContent = `// Service Worker Cache Configuration
+// This file is auto-generated during build time
+// DO NOT EDIT MANUALLY
+
+const SW_CONFIG = {
+  CACHE_NAME: 'blog-cache-${cacheVersion}',
+  STATIC_CACHE: 'blog-static-${cacheVersion}',
+  DYNAMIC_CACHE: 'blog-dynamic-${cacheVersion}',
+  API_CACHE: 'blog-api-${cacheVersion}',
+  VERSION: '${cacheVersion}',
+  BUILD_TIME: ${Date.now()}
+};
+
+// Export for use in Service Worker
+if (typeof self !== 'undefined') {
+  self.SW_CONFIG = SW_CONFIG;
+}
+
+// Export for module systems
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = SW_CONFIG;
+}
+`;
+
+    const swConfigPath = path.join(__dirname, '../public/sw-config.js');
+    fs.writeFileSync(swConfigPath, swConfigContent);
     
-    fs.writeFileSync(swPath, swContent);
-    console.log('✅ Service Worker缓存版本已更新:', cacheVersion);
+    console.log('✅ Service Worker配置文件已生成:', `sw-config.js`);
+    console.log('   缓存版本:', cacheVersion);
+    
+  } catch (error) {
+    console.error('❌ Service Worker配置文件生成失败:', error.message);
   }
 }
 
@@ -131,4 +142,4 @@ if (require.main === module) {
   generateVersionInfo();
 }
 
-module.exports = { generateVersionInfo, cleanOldVersionFiles }; 
+module.exports = { generateVersionInfo, cleanOldVersionFiles, generateSWConfig }; 
