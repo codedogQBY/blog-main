@@ -7,6 +7,7 @@ import type { Article } from '@/lib/api'
 import ArticleCard from '@/components/blog/article-card'
 import InfiniteScrollLoader from '@/components/loading/infinite-scroll-loader'
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
+import ArticleListSkeleton from '@/components/skeleton/article-list-skeleton'
 
 interface Category {
   id: string;
@@ -42,6 +43,7 @@ export default function BlogListClient({
   const [searchQuery, setSearchQuery] = useState("")
   const [categoryStats] = useState(initialCategoryStats)
   const [displayCategories] = useState(initialDisplayCategories)
+  const [isFirstLoad, setIsFirstLoad] = useState(true)
 
   // 加载文章数据
   const loadArticles = useCallback(
@@ -94,6 +96,13 @@ export default function BlogListClient({
     loadData: loadArticles,
     initialData: initialArticles
   })
+
+  // 监听加载状态变化，标记非首次加载
+  useEffect(() => {
+    if (isLoading && isFirstLoad) {
+      setIsFirstLoad(false)
+    }
+  }, [isLoading, isFirstLoad])
 
   // 当分类或搜索条件改变时刷新数据
   useEffect(() => {
@@ -188,41 +197,45 @@ export default function BlogListClient({
           </div>
 
           {/* 文章列表 */}
-          <InfiniteScrollLoader
-            items={articles}
-            onLoadMore={handleLoadMore}
-            renderItem={(article, index) => (
-              <ArticleCard
-                key={article.id || index}
-                article={article}
-                onClick={() => handleArticleClick(article)}
-              />
-            )}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            isLoading={isLoading}
-            hasMore={hasMore}
-            emptyComponent={
-              <div className="col-span-full text-center py-12">
-                <div className="text-gray-400 text-lg mb-2">🔍</div>
-                <p className="text-gray-500 dark:text-gray-400">
-                  {searchQuery
-                    ? `没有找到包含 "${searchQuery}" 的文章`
-                    : selectedCategory !== "全部"
-                    ? `"${selectedCategory}" 分类下暂无文章`
-                    : "暂无文章"}
-                </p>
-                {searchQuery && (
-                  <Button
-                    variant="outline"
-                    onClick={() => setSearchQuery("")}
-                    className="mt-4"
-                  >
-                    清除搜索
-                  </Button>
-                )}
-              </div>
-            }
-          />
+          {isFirstLoad && isLoading ? (
+            <ArticleListSkeleton />
+          ) : (
+            <InfiniteScrollLoader
+              items={articles}
+              onLoadMore={handleLoadMore}
+              renderItem={(article, index) => (
+                <ArticleCard
+                  key={article.id || index}
+                  article={article}
+                  onClick={() => handleArticleClick(article)}
+                />
+              )}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+              isLoading={isLoading}
+              hasMore={hasMore}
+              emptyComponent={
+                <div className="col-span-full text-center py-12">
+                  <div className="text-gray-400 text-lg mb-2">🔍</div>
+                  <p className="text-gray-500 dark:text-gray-400">
+                    {searchQuery
+                      ? `没有找到包含 "${searchQuery}" 的文章`
+                      : selectedCategory !== "全部"
+                      ? `"${selectedCategory}" 分类下暂无文章`
+                      : "暂无文章"}
+                  </p>
+                  {searchQuery && (
+                    <Button
+                      variant="outline"
+                      onClick={() => setSearchQuery("")}
+                      className="mt-4"
+                    >
+                      清除搜索
+                    </Button>
+                  )}
+                </div>
+              }
+            />
+          )}
         </main>
       </div>
     </div>

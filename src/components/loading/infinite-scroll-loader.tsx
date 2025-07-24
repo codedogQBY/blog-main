@@ -18,20 +18,11 @@ interface InfiniteScrollLoaderProps<T> {
     errorComponent?: React.ReactNode
 }
 
+import LoadingSpinner from './loading-spinner'
+
 // 默认加载动画组件
 const DefaultLoadingAnimation = () => {
-    return (
-        <div className="flex flex-col items-center justify-center py-8 space-y-4">
-            {/* 加载动画 - 两个跳跃的圆点 */}
-            <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-cyan-400 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                <div className="w-3 h-3 bg-gray-800 dark:bg-gray-200 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-            </div>
-
-            {/* 加载文字 */}
-            <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">加载中...</p>
-        </div>
-    )
+    return <LoadingSpinner text="加载中..." />
 }
 
 export default function InfiniteScrollLoader<T>({
