@@ -81,9 +81,6 @@ const nextConfig: NextConfig = {
   poweredByHeader: false, // 移除 X-Powered-By header
   reactStrictMode: true,
   
-  // 减少预渲染以提高首次加载速度
-  output: 'standalone',
-  
   // 减少预加载
   onDemandEntries: {
     // 页面在内存中保持的时间（毫秒）
