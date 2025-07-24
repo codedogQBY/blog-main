@@ -4,17 +4,11 @@ import "./globals.css"
 import { ThemeProvider } from "next-themes"
 import Header from "@/components/header"
 import Footer from "@/components/footer"
-import ScrollToTop from "@/components/scroll-to-top"
-import AnimatedBackground from "@/components/animated-background"
 import { MonitoringInitializer } from '@/components/monitoring-initializer'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { Toaster } from 'sonner'
-import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
-import { ServiceWorkerManager } from '@/components/service-worker-manager'
 import { getSiteConfig, DEFAULT_SITE_CONFIG } from '@/lib/site-config'
-import { UserTracker } from '@/components/user-tracker'
-import { PerformanceMonitor } from '@/components/performance-monitor'
-import UpdateNotification from '@/components/update-notification'
+import { DelayedComponents } from '@/components/lazy-components'
 
 async function generateMetadata(): Promise<Metadata> {
     try {
@@ -99,9 +93,11 @@ function ThemeScript() {
                         const root = document.documentElement;
                         root.classList.add(theme);
                         
-                        // 源头预加载主要背景图片
-                        const bgImage = new Image();
-                        bgImage.src = theme === 'dark' ? '/dark.png' : '/light.png';
+                        // 延迟预加载背景图片，避免阻塞初始渲染
+                        setTimeout(() => {
+                            const bgImage = new Image();
+                            bgImage.src = theme === 'dark' ? '/dark.png' : '/light.png';
+                        }, 1000);
                         
                         // 添加 no-transition 类以防止初始加载时的过渡效果
                         root.classList.add('no-transition');
@@ -135,9 +131,7 @@ export default async function RootLayout({
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
                 <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
                 
-                {/* 关键资源预加载（最高优先级） */}
-                <link rel="preload" href="/dark.png" as="image" type="image/png" />
-                <link rel="preload" href="/light.png" as="image" type="image/png" />
+                {/* 关键资源预加载（仅预加载最重要的资源） */}
                 <link rel="preload" href="/logo.png" as="image" type="image/png" />
                 
                 <link rel="manifest" href="/manifest.json" />
@@ -146,25 +140,19 @@ export default async function RootLayout({
             <body className="font-sans bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen theme-transition theme-mask flex flex-col" suppressHydrationWarning>
                 <ErrorBoundary>
                     <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="xa-theme" disableTransitionOnChange>
-                        <AnimatedBackground />
                         <Header />
                         <main className="relative flex-1">
                             {children}
                         </main>
                         <Footer />
-                        <ScrollToTop />
                         <MonitoringInitializer />
-                        <UserTracker />
-                        <PerformanceMonitor />
                         <Toaster 
                             position="top-right"
                             richColors
                             closeButton
                             duration={2000}
                         />
-                        <PWAInstallPrompt />
-                        <ServiceWorkerManager />
-                        <UpdateNotification />
+                        <DelayedComponents />
                     </ThemeProvider>
                 </ErrorBoundary>
             </body>

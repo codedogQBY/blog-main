@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "PORT=5888 next dev",
+    "dev": "next dev",
     "prebuild": "node scripts/generate-version.js",
     "build": "next build",
     "postbuild": "node scripts/deploy-cache-clear.js",

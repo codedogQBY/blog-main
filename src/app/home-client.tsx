@@ -83,18 +83,6 @@ export default function HomeClient({
     setSelectedImage(selectedGalleryImages[selectedImageIndex > 0 ? selectedImageIndex - 1 : selectedGalleryImages.length - 1].imageUrl);
   }, [selectedGalleryImages, selectedImageIndex]);
 
-  // 使用 useMemo 优化计算属性（用于调试）
-  // const currentGallery = useMemo(() => 
-  //   initialGalleries[currentGalleryIndex] || null, 
-  //   [initialGalleries, currentGalleryIndex]
-  // );
-
-  // 使用计算属性（用于调试）
-  // const currentGalleryImages = useMemo(() => 
-  //   currentGallery?.images || [], 
-  //   [currentGallery]
-  // );
-
   const handleStickyNoteClick = useCallback((noteId: string) => {
     router.push(`/wall?noteId=${noteId}`);
   }, [router]);
@@ -281,7 +269,8 @@ export default function HomeClient({
           </div>
 
           <div className="w-full mx-auto lg:w-full">
-            {initialGalleries.map((gallery, index) => (
+            {initialGalleries && initialGalleries.length > 0 ? (
+              initialGalleries.map((gallery, index) => (
               <div
                   key={gallery.id}
                   className={`relative w-full h-[450px] lg:h-[700px] rounded-3xl overflow-hidden transition-opacity duration-300 group cursor-pointer ${
@@ -354,7 +343,10 @@ export default function HomeClient({
                   </div>
                 </div>
               </div>
-            ))}
+              ))
+            ) : (
+              null
+            )}
           </div>
 
           <div className="flex justify-center mt-12">

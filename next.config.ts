@@ -81,6 +81,17 @@ const nextConfig: NextConfig = {
   poweredByHeader: false, // 移除 X-Powered-By header
   reactStrictMode: true,
   
+  // 减少预渲染以提高首次加载速度
+  output: 'standalone',
+  
+  // 减少预加载
+  onDemandEntries: {
+    // 页面在内存中保持的时间（毫秒）
+    maxInactiveAge: 25 * 1000,
+    // 同时保持的页面数量
+    pagesBufferLength: 2,
+  },
+  
   // 生成 sitemap 和 robots.txt
   async rewrites() {
     return [
