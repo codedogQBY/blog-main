@@ -157,11 +157,7 @@ export default function HomeClient({
     }
   }, [galleries, currentGalleryIndex]);
   
-  // 添加强制刷新功能（开发环境）
-  const handleForceRefresh = () => {
-    console.log('🔄 手动强制刷新数据...');
-    refreshData();
-  };
+
   
   const scrollToSecondScreen = useCallback(() => {
     secondScreenRef.current?.scrollIntoView({ 
