@@ -23,9 +23,7 @@ function cleanOldVersionFiles() {
     // 清理带时间戳的版本文件
     const patterns = [
       /^version\.\d+\.json$/, // version.123456789.json
-      /^sw\.\d+\.js$/,        // sw.123456789.js
-      /^manifest\.\d+\.json$/, // manifest.123456789.json
-      /^sw-config\.\d+\.js$/  // sw-config.123456789.js
+      /^manifest\.\d+\.json$/ // manifest.123456789.json
     ];
     
     files.forEach(file => {
@@ -80,7 +78,7 @@ function generateVersionInfo() {
     buildDate: buildDate,
     gitHash: gitHash,
     gitBranch: gitBranch,
-    // 用于Service Worker的缓存版本
+    // 用于缓存的版本
     cacheVersion: `v${packageVersion}-${gitHash || timestamp}`,
     // 用于强制刷新的版本号
     forceUpdateVersion: timestamp
@@ -90,56 +88,17 @@ function generateVersionInfo() {
   const versionFilePath = path.join(__dirname, '../public/version.json');
   fs.writeFileSync(versionFilePath, JSON.stringify(versionInfo, null, 2));
 
-  // 生成Service Worker配置文件
-  generateSWConfig(versionInfo.cacheVersion);
+
 
   console.log('✅ 版本信息生成成功:', versionInfo);
   return versionInfo;
 }
 
-// 生成Service Worker配置文件
-function generateSWConfig(cacheVersion) {
-  try {
-    console.log('🔧 生成Service Worker配置文件...');
-    
-    const swConfigContent = `// Service Worker Cache Configuration
-// This file is auto-generated during build time
-// DO NOT EDIT MANUALLY
 
-const SW_CONFIG = {
-  CACHE_NAME: 'blog-cache-${cacheVersion}',
-  STATIC_CACHE: 'blog-static-${cacheVersion}',
-  DYNAMIC_CACHE: 'blog-dynamic-${cacheVersion}',
-  API_CACHE: 'blog-api-${cacheVersion}',
-  VERSION: '${cacheVersion}',
-  BUILD_TIME: ${Date.now()}
-};
-
-// Export for use in Service Worker
-if (typeof self !== 'undefined') {
-  self.SW_CONFIG = SW_CONFIG;
-}
-
-// Export for module systems
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = SW_CONFIG;
-}
-`;
-
-    const swConfigPath = path.join(__dirname, '../public/sw-config.js');
-    fs.writeFileSync(swConfigPath, swConfigContent);
-    
-    console.log('✅ Service Worker配置文件已生成:', `sw-config.js`);
-    console.log('   缓存版本:', cacheVersion);
-    
-  } catch (error) {
-    console.error('❌ Service Worker配置文件生成失败:', error.message);
-  }
-}
 
 // 执行脚本
 if (require.main === module) {
   generateVersionInfo();
 }
 
-module.exports = { generateVersionInfo, cleanOldVersionFiles, generateSWConfig }; 
+module.exports = { generateVersionInfo, cleanOldVersionFiles }; 

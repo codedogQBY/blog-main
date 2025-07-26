@@ -22,7 +22,6 @@ const CACHE_CONFIG = {
       // 需要清理的路径模式
       paths: [
         '/version.json',
-        '/sw.js',
         '/_next/static/*',
         '/favicon.ico',
         '/manifest.json'
@@ -45,7 +44,6 @@ const CACHE_CONFIG = {
     // 需要缓存破坏的文件
     bustFiles: [
       'version.json',
-      'sw-config.js',
       'manifest.json'
     ]
   }
@@ -125,7 +123,7 @@ async function clearCloudflareCache() {
     const url = `https://api.cloudflare.com/client/v4/zones/${config.zoneId}/purge_cache`;
     const payload = config.purgeEverything ? 
       { purge_everything: true } : 
-      { files: ['https://your-domain.com/version.json', 'https://your-domain.com/sw.js'] };
+      { files: ['https://your-domain.com/version.json'] };
 
     // 这里应该调用Cloudflare API
     // 示例代码
@@ -238,10 +236,7 @@ function generateCacheBustedFiles() {
 }
 
 // Service Worker配置文件已经在构建时生成，不需要额外更新
-function updateServiceWorkerCacheClear() {
-  console.log('✅ Service Worker配置已通过sw-config.js文件处理');
-  return { success: true, reason: 'handled_by_config_file' };
-}
+
 
 // 主函数：执行所有缓存清理策略
 async function clearAllCaches() {
@@ -263,10 +258,7 @@ async function clearAllCaches() {
     const cacheBustResult = generateCacheBustedFiles();
     if (cacheBustResult.success) report.clearedCaches.push('browser_cache_bust');
     
-    // 3. 更新Service Worker
-    console.log('\n🔧 更新Service Worker...');
-    const swResult = updateServiceWorkerCacheClear();
-    if (swResult.success) report.clearedCaches.push('service_worker');
+
     
     report.summary.totalCleared = report.clearedCaches.length;
     

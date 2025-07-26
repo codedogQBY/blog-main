@@ -14,6 +14,9 @@ import type { GalleryItem } from "@/lib/gallery-api";
 import type { StickyNoteData } from '@/lib/sticky-note-api';
 import { useRouter } from "next/navigation";
 import type { SiteConfig } from '@/lib/site-config';
+import { api } from "@/lib/api";
+import { getGalleryImages } from "@/lib/gallery-api";
+import { getStickyNotes } from '@/lib/sticky-note-api';
 
 interface HomeClientProps {
   initialArticles: Article[];
@@ -37,10 +40,128 @@ export default function HomeClient({
   const secondScreenRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<{ handlePrevious: () => void; handleNext: () => void }>(null);
   const router = useRouter();
+  
+  // 客户端状态
+  const [articles, setArticles] = useState<Article[]>(initialArticles);
+  const [galleries, setGalleries] = useState<GalleryItem[]>(initialGalleries);
+  const [stickyNotes, setStickyNotes] = useState<StickyNoteData[]>(initialStickyNotes);
+  const [lastRefresh, setLastRefresh] = useState<Date>(new Date());
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+  
+  // 客户端数据刷新函数
+  const refreshData = useCallback(async () => {
+    // 防抖：如果正在刷新，则跳过
+    if (isRefreshing) {
+      console.log('⏭️ 正在刷新中，跳过重复请求...');
+      return;
+    }
+    
+    try {
+      setIsRefreshing(true);
+      const timestamp = new Date().toISOString()
+      console.log(`🔄 [${timestamp}] 客户端刷新首页数据...`);
+      
+      const [articlesResult, galleriesResult, stickyNotesResult] = await Promise.allSettled([
+        api.getArticles({ page: 1, limit: 4, published: true }),
+        getGalleryImages({ page: 1, limit: 4, sortBy: 'createdAt', sortOrder: 'desc' }),
+        getStickyNotes({ page: 1, limit: 8 })
+      ]);
+      
+      if (articlesResult.status === 'fulfilled') {
+        setArticles(articlesResult.value.data);
+        console.log(`📰 文章数据更新: ${articlesResult.value.data.length} 篇`);
+      }
+      if (galleriesResult.status === 'fulfilled') {
+        setGalleries(galleriesResult.value.items);
+        // 重置图库索引，确保显示第一张图片
+        setCurrentGalleryIndex(0);
+        console.log(`🖼️ 图库数据更新: ${galleriesResult.value.items.length} 张，索引重置为0`);
+      }
+      if (stickyNotesResult.status === 'fulfilled') {
+        setStickyNotes(stickyNotesResult.value.data);
+        console.log(`📝 便签数据更新: ${stickyNotesResult.value.data.length} 条`);
+      }
+      
+      setLastRefresh(new Date());
+      console.log(`✅ [${new Date().toISOString()}] 客户端数据刷新完成`);
+    } catch (error) {
+      console.error('❌ 客户端数据刷新失败:', error);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, []); // 移除 isRefreshing 依赖
+  
+  // 页面加载时立即刷新数据
+  useEffect(() => {
+    if (mounted) {
+      // 延迟一点时间，确保页面完全加载
+      const timer = setTimeout(() => {
+        console.log('🚀 页面加载完成，立即刷新数据...');
+        refreshData();
+      }, 100);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [mounted]); // 移除 refreshData 依赖
+  
+  // 定期刷新数据（每5分钟）
+  useEffect(() => {
+    const interval = setInterval(refreshData, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []); // 移除 refreshData 依赖
+  
+  // 页面获得焦点时刷新数据
+  useEffect(() => {
+    const handleFocus = () => {
+      // 如果距离上次刷新超过2分钟，则刷新数据
+      if (Date.now() - lastRefresh.getTime() > 2 * 60 * 1000) {
+        refreshData();
+      }
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [lastRefresh]); // 移除 refreshData 依赖
+  
+  // 页面可见性变化时刷新数据（从其他标签页或应用返回时）
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (!document.hidden && mounted) {
+        console.log('🔄 页面变为可见，刷新首页数据...');
+        refreshData();
+      }
+    };
+    
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [mounted]); // 移除 refreshData 依赖
+  
+  // 监听 URL 变化，当回到首页时刷新数据
+  useEffect(() => {
+    const currentPath = window.location.pathname;
+    if (currentPath === '/' && mounted) {
+      console.log('🔄 检测到首页访问，刷新数据...');
+      refreshData();
+    }
+  }, [mounted]); // 移除 refreshData 依赖
+  
+  // 监听图库数据变化，确保索引不超出范围
+  useEffect(() => {
+    if (galleries.length > 0 && currentGalleryIndex >= galleries.length) {
+      console.log(`🔄 图库索引超出范围，重置为0 (当前: ${currentGalleryIndex}, 总数: ${galleries.length})`);
+      setCurrentGalleryIndex(0);
+    }
+  }, [galleries, currentGalleryIndex]);
+  
+  // 添加强制刷新功能（开发环境）
+  const handleForceRefresh = () => {
+    console.log('🔄 手动强制刷新数据...');
+    refreshData();
+  };
   
   const scrollToSecondScreen = useCallback(() => {
     secondScreenRef.current?.scrollIntoView({ 
@@ -56,12 +177,14 @@ export default function HomeClient({
   }, []);
 
   const handlePrevGallery = useCallback(() => {
-    setCurrentGalleryIndex((prev) => (prev > 0 ? prev - 1 : initialGalleries.length - 1));
-  }, [initialGalleries.length]);
+    if (galleries.length === 0) return;
+    setCurrentGalleryIndex((prev) => (prev > 0 ? prev - 1 : galleries.length - 1));
+  }, [galleries.length]);
 
   const handleNextGallery = useCallback(() => {
-    setCurrentGalleryIndex((prev) => (prev < initialGalleries.length - 1 ? prev + 1 : 0));
-  }, [initialGalleries.length]);
+    if (galleries.length === 0) return;
+    setCurrentGalleryIndex((prev) => (prev < galleries.length - 1 ? prev + 1 : 0));
+  }, [galleries.length]);
 
   const openLightbox = useCallback((imageUrl: string, galleryImages: GalleryItem['images'], index: number) => {
     setSelectedImage(imageUrl);
@@ -151,7 +274,7 @@ export default function HomeClient({
                       </p>
                   </div>
                   
-                  <div className="mt-6">
+                  <div className="mt-6 flex gap-4">
                       <Link href="/blog" className="cursor-pointer">
                           <Button className="bg-blue-500 hover:bg-blue-600 text-white px-10 py-7 text-xl rounded-full cursor-pointer">
                               开始阅读
@@ -178,7 +301,7 @@ export default function HomeClient({
               
               <div className="max-w-5xl mx-auto">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      {initialArticles.map((article) => (
+                      {articles.map((article) => (
                           <ArticleCard 
                               key={article.id} 
                               article={article} 
@@ -269,8 +392,8 @@ export default function HomeClient({
           </div>
 
           <div className="w-full mx-auto lg:w-full">
-            {initialGalleries && initialGalleries.length > 0 ? (
-              initialGalleries.map((gallery, index) => (
+            {galleries && galleries.length > 0 ? (
+              galleries.map((gallery, index) => (
               <div
                   key={gallery.id}
                   className={`relative w-full h-[450px] lg:h-[700px] rounded-3xl overflow-hidden transition-opacity duration-300 group cursor-pointer ${
@@ -369,7 +492,7 @@ export default function HomeClient({
 
           <div className="w-full mx-auto lg:w-full">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {initialStickyNotes.map((note, index) => {
+              {stickyNotes.map((note, index) => {
                 const colorMap = {
                   pink: {
                     normal: "bg-[#FF6B8A]",

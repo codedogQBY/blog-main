@@ -169,14 +169,6 @@ class VersionManager {
   // 强制刷新页面和缓存
   async forceRefresh(): Promise<void> {
     try {
-      // 清理Service Worker缓存
-      if ('serviceWorker' in navigator) {
-        const registration = await navigator.serviceWorker.getRegistration();
-        if (registration && registration.active) {
-          registration.active.postMessage({ type: 'CACHE_CLEAR' });
-        }
-      }
-
       // 清理浏览器缓存
       if ('caches' in window) {
         const cacheNames = await caches.keys();

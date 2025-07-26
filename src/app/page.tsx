@@ -48,7 +48,8 @@ export async function generateMetadata(): Promise<Metadata> {
 // 服务端获取数据
 async function getHomeData() {
   try {
-    console.log('🚀 服务端获取首页数据...')
+    const timestamp = new Date().toISOString()
+    console.log(`🚀 [${timestamp}] 服务端获取首页数据...`)
     
     // 并行获取所有数据
     const [articlesResult, galleriesResult, stickyNotesResult, siteConfigResult] = await Promise.allSettled([
@@ -97,3 +98,8 @@ export default async function HomePage() {
     />
   )
 }
+
+// 完全禁用缓存，每次请求都重新获取数据
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const fetchCache = 'force-no-store'

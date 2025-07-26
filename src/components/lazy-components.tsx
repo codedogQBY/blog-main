@@ -29,10 +29,7 @@ const LazyPWAInstallPrompt = dynamic(() => import('./pwa-install-prompt').then(m
   loading: () => null
 })
 
-const LazyServiceWorkerManager = dynamic(() => import('./service-worker-manager').then(mod => ({ default: mod.ServiceWorkerManager })), {
-  ssr: false,
-  loading: () => null
-})
+
 
 const LazyUpdateNotification = dynamic(() => import('./update-notification'), {
   ssr: false,
@@ -78,9 +75,7 @@ export function DelayedComponents() {
         <LazyPWAInstallPrompt />
       </Suspense>
       
-      <Suspense fallback={null}>
-        <LazyServiceWorkerManager />
-      </Suspense>
+
       
       <Suspense fallback={null}>
         <LazyUpdateNotification />
