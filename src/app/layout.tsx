@@ -9,6 +9,7 @@ import { ErrorBoundary } from '@/components/error-boundary'
 import { Toaster } from 'sonner'
 import { getSiteConfig, DEFAULT_SITE_CONFIG } from '@/lib/site-config'
 import { DelayedComponents } from '@/components/lazy-components'
+import { NavigationProgress } from '@/components/navigation-progress'
 
 async function generateMetadata(): Promise<Metadata> {
     try {
@@ -140,6 +141,7 @@ export default async function RootLayout({
             <body className="font-sans bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen theme-transition theme-mask flex flex-col" suppressHydrationWarning>
                 <ErrorBoundary>
                     <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="xa-theme" disableTransitionOnChange>
+                        <NavigationProgress />
                         <Header />
                         <main className="relative flex-1">
                             {children}
