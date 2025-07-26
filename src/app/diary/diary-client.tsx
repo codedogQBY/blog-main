@@ -77,9 +77,12 @@ export default function DiaryClient({ initialNotes, initialPagination }: DiaryCl
       setCurrentPage(1)
       setHasMore(response.pagination.hasMore)
       
-      // 如果当前选中的笔记不在新数据中，选择第一个
-      if (selectedNote && !newNotes.find(note => note.id === selectedNote.id)) {
-        setSelectedNote(newNotes[0] || null)
+      // 刷新后总是选择最新的笔记（第一个）
+      if (newNotes.length > 0) {
+        setSelectedNote(newNotes[0])
+        console.log(`📝 刷新后选中最新随记: ${newNotes[0].title}`)
+      } else {
+        setSelectedNote(null)
       }
       
       setLastRefresh(new Date())
