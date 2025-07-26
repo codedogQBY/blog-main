@@ -30,12 +30,6 @@ const LazyPWAInstallPrompt = dynamic(() => import('./pwa-install-prompt').then(m
 })
 
 
-
-const LazyUpdateNotification = dynamic(() => import('./update-notification'), {
-  ssr: false,
-  loading: () => null
-})
-
 // 延迟加载组件包装器
 export function DelayedComponents() {
   const [shouldLoad, setShouldLoad] = useState(false)
@@ -73,12 +67,6 @@ export function DelayedComponents() {
       
       <Suspense fallback={null}>
         <LazyPWAInstallPrompt />
-      </Suspense>
-      
-
-      
-      <Suspense fallback={null}>
-        <LazyUpdateNotification />
       </Suspense>
     </>
   )
