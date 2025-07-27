@@ -100,6 +100,14 @@ const nextConfig: NextConfig = {
         source: '/robots.txt',
         destination: '/api/robots',
       },
+      {
+        source: '/rss.xml',
+        destination: '/api/rss',
+      },
+      {
+        source: '/feed.xml',
+        destination: '/api/rss',
+      },
     ]
   },
 
@@ -135,4 +143,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig; 
+export default nextConfig;
