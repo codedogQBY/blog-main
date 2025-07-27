@@ -4,7 +4,7 @@ import { Article } from '@/lib/api'
 // RSS feed生成函数
 function generateRSSFeed(articles: Article[], siteUrl: string) {
   const rssHeader = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>CodeShine Blog</title>
     <description>个人技术博客，分享编程技术与生活感悟</description>
@@ -12,23 +12,39 @@ function generateRSSFeed(articles: Article[], siteUrl: string) {
     <atom:link href="${siteUrl}/rss.xml" rel="self" type="application/rss+xml" />
     <language>zh-CN</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
-    <generator>Next.js RSS Generator</generator>`
+    <generator>Next.js RSS Generator</generator>
+    <image>
+      <url>${siteUrl}/logo.png</url>
+      <title>CodeShine Blog</title>
+      <link>${siteUrl}</link>
+    </image>`
 
   const rssItems = articles.map(article => {
     const pubDate = article.publishedAt ? new Date(article.publishedAt).toUTCString() : new Date(article.createdAt).toUTCString()
     const articleUrl = `${siteUrl}/blog/${article.slug}`
     
+    // 构建富文本内容，在正文前面添加封面图
+    let contentWithCover = ''
+    
+    // 如果有封面图片，在正文前面添加封面图片
+    if (article.coverImage) {
+      contentWithCover += `<img src="${article.coverImage}" width="800" style="max-width: 100%; height: auto; margin-bottom: 20px;"> `
+    }
+    
+    // 添加文章正文内容
+    contentWithCover += article.content
+    
     return `
     <item>
       <title><![CDATA[${article.title}]]></title>
-      <description><![CDATA[${article.excerpt || ''}]]></description>
       <link>${articleUrl}</link>
       <guid isPermaLink="true">${articleUrl}</guid>
+      <description><![CDATA[${article.excerpt || ''}]]></description>
+      <content:encoded><![CDATA[${contentWithCover}]]></content:encoded>
       <pubDate>${pubDate}</pubDate>
       <author>noreply@codeshine.cn (${article.author.name})</author>
       <category><![CDATA[${article.category.name}]]></category>
       ${article.tags.map(tag => `<category><![CDATA[${tag.tag.name}]]></category>`).join('')}
-      ${article.coverImage ? `<enclosure url="${article.coverImage}" type="image/jpeg" />` : ''}
     </item>`
   }).join('')
 
