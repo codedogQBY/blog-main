@@ -82,7 +82,7 @@ export default function CommentSection({ targetType, targetId, onCommentAdded }:
 
     try {
       setSubmitting(true)
-      const fingerprint = getOrGenerateFingerprint()
+      const fingerprint = await getOrGenerateFingerprint()
       const userInfo = await collectUserInfo()
       
       // 保存用户输入的昵称和邮箱（仅未登录时）
@@ -132,7 +132,7 @@ export default function CommentSection({ targetType, targetId, onCommentAdded }:
 
     try {
       setSubmitting(true)
-      const fingerprint = getOrGenerateFingerprint()
+      const fingerprint = await getOrGenerateFingerprint()
       const userInfo = await collectUserInfo()
 
       const reply = await interactionAPI.addComment({
@@ -428,4 +428,4 @@ export default function CommentSection({ targetType, targetId, onCommentAdded }:
       )}
     </div>
   )
-} 
+}

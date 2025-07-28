@@ -36,10 +36,10 @@ async function generateFingerprint(): Promise<string> {
         timeout: 5000
       };
 
-      Fingerprint2.get(options, (components: any[]) => {
+      Fingerprint2.get(options, (components: { key: string; value: string | number | boolean }[]) => {
          try {
            // 提取指纹值
-           const values = components.map((component: any) => component.value);
+           const values = components.map((component: { key: string; value: string | number | boolean }) => component.value);
           
           // 生成哈希
           const fingerprintString = values.join('|');
