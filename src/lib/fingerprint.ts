@@ -1,52 +1,144 @@
 import { UAParser } from 'ua-parser-js';
+import Fingerprint2 from 'fingerprintjs2';
 
 // 扩展Navigator接口
 declare global {
   interface Navigator {
     deviceMemory?: number;
+    hardwareConcurrency?: number;
+    connection?: {
+      effectiveType?: string;
+      downlink?: number;
+      rtt?: number;
+    };
   }
 }
 
-// 生成浏览器指纹
-function generateFingerprint(): string {
-  const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
-  if (ctx) {
-    ctx.textBaseline = 'top';
-    ctx.font = '14px Arial';
-    ctx.fillText('Browser fingerprint', 2, 2);
-  }
+// 使用 FingerprintJS2 生成浏览器指纹
+async function generateFingerprint(): Promise<string> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      // 服务端环境返回随机指纹
+      resolve('server-side-' + Math.random().toString(36).substr(2, 9));
+      return;
+    }
 
-  const fingerprint = [
+    try {
+      // 配置 FingerprintJS2 选项
+      const options = {
+        excludes: {
+          // 排除一些不稳定的组件
+          'adBlock': true,
+          'availableScreenResolution': true,
+          'enumerateDevices': true
+        },
+        // 设置超时时间
+        timeout: 5000
+      };
+
+      Fingerprint2.get(options, (components: any[]) => {
+         try {
+           // 提取指纹值
+           const values = components.map((component: any) => component.value);
+          
+          // 生成哈希
+          const fingerprintString = values.join('|');
+          let hash = 0;
+          
+          for (let i = 0; i < fingerprintString.length; i++) {
+            const char = fingerprintString.charCodeAt(i);
+            hash = ((hash << 5) - hash) + char;
+            hash = hash & hash; // 转换为32位整数
+          }
+          
+          const fingerprint = Math.abs(hash).toString(36).padStart(8, '0').substring(0, 32);
+          resolve(fingerprint);
+        } catch (error) {
+          console.warn('指纹处理失败:', error);
+          // 降级方案
+          const fallbackFingerprint = generateFallbackFingerprint();
+          resolve(fallbackFingerprint);
+        }
+      });
+    } catch (error) {
+      console.warn('FingerprintJS2 初始化失败:', error);
+      // 降级方案
+      const fallbackFingerprint = generateFallbackFingerprint();
+      resolve(fallbackFingerprint);
+    }
+  });
+}
+
+// 降级方案：生成简单指纹
+function generateFallbackFingerprint(): string {
+  const fallbackData = [
     navigator.userAgent,
     navigator.language,
     screen.width + 'x' + screen.height,
     screen.colorDepth,
     new Date().getTimezoneOffset(),
-    canvas.toDataURL(),
     navigator.hardwareConcurrency || 0,
     navigator.deviceMemory || 0,
   ].join('|');
-
-  return btoa(fingerprint).replace(/[^a-zA-Z0-9]/g, '').substr(0, 32);
+  
+  let hash = 0;
+  for (let i = 0; i < fallbackData.length; i++) {
+    const char = fallbackData.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash;
+  }
+  return Math.abs(hash).toString(36).padStart(8, '0').substring(0, 32);
 }
 
 // 获取或生成浏览器指纹
-export function getOrGenerateFingerprint(): string {
+export async function getOrGenerateFingerprint(): Promise<string> {
   if (typeof window === 'undefined') {
     return 'server-side-' + Math.random().toString(36).substr(2, 9);
   }
 
+  // 检查缓存的指纹和过期时间
   const stored = localStorage.getItem('browser-fingerprint');
-  const current = generateFingerprint();
+  const storedTime = localStorage.getItem('browser-fingerprint-time');
+  const now = Date.now();
+  const thirtyDays = 30 * 24 * 60 * 60 * 1000; // 30天过期
+
+  // 如果有缓存且未过期，直接返回
+  if (stored && storedTime && (now - parseInt(storedTime)) < thirtyDays) {
+    return stored;
+  }
+
+  // 生成新指纹
+  const current = await generateFingerprint();
   
-  // 如果存储的指纹不存在或者与当前生成的不一致（可能被篡改），使用新生成的
-  if (!stored || stored !== current) {
-    localStorage.setItem('browser-fingerprint', current);
-    return current;
+  // 存储指纹和时间戳
+  localStorage.setItem('browser-fingerprint', current);
+  localStorage.setItem('browser-fingerprint-time', now.toString());
+  
+  return current;
+}
+
+// 同步版本的指纹获取（向后兼容）
+export function getOrGenerateFingerprintSync(): string {
+  if (typeof window === 'undefined') {
+    return 'server-side-' + Math.random().toString(36).substr(2, 9);
+  }
+
+  // 检查缓存的指纹和过期时间
+  const stored = localStorage.getItem('browser-fingerprint');
+  const storedTime = localStorage.getItem('browser-fingerprint-time');
+  const now = Date.now();
+  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+
+  // 如果有缓存且未过期，直接返回
+  if (stored && storedTime && (now - parseInt(storedTime)) < thirtyDays) {
+    return stored;
   }
   
-  return stored;
+  // 如果没有有效的缓存指纹，生成一个简单的降级指纹
+  const fallbackFingerprint = generateFallbackFingerprint();
+  localStorage.setItem('browser-fingerprint', fallbackFingerprint);
+  localStorage.setItem('browser-fingerprint-time', now.toString());
+  return fallbackFingerprint;
 }
 
 // 获取用户地理位置（使用服务器端 API）
@@ -144,4 +236,4 @@ export async function collectUserInfo() {
     deviceModel: result.device.model,
     timestamp: new Date().toISOString(),
   };
-} 
+}
