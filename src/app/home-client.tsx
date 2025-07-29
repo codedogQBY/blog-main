@@ -387,7 +387,7 @@ export default function HomeClient({
                   className={`relative w-full h-[450px] lg:h-[700px] rounded-3xl overflow-hidden transition-opacity duration-300 group cursor-pointer ${
                     index === currentGalleryIndex ? 'block' : 'hidden'
                   }`}
-                  onClick={() => window.location.href = `/gallery/${gallery.id}`}
+                  onClick={() => router.push(`/gallery/${gallery.id}`)}
                 >
                   <div 
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat"
