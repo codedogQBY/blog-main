@@ -31,6 +31,7 @@ export default function BackgroundImage() {
                         className="w-full h-auto md:h-screen md:w-auto object-contain object-right-bottom md:object-contain"
                         style={{ width: 'auto', height: 'auto' }}
                         priority
+                        unoptimized={true}
                     />
                 ) : (
                     <Image 
@@ -41,6 +42,7 @@ export default function BackgroundImage() {
                         className="w-full h-auto md:h-screen md:w-auto object-contain object-right-bottom md:object-contain"
                         style={{ width: 'auto', height: 'auto' }}
                         priority
+                        unoptimized={true}
                     />
                 )}
             </div>

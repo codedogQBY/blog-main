@@ -94,6 +94,7 @@ export default function GalleryDetailClient({ gallery }: GalleryDetailClientProp
                         height={800}
                         className="w-full h-auto object-contain"
                         sizes="(max-width: 1024px) 100vw, 1024px"
+                        unoptimized={true}
                       />
                     </div>
                     {/* 图片标题和描述 */}
@@ -148,4 +149,4 @@ export default function GalleryDetailClient({ gallery }: GalleryDetailClientProp
       </div>
     </div>
   )
-} 
+}

@@ -111,6 +111,7 @@ const GalleryCard = React.memo(({ item, onClick }: GalleryCardProps) => {
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     onLoad={() => setImageLoaded(true)}
                     onClick={handleImageClick}
+                    unoptimized={true}
                 />
 
                 {/* 加载占位符 */}

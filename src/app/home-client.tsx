@@ -230,6 +230,7 @@ export default function HomeClient({
                           }}
                           priority
                           fill={false}
+                          unoptimized={true}
                       />
                   ) : (
                       <Image 
@@ -245,6 +246,7 @@ export default function HomeClient({
                           }}
                           priority
                           fill={false}
+                          unoptimized={true}
                       />
                   )}
               </div>
@@ -453,6 +455,7 @@ export default function HomeClient({
                                 width={192}
                                 height={128}
                                 className="w-full h-full object-cover"
+                                unoptimized={true}
                               />
                             </div>
                           </button>
@@ -597,6 +600,7 @@ export default function HomeClient({
                 width={1920}
                 height={1080}
                 className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                unoptimized={true}
               />
             </div>
             
@@ -608,4 +612,4 @@ export default function HomeClient({
       )}
     </>
   );
-} 
+}
