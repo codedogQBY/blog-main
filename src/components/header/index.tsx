@@ -69,6 +69,7 @@ export default function Header() {
                                 alt="Logo"
                                 width={32}
                                 height={32}
+                                unoptimized={true}
                                 className="rounded-full"
                             />
                         </Link>
@@ -110,6 +111,7 @@ export default function Header() {
                                 alt="Logo"
                                 width={32}
                                 height={32}
+                                unoptimized={true}
                                 className="rounded-full"
                             />
                         </Link>

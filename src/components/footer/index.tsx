@@ -378,6 +378,7 @@ export default function Footer() {
                     height={36}
                     src={link.logo}
                     alt={link.name}
+                    unoptimized={true}
                     className="aspect-square h-9 w-9 rounded-full object-cover ring-1 ring-border/50"
                   />
                 ) : (
@@ -416,6 +417,7 @@ export default function Footer() {
                     width={24}
                     height={24}
                     className={tech.invert ? 'dark:invert' : ''}
+                    unoptimized={true}
                     style={{ width: '24px', height: '24px' }}
                   />
                   <span>{tech.name}</span>
@@ -452,6 +454,7 @@ export default function Footer() {
                       width={256}
                       height={256}
                       className="rounded-lg"
+                      unoptimized={true}
                     />
                   </HoverCardContent>
                 </HoverCard>
