@@ -9,8 +9,7 @@ import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
 import { galleryAPI } from "@/lib/gallery-api"
 import type { GalleryItem } from "@/types/gallery"
 import type { GalleryCategory } from "@/lib/gallery-api"
-import GalleryListSkeleton from "@/components/skeleton/gallery-list-skeleton"
-import LoadingSpinner from "@/components/loading/loading-spinner"
+
 
 interface GalleryClientProps {
   initialItems: GalleryItem[]
@@ -25,18 +24,23 @@ export default function GalleryClient({
 }: GalleryClientProps) {
   const router = useRouter()
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory)
-  const [isFirstLoad, setIsFirstLoad] = useState(true)
 
   // 加载图库数据的函数
   const loadGalleryData = useCallback(async (page: number, pageSize: number): Promise<GalleryItem[]> => {
-    const response = await galleryAPI.getGalleryImages({
-      page,
-      limit: pageSize,
-      category: selectedCategory === "全部" ? undefined : selectedCategory,
-      sortBy: 'createdAt',
-      sortOrder: 'desc'
-    })
-    return response.items
+    try {
+      const response = await galleryAPI.getGalleryImages({
+        page,
+        limit: pageSize,
+        category: selectedCategory === "全部" ? undefined : selectedCategory,
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      })
+      
+      return response.items
+    } catch (error) {
+      console.error('加载图库失败:', error)
+      return []
+    }
   }, [selectedCategory])
 
   // 使用无限滚动hook
@@ -46,12 +50,9 @@ export default function GalleryClient({
     initialData: initialItems
   })
 
-  // 监听加载状态变化，标记非首次加载
-  useEffect(() => {
-    if (isLoading && isFirstLoad) {
-      setIsFirstLoad(false)
-    }
-  }, [isLoading, isFirstLoad])
+
+
+
 
   // 重置筛选
   const resetFilters = () => {
@@ -125,10 +126,7 @@ export default function GalleryClient({
 
         {/* 图库网格 */}
         <div className="mt-8">
-          {isFirstLoad && isLoading ? (
-            <GalleryListSkeleton />
-          ) : (
-            <InfiniteScrollLoader
+          <InfiniteScrollLoader
               items={items}
               onLoadMore={handleLoadMore}
               hasMore={hasMore}
@@ -163,13 +161,8 @@ export default function GalleryClient({
                   </button>
                 </div>
               }
-              loadingComponent={
-                <div className="col-span-full">
-                  <LoadingSpinner text="加载更多图片中..." />
-                </div>
-              }
+
             />
-          )}
         </div>
 
         {/* 快速返回顶部按钮 */}

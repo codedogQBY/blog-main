@@ -110,9 +110,8 @@ export default function InfiniteScrollLoader<T>({
             )}
 
             {/* 加载更多指示器 */}
-            {items.length > 0 && (
-                <div ref={loadingRef} className="w-full">
-                    {isLoading && <div className="w-full">{loadingComponent || <DefaultLoadingAnimation />}</div>}
+            <div ref={loadingRef} className="w-full">
+                {isLoading && <div className="w-full">{loadingComponent || <DefaultLoadingAnimation />}</div>}
 
                     {/* 错误状态 */}
                     {error && (
@@ -137,18 +136,17 @@ export default function InfiniteScrollLoader<T>({
                         </div>
                     )}
 
-                    {/* 没有更多数据 */}
-                    {!hasMore && !isLoading && !error && items.length > 0 && (
-                        <div className="flex items-center justify-center py-8">
-                            <div className="flex items-center space-x-2 text-gray-400 dark:text-gray-500">
-                                <div className="h-px bg-gray-200 dark:bg-gray-700 flex-1 max-w-16"></div>
-                                <span className="text-xs font-medium px-3">没有更多了</span>
-                                <div className="h-px bg-gray-200 dark:bg-gray-700 flex-1 max-w-16"></div>
-                            </div>
+                {/* 没有更多数据 */}
+                {!hasMore && !isLoading && !error && items.length > 0 && (
+                    <div className="flex items-center justify-center py-8">
+                        <div className="flex items-center space-x-2 text-gray-400 dark:text-gray-500">
+                            <div className="h-px bg-gray-200 dark:bg-gray-700 flex-1 max-w-16"></div>
+                            <span className="text-xs font-medium px-3">没有更多了</span>
+                            <div className="h-px bg-gray-200 dark:bg-gray-700 flex-1 max-w-16"></div>
                         </div>
-                    )}
-                </div>
-            )}
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

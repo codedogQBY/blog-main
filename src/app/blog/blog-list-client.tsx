@@ -7,7 +7,6 @@ import type { Article } from '@/lib/api'
 import ArticleCard from '@/components/blog/article-card'
 import InfiniteScrollLoader from '@/components/loading/infinite-scroll-loader'
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
-import ArticleListSkeleton from '@/components/skeleton/article-list-skeleton'
 import { useRouter } from "@bprogress/next/app"
 
 interface Category {
@@ -44,7 +43,6 @@ export default function BlogListClient({
   const [searchQuery, setSearchQuery] = useState("")
   const [categoryStats] = useState(initialCategoryStats)
   const [displayCategories] = useState(initialDisplayCategories)
-  const [isFirstLoad, setIsFirstLoad] = useState(true)
   const router = useRouter()
 
   // 加载文章数据
@@ -67,17 +65,24 @@ export default function BlogListClient({
         })
 
         // 转换API数据格式以兼容现有组件
-        return response.data.map(article => ({
-          ...article,
-          publishDate: article.publishedAt || article.createdAt,
-          category: typeof article.category === 'object' ? article.category.name : article.category,
-          tags: Array.isArray(article.tags) 
-            ? article.tags.map(t => typeof t === 'string' ? t : t.tag.name)
-            : [],
-          comments: article._count?.comments || 0,
-          author: typeof article.author === 'object' ? article.author.name : article.author,
-          coverImage: article.coverImage || "/placeholder.svg?height=128&width=128",
-        }))
+        const articlesWithProcessing = await Promise.all(
+          response.data.map(async (article) => {
+            
+            return {
+              ...article,
+              publishDate: article.publishedAt || article.createdAt,
+              category: typeof article.category === 'object' ? article.category.name : article.category,
+              tags: Array.isArray(article.tags) 
+                ? article.tags.map(t => typeof t === 'string' ? t : t.tag.name)
+                : [],
+              comments: article._count?.comments || 0,
+              author: typeof article.author === 'object' ? article.author.name : article.author,
+              coverImage: article.coverImage || "/placeholder.svg?height=128&width=128",
+            }
+          })
+        )
+        
+        return articlesWithProcessing
       } catch (error) {
         console.error('加载文章失败:', error)
         return []
@@ -99,19 +104,10 @@ export default function BlogListClient({
     initialData: initialArticles
   })
 
-  // 监听加载状态变化，标记非首次加载
-  useEffect(() => {
-    if (isLoading && isFirstLoad) {
-      setIsFirstLoad(false)
-    }
-  }, [isLoading, isFirstLoad])
 
   // 当分类或搜索条件改变时刷新数据
   useEffect(() => {
-    const refreshData = async () => {
-      await refresh()
-    }
-    refreshData()
+    refresh()
   }, [selectedCategory, searchQuery, refresh])
 
   // 创建适配器函数来匹配InfiniteScrollLoader的接口
@@ -199,10 +195,7 @@ export default function BlogListClient({
           </div>
 
           {/* 文章列表 */}
-          {isFirstLoad && isLoading ? (
-            <ArticleListSkeleton />
-          ) : (
-            <InfiniteScrollLoader
+          <InfiniteScrollLoader
               items={articles}
               onLoadMore={handleLoadMore}
               renderItem={(article, index) => (
@@ -237,7 +230,6 @@ export default function BlogListClient({
                 </div>
               }
             />
-          )}
         </main>
       </div>
     </div>
