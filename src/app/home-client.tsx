@@ -223,11 +223,6 @@ export default function HomeClient({
                           width={800}
                           height={900}
                           className="w-full h-auto lg:h-screen lg:w-auto object-contain object-right-bottom lg:object-cover lg:object-right"
-                          style={{ 
-                            width: 'auto', 
-                            height: 'auto',
-                            minHeight: '100vh'
-                          }}
                           priority
                           fill={false}
                           unoptimized={true}
@@ -239,11 +234,6 @@ export default function HomeClient({
                           width={800}
                           height={900}
                           className="w-full h-auto lg:h-screen lg:w-auto object-contain object-right-bottom lg:object-cover lg:object-right"
-                          style={{ 
-                            width: 'auto', 
-                            height: 'auto',
-                            minHeight: '100vh'
-                          }}
                           priority
                           fill={false}
                           unoptimized={true}
