@@ -12,7 +12,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Heart, MessageCircle } from "lucide-react";
 import type { GalleryItem } from "@/lib/gallery-api";
 import type { StickyNoteData } from '@/lib/sticky-note-api';
-import { useRouter } from "next/navigation";
+import { useRouter } from "@bprogress/next/app";
 import type { SiteConfig } from '@/lib/site-config';
 import { api } from "@/lib/api";
 import { getGalleryImages } from "@/lib/gallery-api";

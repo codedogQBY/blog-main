@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo, useCallback } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@bprogress/next/app"
 import InfiniteScrollLoader from "@/components/loading/infinite-scroll-loader"
 import GalleryCard from "@/components/gallery/gallery-card"
 import GalleryFilter from "@/components/gallery/gallery-filter"
@@ -189,4 +189,4 @@ export default function GalleryClient({
       </div>
     </div>
   )
-} 
+}

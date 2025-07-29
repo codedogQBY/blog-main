@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@bprogress/next/app"
 import { diaryApi, type DiaryNote } from "@/lib/diary-api"
 import NotePaper from "@/components/diary/note-paper"
 import { Button } from "@/components/ui/button"
@@ -119,4 +119,4 @@ export default function DiaryDetailClient({ id }: DiaryDetailClientProps) {
             </div>
         </div>
     )
-} 
+}

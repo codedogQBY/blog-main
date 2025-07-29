@@ -9,6 +9,7 @@ import { ErrorBoundary } from '@/components/error-boundary'
 import { Toaster } from 'sonner'
 import { getSiteConfig, DEFAULT_SITE_CONFIG } from '@/lib/site-config'
 import { DelayedComponents } from '@/components/lazy-components'
+import { ProgressWrapper } from '@/components/progress-wrapper'
 
 async function generateMetadata(): Promise<Metadata> {
     try {
@@ -140,19 +141,21 @@ export default async function RootLayout({
             <body className="font-sans bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 min-h-screen theme-transition theme-mask flex flex-col" suppressHydrationWarning>
                 <ErrorBoundary>
                     <ThemeProvider attribute="class" defaultTheme="system" enableSystem storageKey="xa-theme" disableTransitionOnChange>
-                        <Header />
-                        <main className="relative flex-1">
-                            {children}
-                        </main>
-                        <Footer />
-                        <MonitoringInitializer />
-                        <Toaster 
-                            position="top-right"
-                            richColors
-                            closeButton
-                            duration={2000}
-                        />
-                        <DelayedComponents />
+                        <ProgressWrapper>
+                            <Header />
+                            <main className="relative flex-1">
+                                {children}
+                            </main>
+                            <Footer />
+                            <MonitoringInitializer />
+                            <Toaster 
+                                position="top-right"
+                                richColors
+                                closeButton
+                                duration={2000}
+                            />
+                            <DelayedComponents />
+                        </ProgressWrapper>
                     </ThemeProvider>
                 </ErrorBoundary>
             </body>

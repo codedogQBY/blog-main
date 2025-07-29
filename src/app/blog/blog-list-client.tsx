@@ -8,6 +8,7 @@ import ArticleCard from '@/components/blog/article-card'
 import InfiniteScrollLoader from '@/components/loading/infinite-scroll-loader'
 import { useInfiniteScroll } from "@/hooks/use-infinite-scroll"
 import ArticleListSkeleton from '@/components/skeleton/article-list-skeleton'
+import { useRouter } from "@bprogress/next/app"
 
 interface Category {
   id: string;
@@ -44,6 +45,7 @@ export default function BlogListClient({
   const [categoryStats] = useState(initialCategoryStats)
   const [displayCategories] = useState(initialDisplayCategories)
   const [isFirstLoad, setIsFirstLoad] = useState(true)
+  const router = useRouter()
 
   // 加载文章数据
   const loadArticles = useCallback(
@@ -130,7 +132,7 @@ export default function BlogListClient({
     
     // 跳转到文章详情页
     if (article.slug) {
-      window.location.href = `/blog/${article.slug}`
+      router.push(`/blog/${article.slug}`)
     }
   }
 
@@ -240,4 +242,4 @@ export default function BlogListClient({
       </div>
     </div>
   )
-} 
+}

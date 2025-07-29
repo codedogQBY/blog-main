@@ -6,7 +6,7 @@ import { useState, useRef, useEffect } from "react"
 import { Search, X, Command, FileText, ImageIcon, Calendar } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { search, type SearchResult } from "@/lib/search-api"
-import { useRouter } from "next/navigation"
+import { useRouter } from "@bprogress/next/app"
 import { useDebounce } from "../../hooks/use-debounce"
 
 interface SearchBoxProps {
