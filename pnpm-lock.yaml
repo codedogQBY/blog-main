@@ -111,6 +111,9 @@ importers:
       '@tailwindcss/postcss':
         specifier: ^4
         version: 4.1.10
+      '@types/fingerprintjs2':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@types/node':
         specifier: ^20
         version: 20.19.1
@@ -942,6 +945,9 @@ packages:
 
   '@types/estree@1.0.8':
     resolution: {integrity: sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==}
+
+  '@types/fingerprintjs2@2.0.0':
+    resolution: {integrity: sha512-isSTwNnW5I6zGZnpkinmVcV9pJqr7cLELns+tXDYzskIOAb2J+iCQ0mQJ9bRjHJhZfdlTFXZoCYK9ZgT3oMWXQ==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -3394,6 +3400,8 @@ snapshots:
   '@types/css-font-loading-module@0.0.7': {}
 
   '@types/estree@1.0.8': {}
+
+  '@types/fingerprintjs2@2.0.0': {}
 
   '@types/json-schema@7.0.15': {}
 

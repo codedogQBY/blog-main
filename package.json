@@ -53,6 +53,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/fingerprintjs2": "^2.0.0",
     "@types/node": "^20",
     "@types/prismjs": "^1.26.5",
     "@types/qrcode": "^1.5.5",
