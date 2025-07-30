@@ -25,11 +25,11 @@ interface HomeClientProps {
   siteConfig?: SiteConfig;
 }
 
-export default function HomeClient({ 
-  initialArticles, 
-  initialGalleries, 
-  initialStickyNotes, 
-  siteConfig 
+export default function HomeClient({
+  initialArticles,
+  initialGalleries,
+  initialStickyNotes,
+  siteConfig
 }: HomeClientProps) {
   const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
@@ -40,7 +40,7 @@ export default function HomeClient({
   const secondScreenRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<{ handlePrevious: () => void; handleNext: () => void }>(null);
   const router = useRouter();
-  
+
   // 客户端状态
   const [articles, setArticles] = useState<Article[]>(initialArticles);
   const [galleries, setGalleries] = useState<GalleryItem[]>(initialGalleries);
@@ -51,7 +51,7 @@ export default function HomeClient({
   useEffect(() => {
     setMounted(true);
   }, []);
-  
+
   // 客户端数据刷新函数
   const refreshData = useCallback(async () => {
     // 防抖：如果正在刷新，则跳过
@@ -59,18 +59,18 @@ export default function HomeClient({
       console.log('⏭️ 正在刷新中，跳过重复请求...');
       return;
     }
-    
+
     try {
       setIsRefreshing(true);
       const timestamp = new Date().toISOString()
       console.log(`🔄 [${timestamp}] 客户端刷新首页数据...`);
-      
+
       const [articlesResult, galleriesResult, stickyNotesResult] = await Promise.allSettled([
         api.getArticles({ page: 1, limit: 4, published: true }),
         getGalleryImages({ page: 1, limit: 4, sortBy: 'createdAt', sortOrder: 'desc' }),
         getStickyNotes({ page: 1, limit: 8 })
       ]);
-      
+
       if (articlesResult.status === 'fulfilled') {
         setArticles(articlesResult.value.data);
         console.log(`📰 文章数据更新: ${articlesResult.value.data.length} 篇`);
@@ -85,7 +85,7 @@ export default function HomeClient({
         setStickyNotes(stickyNotesResult.value.data);
         console.log(`📝 便签数据更新: ${stickyNotesResult.value.data.length} 条`);
       }
-      
+
       setLastRefresh(new Date());
       console.log(`✅ [${new Date().toISOString()}] 客户端数据刷新完成`);
     } catch (error) {
@@ -94,7 +94,7 @@ export default function HomeClient({
       setIsRefreshing(false);
     }
   }, []); // 移除 isRefreshing 依赖
-  
+
   // 页面加载时立即刷新数据
   useEffect(() => {
     if (mounted) {
@@ -103,17 +103,17 @@ export default function HomeClient({
         console.log('🚀 页面加载完成，立即刷新数据...');
         refreshData();
       }, 100);
-      
+
       return () => clearTimeout(timer);
     }
   }, [mounted]); // 移除 refreshData 依赖
-  
+
   // 定期刷新数据（每5分钟）
   useEffect(() => {
     const interval = setInterval(refreshData, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []); // 移除 refreshData 依赖
-  
+
   // 页面获得焦点时刷新数据
   useEffect(() => {
     const handleFocus = () => {
@@ -122,11 +122,11 @@ export default function HomeClient({
         refreshData();
       }
     };
-    
+
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
   }, [lastRefresh]); // 移除 refreshData 依赖
-  
+
   // 页面可见性变化时刷新数据（从其他标签页或应用返回时）
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -135,11 +135,11 @@ export default function HomeClient({
         refreshData();
       }
     };
-    
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
     return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
   }, [mounted]); // 移除 refreshData 依赖
-  
+
   // 监听 URL 变化，当回到首页时刷新数据
   useEffect(() => {
     const currentPath = window.location.pathname;
@@ -148,7 +148,7 @@ export default function HomeClient({
       refreshData();
     }
   }, [mounted]); // 移除 refreshData 依赖
-  
+
   // 监听图库数据变化，确保索引不超出范围
   useEffect(() => {
     if (galleries.length > 0 && currentGalleryIndex >= galleries.length) {
@@ -156,11 +156,11 @@ export default function HomeClient({
       setCurrentGalleryIndex(0);
     }
   }, [galleries, currentGalleryIndex]);
-  
 
-  
+
+
   const scrollToSecondScreen = useCallback(() => {
-    secondScreenRef.current?.scrollIntoView({ 
+    secondScreenRef.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'start'
     });
@@ -168,7 +168,7 @@ export default function HomeClient({
 
   const handleArticleClick = useCallback((article: Article) => {
     if (article.slug) {
-      window.location.href = `/blog/${article.slug}`;
+        router.push(`/blog/${article.slug}`);
     }
   }, []);
 
@@ -207,9 +207,9 @@ export default function HomeClient({
   }, [router]);
 
   if (!mounted) return null;
-  
+
   const isDark = theme === 'dark';
-  
+
   return (
     <>
       {/* 第一屏：主页欢迎部分 */}
@@ -217,9 +217,9 @@ export default function HomeClient({
           <div className="absolute right-0 bottom-0 lg:top-0 lg:bottom-auto w-full flex justify-end z-0 pointer-events-none">
               <div className="w-[70%] lg:w-auto lg:h-screen lg:min-h-screen">
                   {isDark ? (
-                      <Image 
-                          src="/dark.png" 
-                          alt="Dark background" 
+                      <Image
+                          src="/dark.png"
+                          alt="Dark background"
                           width={800}
                           height={900}
                           className="w-full h-auto lg:h-screen lg:w-auto object-contain object-right-bottom lg:object-cover lg:object-right"
@@ -228,9 +228,9 @@ export default function HomeClient({
                           unoptimized={true}
                       />
                   ) : (
-                      <Image 
-                          src="/light.png" 
-                          alt="Light background" 
+                      <Image
+                          src="/light.png"
+                          alt="Light background"
                           width={800}
                           height={900}
                           className="w-full h-auto lg:h-screen lg:w-auto object-contain object-right-bottom lg:object-cover lg:object-right"
@@ -241,7 +241,7 @@ export default function HomeClient({
                   )}
               </div>
           </div>
-          
+
           <div className="container mx-auto px-4 lg:px-10 relative z-10">
               <div className="flex flex-col items-start w-full lg:w-3/5 lg:ml-[8%]">
                   <h1 className="text-6xl sm:text-7xl lg:text-9xl font-bold mb-8 tracking-tighter whitespace-nowrap">
@@ -252,7 +252,7 @@ export default function HomeClient({
                           {' '}{siteConfig?.heroTitle?.second || 'SHINE'}
                       </span>
                   </h1>
-                  
+
                   <div className="space-y-6 mb-12 text-left">
                       <h2 className="text-4xl lg:text-5xl font-bold text-gray-800 dark:text-gray-100">
                           {siteConfig?.title || '码上拾光'}
@@ -261,7 +261,7 @@ export default function HomeClient({
                           {siteConfig?.subtitle || '在代码间打捞落日余辉'}
                       </p>
                   </div>
-                  
+
                   <div className="mt-6 flex gap-4">
                       <Link href="/blog" className="cursor-pointer">
                           <Button className="bg-blue-500 hover:bg-blue-600 text-white px-10 py-7 text-xl rounded-full cursor-pointer">
@@ -271,14 +271,14 @@ export default function HomeClient({
                   </div>
               </div>
           </div>
-          
+
           <div className="absolute bottom-8 left-8 lg:left-1/2 lg:transform lg:-translate-x-1/2 cursor-pointer animate-bounce" onClick={scrollToSecondScreen}>
               <div className="w-8 h-12 border-2 border-gray-700 dark:border-gray-300 rounded-full flex items-start justify-center">
                   <div className="w-2 h-3 bg-gray-700 dark:bg-gray-300 rounded-full mt-2 animate-scroll"></div>
               </div>
           </div>
       </div>
-      
+
       {/* 第二屏：博客文章部分 */}
       <div ref={secondScreenRef} className="py-20">
           <div className="container mx-auto px-4 lg:px-10">
@@ -286,19 +286,19 @@ export default function HomeClient({
                   <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">博客文章</h2>
                   <p className="text-gray-600 dark:text-gray-400">记录生活，分享思考，探索世界</p>
               </div>
-              
+
               <div className="max-w-5xl mx-auto">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       {articles.map((article) => (
-                          <ArticleCard 
-                              key={article.id} 
-                              article={article} 
+                          <ArticleCard
+                              key={article.id}
+                              article={article}
                               onClick={handleArticleClick}
                           />
                       ))}
                   </div>
               </div>
-              
+
               <div className="flex justify-center mt-12">
                   <Link href="/blog">
                       <Button className="bg-blue-500 hover:bg-blue-600 text-white px-10 py-6 text-lg rounded-full hover:scale-105 transition-transform">
@@ -308,7 +308,7 @@ export default function HomeClient({
               </div>
           </div>
       </div>
-      
+
       {/* 第三屏：随笔随记部分 */}
       <div className="py-20">
         <div className="container mx-auto px-4 lg:px-10">
@@ -336,11 +336,11 @@ export default function HomeClient({
               </Button>
             </div>
           </div>
-          
+
           <div className="w-full mx-auto lg:w-[60%] h-[calc(100vh-8rem)] lg:h-[calc(110vh-8rem)] min-h-[600px]">
             <DiaryCarousel ref={carouselRef} />
           </div>
-          
+
           <div className="flex justify-center mt-6">
               <Link href="/diary">
                   <Button className="bg-blue-500 hover:bg-blue-600 text-white px-10 py-6 text-lg rounded-full hover:scale-105 transition-transform">
@@ -389,42 +389,42 @@ export default function HomeClient({
                   }`}
                   onClick={() => router.push(`/gallery/${gallery.id}`)}
                 >
-                  <div 
+                  <div
                     className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                     style={{ backgroundImage: `url(${gallery.coverImage || '/placeholder.jpg'})` }}
                   />
-                
+
                 <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/20 lg:bg-gradient-to-r lg:from-black/20 lg:via-black/40 lg:to-black/70" />
-                
+
                 <div className="relative z-10 h-full flex flex-col p-8 lg:p-12">
                   <div className="absolute top-8 left-8 lg:top-12 lg:right-12 lg:left-auto max-w-md">
                     <h3 className="text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight drop-shadow-lg">
                       {gallery.title}
                     </h3>
-                    
+
                     <div className="flex items-center gap-6 text-white/90 mb-6">
                       <time className="text-base font-medium drop-shadow">
                         {new Date(gallery.createdAt).toLocaleDateString('zh-CN')}
                       </time>
-                      
+
                       <div className="flex items-center gap-4">
                         <div className="flex items-center gap-2">
                           <MessageCircle size={16} />
                           <span className="font-medium text-sm">{gallery.stats?.comments || 0}</span>
                         </div>
-                        
+
                         <div className="flex items-center gap-2">
                           <Heart size={16} />
                           <span className="font-medium text-sm">{gallery.stats?.likes || 0}</span>
                         </div>
                       </div>
                     </div>
-                    
+
                     <p className="text-white/95 text-sm leading-relaxed drop-shadow max-w-xs line-clamp-4 lg:line-clamp-8">
                       {gallery.description}
                     </p>
                   </div>
-                  
+
                   <div className="absolute bottom-8 left-4 lg:bottom-12 lg:left-12 z-20">
                     <div className="w-[85vw] lg:w-[calc(192px*3+24px*4)] overflow-x-auto mb-4 [&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-thumb]:bg-white/30 [&::-webkit-scrollbar-thumb]:hover:bg-white/50 [&::-webkit-scrollbar-track]:bg-white/10">
                       <div className="flex gap-3 lg:gap-6 pb-2">
@@ -568,21 +568,21 @@ export default function HomeClient({
             >
               <X size={24} className="text-white" />
             </button>
-            
+
             <button
               onClick={prevImage}
               className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all duration-200 backdrop-blur-sm border border-white/20 cursor-pointer hover:scale-105"
             >
               <ChevronLeft size={24} className="text-white" />
             </button>
-            
+
             <button
               onClick={nextImage}
               className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center transition-all duration-200 backdrop-blur-sm border border-white/20 cursor-pointer hover:scale-105"
             >
               <ChevronRight size={24} className="text-white" />
             </button>
-          
+
             <div className="flex items-center justify-center w-full h-full">
               <Image
                 src={selectedImage}
@@ -593,7 +593,7 @@ export default function HomeClient({
                 unoptimized={true}
               />
             </div>
-            
+
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 text-white font-medium border border-white/20">
               {selectedImageIndex + 1} / {selectedGalleryImages.length}
             </div>
