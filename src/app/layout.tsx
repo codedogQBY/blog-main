@@ -8,8 +8,13 @@ import { MonitoringInitializer } from '@/components/monitoring-initializer'
 import { ErrorBoundary } from '@/components/error-boundary'
 import { Toaster } from 'sonner'
 import { getSiteConfig, DEFAULT_SITE_CONFIG } from '@/lib/site-config'
-import { DelayedComponents } from '@/components/lazy-components'
+
 import { ProgressWrapper } from '@/components/progress-wrapper'
+import AnimatedBackground from '@/components/animated-background'
+import ScrollToTop from '@/components/scroll-to-top'
+import { PerformanceMonitor } from '@/components/performance-monitor'
+import { UserTracker } from '@/components/user-tracker'
+import { PWAInstallPrompt } from '@/components/pwa-install-prompt'
 
 async function generateMetadata(): Promise<Metadata> {
     try {
@@ -154,7 +159,12 @@ export default async function RootLayout({
                                 closeButton
                                 duration={2000}
                             />
-                            <DelayedComponents />
+                            <AnimatedBackground />
+                            <ScrollToTop />
+                            <PerformanceMonitor />
+                            <UserTracker />
+                            <PWAInstallPrompt />
+
                         </ProgressWrapper>
                     </ThemeProvider>
                 </ErrorBoundary>
