@@ -91,7 +91,15 @@ export async function trackUser() {
       return;
     }
 
-    const fingerprint = getOrGenerateFingerprint();
+    // 等待指纹生成完成
+    const fingerprint = await getOrGenerateFingerprint();
+    
+    // 检查指纹是否有效
+    if (!fingerprint || fingerprint.trim() === '') {
+      console.warn('无法获取有效的浏览器指纹，跳过用户追踪');
+      return;
+    }
+    
     const userInfo = await collectUserInfo() as ExtendedUserInfo;
     
     // 尝试获取IP地址和位置信息
@@ -139,4 +147,4 @@ export function initUserTracking() {
   } else {
     window.addEventListener('load', trackUser);
   }
-} 
+}

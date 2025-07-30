@@ -32,7 +32,7 @@ export default function FloatingActions({
   coverImage = '',
   onStatsUpdate
 }: FloatingActionsProps) {
-  const [loading, setLoading] = useState(false)
+
   const [displayLikes, setDisplayLikes] = useState(0)
   const [displayComments, setDisplayComments] = useState(0)
   const [displayIsLiked, setDisplayIsLiked] = useState(false)
@@ -101,11 +101,26 @@ export default function FloatingActions({
   }, [targetType, targetId, mounted, refreshStats])
 
   const handleLike = async () => {
-    if (!targetType || !targetId || loading) return
+    if (!targetType || !targetId) return
+
+    const fingerprint = await getOrGenerateFingerprint()
+    
+    // 检查指纹是否有效
+    if (!fingerprint || fingerprint.trim() === '') {
+      console.warn('无法获取有效的浏览器指纹，跳过点赞操作')
+      return
+    }
+
+    // 乐观更新：立即更新UI状态
+    const previousIsLiked = displayIsLiked
+    const previousLikes = displayLikes
+    const newIsLiked = !displayIsLiked
+    const newLikes = newIsLiked ? displayLikes + 1 : displayLikes - 1
+    
+    setDisplayIsLiked(newIsLiked)
+    setDisplayLikes(newLikes)
 
     try {
-      setLoading(true)
-      const fingerprint = await getOrGenerateFingerprint()
       const userInfo = await collectUserInfo()
       const result = await interactionAPI.toggleLike({
         targetType,
@@ -120,13 +135,16 @@ export default function FloatingActions({
       // 检查组件是否仍然挂载
       if (!mounted) return
       
+      // 使用服务器返回的准确数据更新状态
       setDisplayLikes(result.totalLikes)
       setDisplayIsLiked(result.isLiked)
     } catch (error) {
       console.error('Failed to like:', error)
-    } finally {
+      
+      // 发生错误时回滚到之前的状态
       if (mounted) {
-        setLoading(false)
+        setDisplayIsLiked(previousIsLiked)
+        setDisplayLikes(previousLikes)
       }
     }
   }
@@ -144,7 +162,6 @@ export default function FloatingActions({
       <div className="group relative">
         <Button
           onClick={handleLike}
-          disabled={loading}
           className={`w-14 h-14 rounded-full shadow-lg transition-all duration-300 hover:scale-110 cursor-pointer ${
             displayIsLiked
               ? 'bg-red-500 hover:bg-red-600 text-white'
@@ -212,4 +229,4 @@ export default function FloatingActions({
       )}
     </div>
   )
-} 
+}

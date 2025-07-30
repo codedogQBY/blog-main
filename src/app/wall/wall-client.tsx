@@ -202,7 +202,30 @@ function WallClientContent({ initialNotes, categories }: WallClientProps) {
   }
 
   const handleLike = async (id: string) => {
-    if (!fingerprint) return
+    // 检查指纹是否有效
+    if (!fingerprint || fingerprint.trim() === '') {
+      console.warn('无法获取有效的浏览器指纹，跳过点赞操作')
+      return
+    }
+    
+    // 获取当前项目状态用于乐观更新和回滚
+    const currentItem = messages.find(item => item.id === id)
+    if (!currentItem) return
+    
+    const previousIsLiked = currentItem.isLiked || false
+    const previousLikes = currentItem.likes || 0
+    const newIsLiked = !previousIsLiked
+    const newLikes = newIsLiked ? previousLikes + 1 : previousLikes - 1
+    
+    // 乐观更新：立即更新UI状态
+    updateItem(
+      (item) => item.id === id,
+      (item) => ({
+        ...item,
+        likes: newLikes,
+        isLiked: newIsLiked,
+      })
+    )
     
     try {
       const baseUserInfo = await collectUserInfo()
@@ -217,6 +240,7 @@ function WallClientContent({ initialNotes, categories }: WallClientProps) {
         userInfo
       })
       
+      // 使用服务器返回的准确数据更新状态
       updateItem(
         (item) => item.id === id,
         (item) => ({
@@ -227,6 +251,16 @@ function WallClientContent({ initialNotes, categories }: WallClientProps) {
       )
     } catch (error) {
       console.error('点赞失败:', error)
+      
+      // 发生错误时回滚到之前的状态
+      updateItem(
+        (item) => item.id === id,
+        (item) => ({
+          ...item,
+          likes: previousLikes,
+          isLiked: previousIsLiked,
+        })
+      )
     }
   }
 
@@ -392,4 +426,4 @@ export default function WallClient(props: WallClientProps) {
       <WallClientContent {...props} />
     </Suspense>
   )
-} 
+}
