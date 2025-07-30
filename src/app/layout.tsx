@@ -74,67 +74,18 @@ export const viewport: Viewport = {
     themeColor: '#000000',
 }
 
-function ThemeScript() {
-    return (
-        <script
-            dangerouslySetInnerHTML={{
-                __html: `
-                    (function() {
-                        function getTheme() {
-                            const storageTheme = localStorage.getItem('xa-theme');
-                            if (storageTheme) return storageTheme;
-                            
-                            if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                                return 'dark';
-                            }
-                            return 'light';
-                        }
-                        
-                        const theme = getTheme();
-                        const root = document.documentElement;
-                        root.classList.add(theme);
-                        
-                        // 延迟预加载背景图片，避免阻塞初始渲染
-                        setTimeout(() => {
-                            const bgImage = new Image();
-                            bgImage.src = theme === 'dark' ? '/dark.png' : '/light.png';
-                        }, 1000);
-                        
-                        // 添加 no-transition 类以防止初始加载时的过渡效果
-                        root.classList.add('no-transition');
-                        
-                        // 在页面加载完成后移除 no-transition 类
-                        window.addEventListener('load', function() {
-                            setTimeout(function() {
-                                root.classList.remove('no-transition');
-                                document.body.classList.add('theme-ready');
-                            }, 0);
-                        });
-                    })();
-                `,
-            }}
-        />
-    )
-}
-
 export default async function RootLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    
+
     return (
         <html lang="zh-CN" suppressHydrationWarning className="theme-transition">
             <head>
-                <ThemeScript />
-                
-                {/* 字体预加载 */}
-                <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                
                 {/* 关键资源预加载（仅预加载最重要的资源） */}
                 <link rel="preload" href="/logo.png" as="image" type="image/png" />
-                
+
                 <link rel="manifest" href="/manifest.json" />
                 <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
             </head>
@@ -148,7 +99,7 @@ export default async function RootLayout({
                             </main>
                             <Footer />
                             <MonitoringInitializer />
-                            <Toaster 
+                            <Toaster
                                 position="top-right"
                                 richColors
                                 closeButton
