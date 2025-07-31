@@ -510,9 +510,9 @@ export default function Footer() {
         {/* 备案信息 */}
         <div className="flex flex-col items-center gap-3 border-t border-border pt-6 text-center text-sm text-muted-foreground" suppressHydrationWarning>
           <p suppressHydrationWarning>© {currentYear} <span onClick={handleLogoClick}>{siteConfig?.englishTitle || 'Code Shine'}</span>. All rights reserved.</p>
-          <p suppressHydrationWarning>
+          {/* <p suppressHydrationWarning>
             本站已运行：{mounted ? `${runningTime.days}天${runningTime.hours}时${runningTime.minutes}分${runningTime.seconds}秒` : '加载中...'}
-          </p>
+          </p> */}
           {siteConfig?.icpNumber && (
             <a
               href="https://beian.miit.gov.cn"
