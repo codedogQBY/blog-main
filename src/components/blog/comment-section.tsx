@@ -191,6 +191,12 @@ export default function CommentSection({ targetType, targetId, onCommentAdded }:
 
   // 格式化时间
   const formatTime = (dateString: string) => {
+    // 在服务端渲染时，避免使用当前时间计算差值，直接返回格式化的日期
+    if (typeof window === 'undefined') {
+      const date = new Date(dateString)
+      return date.toLocaleDateString('zh-CN')
+    }
+    
     const date = new Date(dateString)
     const now = new Date()
     const diff = now.getTime() - date.getTime()

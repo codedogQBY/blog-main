@@ -133,28 +133,30 @@ export default function Footer() {
     setMounted(true)
     setCurrentYear(new Date().getFullYear())
 
-    // 计算运行时间
-    const startTime = siteConfig?.startTime ? new Date(siteConfig.startTime) : new Date(2025, 5, 6, 10, 0, 0)
-    const calculateRunningTime = () => {
-      const now = new Date()
-      const diff = now.getTime() - startTime.getTime()
-      
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000)
-      
-      setRunningTime({ days, hours, minutes, seconds })
-    }
+    // 计算运行时间 - 只在客户端执行
+    if (typeof window !== 'undefined') {
+      const startTime = siteConfig?.startTime ? new Date(siteConfig.startTime) : new Date(2025, 5, 6, 10, 0, 0)
+      const calculateRunningTime = () => {
+        const now = new Date()
+        const diff = now.getTime() - startTime.getTime()
+        
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+        
+        setRunningTime({ days, hours, minutes, seconds })
+      }
 
-    // 立即设置一次运行时间
-    calculateRunningTime()
+      // 立即设置一次运行时间
+      calculateRunningTime()
 
-    // 每秒更新运行时间
-    const timer = setInterval(calculateRunningTime, 1000)
+      // 每秒更新运行时间
+      const timer = setInterval(calculateRunningTime, 1000)
 
-    return () => {
-      clearInterval(timer)
+      return () => {
+        clearInterval(timer)
+      }
     }
   }, [siteConfig?.startTime])
 
@@ -597,4 +599,4 @@ export default function Footer() {
       </Dialog>
     </footer>
   )
-} 
+}
