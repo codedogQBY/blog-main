@@ -80,8 +80,8 @@ const TECH_STACK = [
 
 export default function Footer() {
   const [friendLinks, setFriendLinks] = useState<FriendLink[]>([])
-  const [runningTime, setRunningTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
-  const [mounted, setMounted] = useState(false)
+  // const [runningTime, setRunningTime] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+  // const [mounted, setMounted] = useState(false)
   const [currentYear, setCurrentYear] = useState(2025)
   const [siteConfig, setSiteConfig] = useState<SiteConfig | null>(null)
   const [formData, setFormData] = useState<FriendLinkFormData>({
@@ -130,7 +130,7 @@ export default function Footer() {
     }
 
     fetchData()
-    setMounted(true)
+    // setMounted(true)
     setCurrentYear(new Date().getFullYear())
 
     // 计算运行时间 - 只在客户端执行
@@ -145,7 +145,7 @@ export default function Footer() {
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
         const seconds = Math.floor((diff % (1000 * 60)) / 1000)
         
-        setRunningTime({ days, hours, minutes, seconds })
+        // setRunningTime({ days, hours, minutes, seconds })
       }
 
       // 立即设置一次运行时间
