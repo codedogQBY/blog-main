@@ -135,15 +135,15 @@ export default function Footer() {
 
     // 计算运行时间 - 只在客户端执行
     if (typeof window !== 'undefined') {
-      const startTime = siteConfig?.startTime ? new Date(siteConfig.startTime) : new Date(2025, 5, 6, 10, 0, 0)
+      // const startTime = siteConfig?.startTime ? new Date(siteConfig.startTime) : new Date(2025, 5, 6, 10, 0, 0)
       const calculateRunningTime = () => {
-        const now = new Date()
-        const diff = now.getTime() - startTime.getTime()
+        // const now = new Date()
+        // const diff = now.getTime() - startTime.getTime()
         
-        const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000)
+        // const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+        // const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+        // const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+        // const seconds = Math.floor((diff % (1000 * 60)) / 1000)
         
         // setRunningTime({ days, hours, minutes, seconds })
       }
